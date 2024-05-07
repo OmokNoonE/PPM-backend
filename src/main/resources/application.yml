@@ -8,6 +8,9 @@ spring:
     url: jdbc:mariadb://localhost:3306/ppm
     username: root
     password: root
+  config:
+    import:
+      - classpath:/messages.yml
 
   jpa:
     generate-ddl: false
@@ -21,6 +24,7 @@ token:
   access-expiration-time: 43200000          # 12H
   refresh-expiration-time: 604800000        # 7D
   secret: temp
+
 
 #logging:
 #  level:
