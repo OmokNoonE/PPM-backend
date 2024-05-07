@@ -1,4 +1,4 @@
-package org.omoknoone.common.exception;
+package org.omoknoone.ppm.common.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
@@ -6,7 +6,7 @@ import jakarta.transaction.TransactionRolledbackException;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.tools.UnsupportedPointcutPrimitiveException;
 import org.hibernate.exception.ConstraintViolationException;
-import org.omoknoone.common.ResponseMessage;
+import org.omoknoone.ppm.common.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;

@@ -1,4 +1,4 @@
-package org.omoknoone.common;
+package org.omoknoone.ppm.common;
 
 import lombok.*;
 

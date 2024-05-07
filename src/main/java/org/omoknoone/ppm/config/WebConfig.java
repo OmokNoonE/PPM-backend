@@ -1,4 +1,4 @@
-package org.omoknoone.config;
+package org.omoknoone.ppm.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
