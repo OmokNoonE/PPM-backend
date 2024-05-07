@@ -4,16 +4,13 @@ exception:
     httpMediaTypeNotSupported: "지원되지 않는 미디어 타입입니다."
     httpMessageNotReadable: "요청 본문을 읽을 수 없습니다."
     httpRequestMethodNotSupported: "이 HTTP 메소드는 지원되지 않습니다."
-    resourceNotFound: "요청한 리소스를 찾을 수 없습니다."
     methodArgumentTypeMismatch: "요청 매개변수 유형이 일치하지 않습니다."
-    missingServletRequestParameter: "필수 요청 매개변수가 누락되었습니다."
     accessDenied: "접근 권한이 없습니다."
 
   # 서비스 및 비즈니스 로직 관련 예외
   service:
     nullPointer: "객체 참조가 null입니다."
     illegalArgument: "부적절한 인자가 전달되었습니다."
-    accessDenied: "비즈니스 로직에서 접근 권한이 없습니다."
 
   # 데이터 접근 계층 관련 예외
   data:
@@ -32,11 +29,11 @@ exception:
   # AOP 관련 예외
   aop:
     aspectJExpressionPointcut: "AOP 포인트컷 표현식 오류입니다."
-    aopConfig: "AOP 구성 오류입니다."
 
   # 기타 시스템 예외
   system:
     transactionSystemError: "트랜잭션 시스템 오류입니다."
     cannotCreateTransaction: "트랜잭션 생성 실패입니다."
     rollbackError: "트랜잭션 롤백 오류입니다."
+    transactionError: "트랜잭션 오류입니다."
     generalError: "서버에서 오류가 발생했습니다."

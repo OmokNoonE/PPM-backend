@@ -2,6 +2,7 @@ package org.omoknoone.common.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
+import jakarta.transaction.TransactionRolledbackException;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.tools.UnsupportedPointcutPrimitiveException;
 import org.hibernate.exception.ConstraintViolationException;
@@ -74,9 +75,12 @@ public class GlobalExceptionHandler {
         } else if (ex instanceof IllegalArgumentException) {
             status = HttpStatus.BAD_REQUEST;
             propertyKey = environment.getProperty("exception.service.illegalArgument");
+        } else if (ex instanceof NullPointerException) {
+            status = HttpStatus.BAD_REQUEST;
+            propertyKey = environment.getProperty("exception.service.nullPointer");
         } else if (ex instanceof AccessDeniedException) {
             status = HttpStatus.FORBIDDEN;
-            propertyKey = environment.getProperty("exception.service.accessDenied");
+            propertyKey = environment.getProperty("exception.controller.accessDenied");
         } else if (ex instanceof ConstraintViolationException) {
             status = HttpStatus.BAD_REQUEST;
             propertyKey = environment.getProperty("exception.data.constraintViolation");
@@ -86,19 +90,33 @@ public class GlobalExceptionHandler {
         } else if (ex instanceof HttpMessageNotWritableException) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             propertyKey = environment.getProperty("exception.data.httpMessageNotWritable");
-        } else if (ex instanceof BeanCreationException || ex instanceof BeanInitializationException ||
-                ex instanceof BeanInstantiationException) {
+        } else if (ex instanceof BeanCreationException) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             propertyKey = environment.getProperty("exception.bean.beanCreation");
+        } else if (ex instanceof BeanInitializationException) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            propertyKey = environment.getProperty("exception.bean.beanInitialization");
+        } else if (ex instanceof BeanInstantiationException) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            propertyKey = environment.getProperty("exception.bean.beanInstantiation");
         } else if (ex instanceof NoSuchBeanDefinitionException) {
             status = HttpStatus.NOT_FOUND;
             propertyKey = environment.getProperty("exception.bean.noSuchBeanDefinition");
         } else if (ex instanceof UnsupportedPointcutPrimitiveException) {
             status = HttpStatus.BAD_REQUEST;
             propertyKey = environment.getProperty("exception.aop.aspectJExpressionPointcut");
-        } else if (ex instanceof TransactionException) {
+        } else if (ex instanceof TransactionSystemException) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             propertyKey = environment.getProperty("exception.system.transactionSystemError");
+        } else if (ex instanceof CannotCreateTransactionException) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            propertyKey = environment.getProperty("exception.system.cannotCreateTransaction");
+        } else if (ex instanceof TransactionRolledbackException) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            propertyKey = environment.getProperty("exception.system.rollbackError");
+        } else if (ex instanceof TransactionException) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            propertyKey = environment.getProperty("exception.system.transactionError");
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             propertyKey = environment.getProperty("exception.system.generalError");
