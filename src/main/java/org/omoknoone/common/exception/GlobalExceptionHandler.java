@@ -58,57 +58,56 @@ public class GlobalExceptionHandler {
         // 예외 유형에 따라 status 및 propertyKey 결정하는 로직
         if (ex instanceof HttpMediaTypeNotSupportedException) {
             status = HttpStatus.UNSUPPORTED_MEDIA_TYPE;
-            propertyKey = "exception.controller.httpMediaTypeNotSupported";
+            propertyKey = environment.getProperty("exception.controller.httpMediaTypeNotSupported");
         } else if (ex instanceof HttpMessageNotReadableException) {
             status = HttpStatus.BAD_REQUEST;
-            propertyKey = "exception.controller.httpMessageNotReadable";
+            propertyKey = environment.getProperty("exception.controller.httpMessageNotReadable");
         } else if (ex instanceof HttpRequestMethodNotSupportedException) {
             status = HttpStatus.METHOD_NOT_ALLOWED;
-            propertyKey = "exception.controller.httpRequestMethodNotSupported";
+            propertyKey = environment.getProperty("exception.controller.httpRequestMethodNotSupported");
         } else if (ex instanceof EntityNotFoundException) {
             status = HttpStatus.NOT_FOUND;
-            propertyKey = "exception.data.entityNotFound";
+            propertyKey = environment.getProperty("exception.data.entityNotFound");
         } else if (ex instanceof MethodArgumentTypeMismatchException || ex instanceof ServletRequestBindingException) {
             status = HttpStatus.BAD_REQUEST;
-            propertyKey = "exception.controller.methodArgumentTypeMismatch";
+            propertyKey = environment.getProperty("exception.controller.methodArgumentTypeMismatch");
         } else if (ex instanceof IllegalArgumentException) {
             status = HttpStatus.BAD_REQUEST;
-            propertyKey = "exception.service.illegalArgument";
+            propertyKey = environment.getProperty("exception.service.illegalArgument");
         } else if (ex instanceof AccessDeniedException) {
             status = HttpStatus.FORBIDDEN;
-            propertyKey = "exception.service.accessDenied";
+            propertyKey = environment.getProperty("exception.service.accessDenied");
         } else if (ex instanceof ConstraintViolationException) {
             status = HttpStatus.BAD_REQUEST;
-            propertyKey = "exception.data.constraintViolation";
+            propertyKey = environment.getProperty("exception.data.constraintViolation");
         } else if (ex instanceof OptimisticLockException) {
             status = HttpStatus.CONFLICT;
-            propertyKey = "exception.data.optimisticLockingFailure";
+            propertyKey = environment.getProperty("exception.data.optimisticLockingFailure");
         } else if (ex instanceof HttpMessageNotWritableException) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-            propertyKey = "exception.data.httpMessageNotWritable";
+            propertyKey = environment.getProperty("exception.data.httpMessageNotWritable");
         } else if (ex instanceof BeanCreationException || ex instanceof BeanInitializationException ||
                 ex instanceof BeanInstantiationException) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-            propertyKey = "exception.bean.beanCreation";
+            propertyKey = environment.getProperty("exception.bean.beanCreation");
         } else if (ex instanceof NoSuchBeanDefinitionException) {
             status = HttpStatus.NOT_FOUND;
-            propertyKey = "exception.bean.noSuchBeanDefinition";
+            propertyKey = environment.getProperty("exception.bean.noSuchBeanDefinition");
         } else if (ex instanceof UnsupportedPointcutPrimitiveException) {
             status = HttpStatus.BAD_REQUEST;
-            propertyKey = "exception.aop.aspectJExpressionPointcut";
+            propertyKey = environment.getProperty("exception.aop.aspectJExpressionPointcut");
         } else if (ex instanceof TransactionException) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-            propertyKey = "exception.system.transactionSystemError";
+            propertyKey = environment.getProperty("exception.system.transactionSystemError");
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
-            propertyKey = "exception.system.generalError";
+            propertyKey = environment.getProperty("exception.system.generalError");
         }
 
-        ResponseMessage responseMessage = new ResponseMessage(
-                status.value(),
-                environment.getProperty(propertyKey, "Error processing request"),
-                null  // additional data can be added here if necessary
-        );
+        ResponseMessage responseMessage = ResponseMessage.builder()
+                .httpStatus(status.value())
+                .message(propertyKey)
+                .build();
 
         return new ResponseEntity<>(responseMessage, status);
     }
