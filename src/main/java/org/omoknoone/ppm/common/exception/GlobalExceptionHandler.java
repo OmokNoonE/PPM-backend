@@ -6,7 +6,6 @@ import jakarta.transaction.TransactionRolledbackException;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.weaver.tools.UnsupportedPointcutPrimitiveException;
 import org.hibernate.exception.ConstraintViolationException;
-import org.omoknoone.ppm.common.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;
@@ -29,6 +28,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @ControllerAdvice
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
@@ -47,12 +49,12 @@ public class GlobalExceptionHandler {
             BeanInstantiationException.class, UnsupportedPointcutPrimitiveException.class, TransactionSystemException.class,
             CannotCreateTransactionException.class, TransactionException.class, Exception.class
     })
-    public ResponseEntity<ResponseMessage> handleException(Exception ex) {
+    public ResponseEntity<Map<Integer, String>> handleException(Exception ex) {
         logger.error("Exception: {}", ex.getMessage());
         return buildResponseEntity(ex);
     }
 
-    private ResponseEntity<ResponseMessage> buildResponseEntity(Exception ex) {
+    private ResponseEntity<Map<Integer, String>> buildResponseEntity(Exception ex) {
         HttpStatus status;
         String propertyKey;
 
@@ -122,10 +124,8 @@ public class GlobalExceptionHandler {
             propertyKey = environment.getProperty("exception.system.generalError");
         }
 
-        ResponseMessage responseMessage = ResponseMessage.builder()
-                .httpStatus(status.value())
-                .message(propertyKey)
-                .build();
+        Map<Integer, String> responseMessage = new HashMap<>();
+        responseMessage.put(status.value(), propertyKey);
 
         return new ResponseEntity<>(responseMessage, status);
     }

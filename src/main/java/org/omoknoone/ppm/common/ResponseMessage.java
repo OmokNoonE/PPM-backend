@@ -15,12 +15,6 @@ public class ResponseMessage {
     private Map<String, Object> result;     // 응답 데이터
 
     @Builder
-    public ResponseMessage(int httpStatus, String message) {
-        this.httpStatus = httpStatus;
-        this.message = message;
-    }
-
-    @Builder
     public ResponseMessage(int httpStatus, String message, Map<String, Object> result) {
         this.httpStatus = httpStatus;
         this.message = message;
