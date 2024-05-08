@@ -1,6 +1,18 @@
 package org.omoknoone.ppm.commoncode.service;
 
+import org.omoknoone.ppm.commoncode.dto.CommonCodeDTO;
+import org.omoknoone.ppm.commoncode.dto.CommonCodeGroupDTO;
+
+import java.util.List;
+import java.util.Optional;
+
 public interface CommonCodeService {
 
-    // 공통코드ID로 코드 정보 조회
+     List<CommonCodeDTO> viewCommonCodesByGroup(Long groupId);
+
+     Optional<CommonCodeDTO> viewCommonCodeById(Long codeId);
+
+     List<CommonCodeGroupDTO> viewAllCommonCodeGroups();
+
+     Optional<CommonCodeGroupDTO> viewCommonCodeGroupById(Long groupId);
 }
