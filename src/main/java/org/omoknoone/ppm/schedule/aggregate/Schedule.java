@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 @Table(name = "schedule")
 public class Schedule {
@@ -51,7 +50,7 @@ public class Schedule {
     private Integer scheduleProgress;
 
     @JoinColumn(name = "schedule_status")
-    private Long scheduleStatus;
+    private Long scheduleStatus = 10301L;
 
     @Column(name = "schedule_man_hours")
     private Integer scheduleManHours;

@@ -22,10 +22,7 @@ public class ScheduleServiceImpl implements ScheduleService{
     @Override
     public void createSchedule(NewScheduleDTO newScheduleDTO) {
         Schedule schedule = modelMapper.map(newScheduleDTO, Schedule.class);
-
-        /* 설명. 일정 생성 시, 일정 상태 기본 값으로 준비(공통코드 10301)로 설정. (이를 그냥 default로서 entitiy에 설정할 지 고민할 것)*/
-        schedule.setScheduleStatus(10301L);
-
+        
         scheduleRepository.save(schedule);
     }
 }
