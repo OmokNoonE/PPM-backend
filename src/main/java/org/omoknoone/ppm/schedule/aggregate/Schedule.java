@@ -78,12 +78,15 @@ public class Schedule {
     @Column(name = "schedule_deleted_date", length = 30)
     private LocalDateTime scheduleDeletedDate;
 
+    @JoinColumn(name = "schedule_project_id", nullable = false)
+    private Long scheduleProjectId;
+
     @Builder
     public Schedule(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate,
         LocalDate scheduleEndDate, Integer scheduleDepth, Integer schedulePriority, Integer scheduleProgress,
         Long scheduleStatus, Integer scheduleManHours, Long scheduleParentScheduleId, Long schedulePrecedingScheduleId,
         LocalDateTime scheduleCreatedDate, LocalDateTime scheduleModifiedDate, Boolean scheduleIsDeleted,
-        LocalDateTime scheduleDeletedDate) {
+        LocalDateTime scheduleDeletedDate, Long scheduleProjectId) {
         this.scheduleId = scheduleId;
         this.scheduleTitle = scheduleTitle;
         this.scheduleContent = scheduleContent;
@@ -100,5 +103,6 @@ public class Schedule {
         this.scheduleModifiedDate = scheduleModifiedDate;
         this.scheduleIsDeleted = scheduleIsDeleted;
         this.scheduleDeletedDate = scheduleDeletedDate;
+        this.scheduleProjectId = scheduleProjectId;
     }
 }

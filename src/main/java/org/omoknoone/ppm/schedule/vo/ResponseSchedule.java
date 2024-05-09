@@ -29,4 +29,5 @@ public class ResponseSchedule {
     private LocalDateTime scheduleModifiedDate;
     private Boolean scheduleIsDeleted;
     private LocalDateTime scheduleDeletedDate;
+    private Long scheduleProjectId;
 }

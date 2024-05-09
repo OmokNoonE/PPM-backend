@@ -20,4 +20,5 @@ public class RequestSchedule {
     private Integer schedulePriority;
     private Long scheduleParentScheduleId;
     private Long schedulePrecedingScheduleId;
+    private Long scheduleProjectId;
 }

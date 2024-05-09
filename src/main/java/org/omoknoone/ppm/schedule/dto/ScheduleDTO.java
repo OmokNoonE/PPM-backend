@@ -31,13 +31,14 @@ public class ScheduleDTO{
     private LocalDateTime scheduleModifiedDate;
     private Boolean scheduleIsDeleted;
     private LocalDateTime scheduleDeletedDate;
+    private Long scheduleProjectId;
 
     @Builder
     public ScheduleDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate,
         LocalDate scheduleEndDate, Integer scheduleDepth, Integer schedulePriority, Integer scheduleProgress,
         Long scheduleStatus, Integer scheduleManHours, Long scheduleParentScheduleId, Long schedulePrecedingScheduleId,
         LocalDateTime scheduleCreatedDate, LocalDateTime scheduleModifiedDate, Boolean scheduleIsDeleted,
-        LocalDateTime scheduleDeletedDate) {
+        LocalDateTime scheduleDeletedDate, Long scheduleProjectId) {
         this.scheduleId = scheduleId;
         this.scheduleTitle = scheduleTitle;
         this.scheduleContent = scheduleContent;
@@ -54,5 +55,6 @@ public class ScheduleDTO{
         this.scheduleModifiedDate = scheduleModifiedDate;
         this.scheduleIsDeleted = scheduleIsDeleted;
         this.scheduleDeletedDate = scheduleDeletedDate;
+        this.scheduleProjectId = scheduleProjectId;
     }
 }
