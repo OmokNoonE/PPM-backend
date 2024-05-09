@@ -4,9 +4,9 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter
+@Getter
 @ToString
-public class CommonCodeGroupDTO {
+public class CommonCodeGroupResponseDTO {
 
     private Long groupId;
     private String groupName;
