@@ -1,4 +1,4 @@
-package org.omoknoone.ppm.schedule.aggregate;
+package org.omoknoone.ppm.domain.schedule.aggregate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

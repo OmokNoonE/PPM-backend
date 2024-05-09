@@ -1,10 +1,10 @@
-package org.omoknoone.ppm.schedule.service;
+package org.omoknoone.ppm.domain.schedule.service;
 
 import java.util.List;
 
-import org.omoknoone.ppm.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.schedule.dto.NewScheduleDTO;
-import org.omoknoone.ppm.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.schedule.dto.NewScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 
 public interface ScheduleService {
 

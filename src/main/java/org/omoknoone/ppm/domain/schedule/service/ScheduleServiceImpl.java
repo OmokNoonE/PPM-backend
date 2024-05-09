@@ -1,14 +1,14 @@
-package org.omoknoone.ppm.schedule.service;
+package org.omoknoone.ppm.domain.schedule.service;
 
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
-import org.omoknoone.ppm.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.schedule.dto.NewScheduleDTO;
-import org.omoknoone.ppm.schedule.dto.ScheduleDTO;
-import org.omoknoone.ppm.schedule.repository.ScheduleRepository;
+import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.schedule.dto.NewScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

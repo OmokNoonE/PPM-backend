@@ -1,4 +1,4 @@
-package org.omoknoone.ppm.schedule.vo;
+package org.omoknoone.ppm.domain.schedule.vo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
