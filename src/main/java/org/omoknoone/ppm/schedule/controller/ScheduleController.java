@@ -28,9 +28,9 @@ public class ScheduleController {
 
     /* 일정 등록 */
     @PostMapping("/create")
-    public ResponseEntity<ResponseSchedule> createSchedule(@RequestBody RequestSchedule schedule){
+    public ResponseEntity<ResponseSchedule> createSchedule(@RequestBody RequestSchedule requestSchedule){
 
-        ScheduleDTO scheduleDTO = modelMapper.map(schedule, ScheduleDTO.class);
+        ScheduleDTO scheduleDTO = modelMapper.map(requestSchedule, ScheduleDTO.class);
 
         scheduleService.createSchedule(scheduleDTO);
 

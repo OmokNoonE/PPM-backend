@@ -1,11 +1,20 @@
 package org.omoknoone.ppm.schedule.service;
 
+import java.util.List;
+
 import org.omoknoone.ppm.schedule.dto.ScheduleDTO;
 
 public interface ScheduleService {
 
     void createSchedule(ScheduleDTO scheduleDTO);
 
+    ScheduleDTO viewSchedule(Long scheduleId);
 
+    List<ScheduleDTO> viewScheduleByProject(Long projectId);
 
+    List<ScheduleDTO> viewScheduleOrderBy(Long projectId, String sort);
+
+    List<ScheduleDTO> viewScheduleNearByStart(Long projectId);
+
+    List<ScheduleDTO> viewScheduleNearByEnd(Long projectId);
 }
