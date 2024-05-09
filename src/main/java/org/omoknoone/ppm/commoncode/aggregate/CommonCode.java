@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "common_code")
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter
+@Getter
 @ToString
 public class CommonCode {
 
