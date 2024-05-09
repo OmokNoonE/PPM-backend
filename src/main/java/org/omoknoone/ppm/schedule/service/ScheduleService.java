@@ -1,10 +1,10 @@
 package org.omoknoone.ppm.schedule.service;
 
-import org.omoknoone.ppm.schedule.dto.NewScheduleDTO;
+import org.omoknoone.ppm.schedule.dto.ScheduleDTO;
 
 public interface ScheduleService {
 
-    void createSchedule(NewScheduleDTO newScheduleDTO);
+    void createSchedule(ScheduleDTO scheduleDTO);
 
 
 
