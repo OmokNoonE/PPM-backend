@@ -3,15 +3,18 @@ package org.omoknoone.ppm.schedule.service;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.schedule.dto.NewScheduleDTO;
 import org.omoknoone.ppm.schedule.dto.ScheduleDTO;
 import org.omoknoone.ppm.schedule.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ScheduleServiceImpl implements ScheduleService{
+public class ScheduleServiceImpl implements ScheduleService {
 
     private final ModelMapper modelMapper;
     private final ScheduleRepository scheduleRepository;
@@ -23,39 +26,91 @@ public class ScheduleServiceImpl implements ScheduleService{
     }
 
     @Override
-    public void createSchedule(ScheduleDTO scheduleDTO) {
+    @Transactional
+    public Schedule createSchedule(NewScheduleDTO newScheduleDTO) {
+
+        /* 일정 상태와 삭제 여부 기본값 부여*/
+        newScheduleDTO.newScheduleDefaultValueSet();
+
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        Schedule schedule = modelMapper.map(scheduleDTO, Schedule.class);
+        Schedule schedule = modelMapper.map(newScheduleDTO, Schedule.class);
 
-        scheduleRepository.save(schedule);
+        Schedule newSchedule = scheduleRepository.save(schedule);
+
+        return newSchedule;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ScheduleDTO viewSchedule(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(IllegalArgumentException::new);
 
-        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId);
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
+        ScheduleDTO scheduleDTO = modelMapper.map(schedule, ScheduleDTO.class);
 
-        return null;
+        return scheduleDTO;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ScheduleDTO> viewScheduleByProject(Long projectId) {
-        return null;
+
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesByScheduleProjectId(projectId);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
+
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
+
+        return scheduleDTOList;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ScheduleDTO> viewScheduleOrderBy(Long projectId, String sort) {
-        return null;
+
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectIdAndSort(projectId, sort);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
+
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
+
+        return scheduleDTOList;
     }
 
+
     @Override
+    @Transactional(readOnly = true)
     public List<ScheduleDTO> viewScheduleNearByStart(Long projectId) {
-        return null;
+
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectNearByStart(projectId);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
+
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
+
+        return scheduleDTOList;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ScheduleDTO> viewScheduleNearByEnd(Long projectId) {
-        return null;
+
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectNearByEnd(projectId);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
+
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
+
+        return scheduleDTOList;
     }
 }

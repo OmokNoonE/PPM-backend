@@ -2,11 +2,13 @@ package org.omoknoone.ppm.schedule.service;
 
 import java.util.List;
 
+import org.omoknoone.ppm.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.schedule.dto.NewScheduleDTO;
 import org.omoknoone.ppm.schedule.dto.ScheduleDTO;
 
 public interface ScheduleService {
 
-    void createSchedule(ScheduleDTO scheduleDTO);
+    Schedule createSchedule(NewScheduleDTO newScheduleDTO);
 
     ScheduleDTO viewSchedule(Long scheduleId);
 
