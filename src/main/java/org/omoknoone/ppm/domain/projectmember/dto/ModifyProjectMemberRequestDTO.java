@@ -4,9 +4,12 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter
+@Getter
 public class ModifyProjectMemberRequestDTO {
 
+    private Integer projectMemberId;
+
+    @Setter
     private Integer projectMemberRoleId;
 
 }

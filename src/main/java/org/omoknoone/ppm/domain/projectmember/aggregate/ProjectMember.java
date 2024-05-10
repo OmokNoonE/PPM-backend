@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -56,4 +57,10 @@ public class ProjectMember {
         this.projectMemberCreatedDate = projectMemberCreatedDate;
         this.projectMemberModifiedDate = projectMemberModifiedDate;
     }
+
+    public void modify(ModifyProjectMemberRequestDTO dto) {
+        this.projectMemberId = dto.getProjectMemberId();
+        this.projectMemberRoleId = dto.getProjectMemberRoleId();
+    }
+
 }
