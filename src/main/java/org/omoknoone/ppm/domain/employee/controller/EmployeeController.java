@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.employee.dto.ModifyEmployeeRequestDTO;
+import org.omoknoone.ppm.domain.employee.dto.SignUpEmployeeRequestDTO;
 import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
 import org.springframework.http.HttpHeaders;
@@ -55,5 +56,22 @@ public class EmployeeController {
                 .ok()
                 .headers(headers)
                 .body(new ResponseMessage(200, "회원 정보 수정 성공", responseMap));
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<ResponseMessage> signUp(@RequestBody SignUpEmployeeRequestDTO signUpEmployeeRequestDTO) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+        String employeeId = employeeService.signUp(signUpEmployeeRequestDTO);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("result", employeeId);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "회원 가입 성공", responseMap));
     }
 }
