@@ -1,22 +1,33 @@
 package org.omoknoone.ppm.domain.schedule.controller;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
+import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.omoknoone.ppm.domain.schedule.vo.RequestSchedule;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseSchedule;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -93,7 +104,8 @@ public class ScheduleController {
             new TypeToken<List<ScheduleDTO>>() {
             }.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);    }
+        return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
+    }
 
     /* 일정 마감일순 목록 조회 */
     @GetMapping("/nearend/{projectId}")
@@ -105,5 +117,37 @@ public class ScheduleController {
             }.getType());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
+    }
+
+    @PutMapping("/modify")
+    public ResponseEntity<ResponseMessage> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+
+        Long scheduleId = scheduleService.modifySchedule(modifyScheduleDTO);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("result", scheduleId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .headers(headers)
+            .body(new ResponseMessage(200, "일정 수정 성공", responseMap));
+    }
+
+    @DeleteMapping("/remove/{scheduleId}")
+    public ResponseEntity<ResponseMessage> removeSchedule(@PathVariable("scheduleId") Long scheduleId){
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+
+        scheduleService.removeSchedule(scheduleId);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("result", scheduleId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .headers(headers)
+            .body(new ResponseMessage(204, "일정 삭제 성공", responseMap));
     }
 }

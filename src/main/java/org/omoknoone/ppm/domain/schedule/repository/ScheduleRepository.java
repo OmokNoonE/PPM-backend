@@ -35,4 +35,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         + "AND s.scheduleEndDate >= FUNCTION('CURRENT_DATE') "
         + "ORDER BY s.scheduleEndDate ASC")
     List<Schedule> findSchedulesByProjectNearByEnd(Long projectId);
+
+    List<Schedule> findSchedulesByScheduleParentScheduleId(Long scheduleId);
 }
