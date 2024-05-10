@@ -54,7 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException | AuthenticationException e) {
                 /* 설명. accessToken이 만료 됐으면 refreshToken 확인 */
                 try {
-                    if(authService.checkRefreshToken(Integer.valueOf(refreshTokenId))) {     // refreshToken이 있는 경우 재발급
+                    if(authService.checkRefreshToken(refreshTokenId)) {     // refreshToken이 있는 경우 재발급
                         Long accessExpirationTime = Long.valueOf(environment.getProperty("token.access-expiration-time"));
                         String newAccessToken =
                                 jwtTokenProvider.generateToken(jwtUtil.parseClaims(token), accessExpirationTime);

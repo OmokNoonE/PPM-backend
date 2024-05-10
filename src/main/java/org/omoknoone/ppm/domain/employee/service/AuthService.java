@@ -3,9 +3,9 @@ package org.omoknoone.ppm.domain.employee.service;
 import javax.naming.AuthenticationException;
 
 public interface AuthService {
-    void logout(int refreshTokenId) throws AuthenticationException;
+    void logout(String refreshTokenId) throws AuthenticationException;
 
-    int successLogin(String employeeId, String refreshToken);
+    String successLogin(String employeeId, String refreshToken, Long refreshExpirationTime);
 
-    boolean checkRefreshToken(int refreshTokenId) throws AuthenticationException;
+    boolean checkRefreshToken(String refreshTokenId) throws AuthenticationException;
 }

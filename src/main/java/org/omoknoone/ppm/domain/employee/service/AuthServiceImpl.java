@@ -19,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public void logout(int refreshTokenId) throws AuthenticationException {
+    public void logout(String refreshTokenId) throws AuthenticationException {
         Auth auth = authRepository.findById(refreshTokenId).orElseThrow(AuthenticationException::new);
         auth.logout();
 
@@ -28,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public int successLogin(String employeeId, String refreshToken) {
+    public String successLogin(String employeeId, String refreshToken, Long refreshExpirationTime) {
 
         Auth auth = Auth.builder()
                 .refreshTokenValue(refreshToken)
@@ -36,12 +36,13 @@ public class AuthServiceImpl implements AuthService {
                 .refreshTokenCreatedDate(LocalDateTime.now())
                 .refreshTokenIsRevoked(false)
                 .build();
+        auth.calculateExpiredDate(refreshExpirationTime);   // 파기 일을 계산하여 저장
 
         return authRepository.save(auth).getId();
     }
 
     @Override
-    public boolean checkRefreshToken(int refreshTokenId) throws AuthenticationException {
+    public boolean checkRefreshToken(String refreshTokenId) throws AuthenticationException {
         Auth auth = null;
 
         auth = authRepository.findById(refreshTokenId).orElseThrow(AuthenticationException::new);
