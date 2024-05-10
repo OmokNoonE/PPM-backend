@@ -28,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public int successLogin(String employeeId, String refreshToken, Long refreshExpirationTime) {
+    public String successLogin(String employeeId, String refreshToken, Long refreshExpirationTime) {
 
         Auth auth = Auth.builder()
                 .refreshTokenValue(refreshToken)
@@ -38,12 +38,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         auth.calculateExpiredDate(refreshExpirationTime);   // 파기 일을 계산하여 저장
 
-        log.info("[service] auth : {}", auth);
-
-        int id = authRepository.save(auth).getId();
-        log.info("[service] id : {}", id);
-
-        return id;
+        return authRepository.save(auth).getId();
     }
 
     @Override

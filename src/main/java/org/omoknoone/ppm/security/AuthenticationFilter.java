@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.domain.employee.dto.LoginEmployeeDTO;
 import org.omoknoone.ppm.domain.employee.dto.RequestLoginDTO;
 import org.omoknoone.ppm.domain.employee.service.AuthService;
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.ArrayList;
 
+@Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final EmployeeService employeeService;
@@ -83,14 +85,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String refreshToken = jwtTokenProvider.generateToken(claims, refreshExpirationTime);
 
         /* 설명. redis에 refreshToken을 저장하고 id값 가져오기 */
-        int refreshTokenId = authService.successLogin(employeeId, refreshToken, refreshExpirationTime);
+        String refreshTokenId = authService.successLogin(employeeId, refreshToken, refreshExpirationTime);
 
         response.addHeader("accessToken", accessToken);
         response.addHeader("employeeId", employeeId);
         response.addHeader("employeeName", employeeName);
 
         /* 설명. refreshToken이 아닌 token의 Id를 전달, refreshToken은 서버만 가지고 있음 */
-        Cookie cookie = new Cookie("refreshTokenId", String.valueOf(refreshTokenId));
+        Cookie cookie = new Cookie("refreshTokenId", refreshTokenId);
         cookie.setMaxAge(604800);        // 7일
 
         // HttpOnly Cookie 는 추후에 구현

@@ -3,6 +3,7 @@ package org.omoknoone.ppm.domain.employee.aggregate;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.time.Duration;
@@ -18,8 +19,8 @@ import java.time.LocalDateTime;
 public class Auth {
     @Id
     @Column(name = "refresh_token_id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private Integer id;
+    @UuidGenerator          // 랜덤한 고유 식별자 생성
+    private String id;
 
     @Column(name = "refresh_token_value", nullable = false, length = 512)
     private String refreshTokenValue;
