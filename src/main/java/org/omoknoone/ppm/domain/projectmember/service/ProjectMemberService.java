@@ -7,6 +7,7 @@ import org.omoknoone.ppm.domain.projectmember.dto.viewProjectMembersByProjectRes
 import java.util.List;
 
 public interface ProjectMemberService {
+    List<viewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId);
 
     String createProjectMember(CreateProjectMemberRequestDTO createProjectMemberRequestDTO);
 
@@ -14,5 +15,4 @@ public interface ProjectMemberService {
 
     String modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO);
 
-    List<viewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId);
 }
