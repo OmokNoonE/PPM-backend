@@ -6,4 +6,6 @@ import org.omoknoone.ppm.projectDashboard.aggregate.ProjectDashboard;
 
 public interface ProjectDashboardService {
 	List<ProjectDashboard> viewProjectDashboardByProjectId(String projectId);
+	void updateGauge(String projectId);
+
 }

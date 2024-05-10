@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 // mongoDB document
 @Document(collection = "ProjectDashboard")
@@ -22,6 +23,8 @@ public class ProjectDashboard {
 
 	private List<Map<String, Object>> series;
 
-	private Integer projectId;
+	private String projectId;
+
+	private String type;
 
 }
