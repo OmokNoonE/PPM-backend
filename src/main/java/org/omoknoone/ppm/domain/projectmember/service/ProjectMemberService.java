@@ -1,15 +1,18 @@
 package org.omoknoone.ppm.domain.projectmember.service;
 
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.viewProjectMembersByProjectResponseDTO;
+
+import java.util.List;
 
 public interface ProjectMemberService {
 
-    CreateProjectMemberResponseDTO createProjectMember(CreateProjectMemberRequestDTO createProjectMemberRequestDTO);
+    String createProjectMember(CreateProjectMemberRequestDTO createProjectMemberRequestDTO);
 
-    void removeProjectMember(Integer projectMemberId);
+    String removeProjectMember(Integer projectMemberId);
 
-//    ModifyProjectMemberResponseDTO modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO);
-//            viewProjectMemberByProject
-//    viewNotificationSetting
+    String modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO);
+
+    List<viewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId);
 }
