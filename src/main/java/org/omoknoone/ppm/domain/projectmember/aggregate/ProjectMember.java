@@ -18,14 +18,13 @@ public class ProjectMember {
     @Column(name = "project_member_id", nullable = false)
     private Integer projectMemberId;
 
-    @JoinColumn(name = "project_member_project_id", nullable = false)
-    private Integer projectMemberProjectId;
+    @CreatedDate
+    @Column(name = "project_member_created_date", nullable = false, length = 30)
+    private LocalDateTime projectMemberCreatedDate;
 
-    @JoinColumn(name = "project_member_role_id", nullable = false)
-    private Integer projectMemberRoleId;
-
-    @JoinColumn(name = "project_member_employee_id", nullable = false)
-    private String projectMemberEmployeeId;
+    @LastModifiedDate
+    @Column(name = "project_member_modified_date", length = 30)
+    private LocalDateTime projectMemberModifiedDate;
 
     @Column(name = "project_member_is_excluded", nullable = false)
     private Boolean projectMemberIsExcluded = false;
@@ -34,13 +33,14 @@ public class ProjectMember {
     @Column(name = "project_member_exclusion_date", length = 30)
     private LocalDateTime projectMemberExclusionDate;
 
-    @CreatedDate
-    @Column(name = "project_member_created_date", nullable = false, length = 30)
-    private LocalDateTime projectMemberCreatedDate;
+    @JoinColumn(name = "project_member_project_id", nullable = false)
+    private Integer projectMemberProjectId;
 
-    @LastModifiedDate
-    @Column(name = "project_member_modified_date", length = 30)
-    private LocalDateTime projectMemberModifiedDate;
+    @JoinColumn(name = "project_member_role_id", nullable = false)
+    private Integer projectMemberRoleId;
+
+    @JoinColumn(name = "project_member_employee_id", nullable = false)
+    private String projectMemberEmployeeId;
 
     @Builder
     public ProjectMember(Integer projectMemberId, Integer projectMemberProjectId, Integer projectMemberRoleId,
