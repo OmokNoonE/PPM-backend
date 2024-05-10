@@ -6,7 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.NewScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.omoknoone.ppm.domain.schedule.vo.RequestSchedule;
@@ -39,9 +39,9 @@ public class ScheduleController {
     public ResponseEntity<ResponseSchedule> createSchedule(@RequestBody RequestSchedule requestSchedule) {
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        NewScheduleDTO newScheduleDTO = modelMapper.map(requestSchedule, NewScheduleDTO.class);
+        CreateScheduleDTO createScheduleDTO = modelMapper.map(requestSchedule, CreateScheduleDTO.class);
 
-        Schedule newSchedule = scheduleService.createSchedule(newScheduleDTO);
+        Schedule newSchedule = scheduleService.createSchedule(createScheduleDTO);
 
         ResponseSchedule responseSchedule = modelMapper.map(newSchedule, ResponseSchedule.class);
 

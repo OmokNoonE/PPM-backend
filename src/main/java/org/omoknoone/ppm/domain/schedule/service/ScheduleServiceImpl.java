@@ -6,7 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.NewScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +27,13 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     @Transactional
-    public Schedule createSchedule(NewScheduleDTO newScheduleDTO) {
+    public Schedule createSchedule(CreateScheduleDTO createScheduleDTO) {
 
         /* 일정 상태와 삭제 여부 기본값 부여*/
-        newScheduleDTO.newScheduleDefaultValueSet();
+        createScheduleDTO.newScheduleDefaultValueSet();
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        Schedule schedule = modelMapper.map(newScheduleDTO, Schedule.class);
+        Schedule schedule = modelMapper.map(createScheduleDTO, Schedule.class);
 
         Schedule newSchedule = scheduleRepository.save(schedule);
 
