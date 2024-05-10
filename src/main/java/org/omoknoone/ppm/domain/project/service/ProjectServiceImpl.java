@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
+import org.omoknoone.ppm.domain.project.dto.ModifyProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,18 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Transactional
     @Override
-    public String createProject(CreateProjectRequestDTO createProjectRequestDTO) {
-        return projectRepository.save(modelMapper.map(createProjectRequestDTO, Project.class)).getId().toString();
+    public int createProject(CreateProjectRequestDTO createProjectRequestDTO) {
+        return projectRepository.save(modelMapper.map(createProjectRequestDTO, Project.class)).getId();
+    }
+
+    @Transactional
+    @Override
+    public int modifyProject(ModifyProjectRequestDTO modifyProjectRequestDTO) {
+
+        Project project = projectRepository.findById(modifyProjectRequestDTO.getProjectId())
+                                                .orElseThrow(IllegalArgumentException::new);
+        project.modify(modifyProjectRequestDTO);
+
+        return projectRepository.save(project).getId();
     }
 }

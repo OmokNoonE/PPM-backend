@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.omoknoone.ppm.domain.project.dto.ModifyProjectRequestDTO;
 
 import java.time.LocalDateTime;
 
@@ -47,5 +48,12 @@ public class Project {
         this.projectStatus = projectStatus;
         this.projectCreatedDate = projectCreatedDate;
         this.projectModifiedDate = projectModifiedDate;
+    }
+
+    public void modify(ModifyProjectRequestDTO modifyProjectRequestDTO) {
+        this.projectTitle = modifyProjectRequestDTO.getProjectTitle();
+        this.projectStartDate = modifyProjectRequestDTO.getProjectStartDate();
+        this.projectEndDate = modifyProjectRequestDTO.getProjectEndDate();
+        this.projectStatus = modifyProjectRequestDTO.getProjectStatus();
     }
 }
