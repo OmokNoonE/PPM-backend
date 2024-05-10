@@ -83,7 +83,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String refreshToken = jwtTokenProvider.generateToken(claims, refreshExpirationTime);
 
         /* 설명. redis에 refreshToken을 저장하고 id값 가져오기 */
-        int refreshTokenId = authService.successLogin(employeeId, refreshToken);
+        int refreshTokenId = authService.successLogin(employeeId, refreshToken, refreshExpirationTime);
 
         response.addHeader("accessToken", accessToken);
         response.addHeader("employeeId", employeeId);

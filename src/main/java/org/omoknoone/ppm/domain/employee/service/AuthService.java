@@ -5,7 +5,7 @@ import javax.naming.AuthenticationException;
 public interface AuthService {
     void logout(int refreshTokenId) throws AuthenticationException;
 
-    int successLogin(String employeeId, String refreshToken);
+    int successLogin(String employeeId, String refreshToken, Long refreshExpirationTime);
 
     boolean checkRefreshToken(int refreshTokenId) throws AuthenticationException;
 }
