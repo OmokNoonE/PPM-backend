@@ -5,6 +5,11 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
+import org.omoknoone.ppm.domain.schedule.dto.RemoveScheduleDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -92,7 +97,7 @@ public class Schedule {
         this.scheduleEndDate = scheduleEndDate;
         this.scheduleDepth = scheduleDepth;
         this.schedulePriority = schedulePriority;
-        this.scheduleProgress = scheduleProgress;
+        this.scheduleProgress = scheduleProgress != null ? scheduleProgress : 0; // 기본값 진행률 0% 설정
         this.scheduleStatus = scheduleStatus != null ? scheduleStatus : 10301L; // 기본값 (준비) 설정
         this.scheduleManHours = scheduleManHours;
         this.scheduleParentScheduleId = scheduleParentScheduleId;
@@ -103,4 +108,31 @@ public class Schedule {
         this.scheduleDeletedDate = scheduleDeletedDate;
         this.scheduleProjectId = scheduleProjectId;
     }
+
+    public void modifyDate(ModifyScheduleDateDTO modifyScheduleDateDTO) {
+        this.scheduleStartDate = modifyScheduleDateDTO.getScheduleStartDate();
+        this.scheduleEndDate = modifyScheduleDateDTO.getScheduleEndDate();
+        this.scheduleManHours = modifyScheduleDateDTO.getScheduleManHours();
+        this.scheduleModifiedDate = modifyScheduleDateDTO.getScheduleModifiedDate();
+    }
+
+    public void modifyProgress(ModifyScheduleProgressDTO modifyScheduleProgressDTO) {
+        this.scheduleProgress = modifyScheduleProgressDTO.getScheduleProgress();
+        this.scheduleStatus = modifyScheduleProgressDTO.getScheduleStatus();
+        this.scheduleParentScheduleId = modifyScheduleProgressDTO.getScheduleParentScheduleId();
+        this.scheduleModifiedDate = modifyScheduleProgressDTO.getScheduleModifiedDate();
+    }
+
+    public void modifyTitleAndContent(ModifyScheduleTitleAndContentDTO modifyScheduleTitleAndContentDTO) {
+        this.scheduleTitle = modifyScheduleTitleAndContentDTO.getScheduleTitle();
+        this.scheduleContent = modifyScheduleTitleAndContentDTO.getScheduleContent();
+        this.scheduleModifiedDate = modifyScheduleTitleAndContentDTO.getScheduleModifiedDate();
+    }
+
+    public void remove(RemoveScheduleDTO removeScheduleDTO) {
+        this.scheduleModifiedDate = removeScheduleDTO.getScheduleModifiedDate();
+        this.scheduleIsDeleted = removeScheduleDTO.getScheduleIsDeleted();
+        this.scheduleDeletedDate = removeScheduleDTO.getScheduleDeletedDate();
+    }
+
 }
