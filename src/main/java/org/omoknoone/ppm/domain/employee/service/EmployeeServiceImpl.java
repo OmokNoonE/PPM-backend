@@ -6,11 +6,13 @@ import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.employee.aggregate.Employee;
 import org.omoknoone.ppm.domain.employee.dto.LoginEmployeeDTO;
 import org.omoknoone.ppm.domain.employee.dto.ModifyEmployeeRequestDTO;
+import org.omoknoone.ppm.domain.employee.dto.SignUpEmployeeRequestDTO;
 import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
 import org.omoknoone.ppm.domain.employee.repository.EmployeeRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     private final EmployeeRepository employeeRepository;
     private final ModelMapper modelMapper;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // 로그인 시 회원 정보 조회
     @Transactional(readOnly = true)
@@ -56,6 +59,17 @@ public class EmployeeServiceImpl implements EmployeeService{
         Employee employee = employeeRepository.findById(employeeId).orElseThrow(IllegalArgumentException::new);
 
         return modelMapper.map(employee, LoginEmployeeDTO.class);
+    }
+
+    @Override
+    public String signUp(SignUpEmployeeRequestDTO signUpEmployeeRequestDTO) {
+
+        Employee employee = modelMapper.map(signUpEmployeeRequestDTO, Employee.class);
+        employee.savePassword(bCryptPasswordEncoder.encode(signUpEmployeeRequestDTO.getEmployeePassword()));
+
+
+
+        return employeeRepository.save(employee).getEmployeeId();
     }
 
     @Transactional

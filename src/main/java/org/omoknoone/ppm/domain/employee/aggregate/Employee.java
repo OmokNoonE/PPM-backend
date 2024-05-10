@@ -2,7 +2,10 @@ package org.omoknoone.ppm.domain.employee.aggregate;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.omoknoone.ppm.domain.employee.dto.ModifyEmployeeRequestDTO;
+import org.omoknoone.ppm.domain.employee.dto.SignUpEmployeeRequestDTO;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -32,7 +35,8 @@ public class Employee {
 //    @ManyToOne(fetch = FetchType.LAZY, optional = false)
 //    @JoinColumn(name = "employee_employment_status", nullable = false)
 //    private CommonCode employeeEmploymentStatus;
-//    private Integer employeeEmploymentStatus;
+    @Column(name = "employee_employment_status", nullable = false, length = 11)
+    private Integer employeeEmploymentStatus;
 
     @Column(name = "employee_department", length = 50)
     private String employeeDepartment;
@@ -52,21 +56,22 @@ public class Employee {
     @Column(name = "employee_is_withdrawn", nullable = false)
     private Boolean employeeIsWithdrawn = false;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(name = "employee_created_date", nullable = false, length = 30)
     private LocalDateTime employeeCreatedDate;
 
-    @LastModifiedDate
+    @UpdateTimestamp
     @Column(name = "employee_modified_date", length = 30)
     private LocalDateTime employeeModifiedDate;
 
     @Builder
-    public Employee(String employeeId, String employeeName, String employeePassword, String employeeEmail, String employeeJoinDate, String employeeDepartment, String employeeContact, String employeeCompanyName, Boolean employeeIsExternalPartner, LocalDateTime employeeWithdrawalDate, Boolean employeeIsWithdrawn, LocalDateTime employeeCreatedDate, LocalDateTime employeeModifiedDate) {
+    public Employee(String employeeId, String employeeName, String employeePassword, String employeeEmail, String employeeJoinDate, Integer employeeEmploymentStatus, String employeeDepartment, String employeeContact, String employeeCompanyName, Boolean employeeIsExternalPartner, LocalDateTime employeeWithdrawalDate, Boolean employeeIsWithdrawn, LocalDateTime employeeCreatedDate, LocalDateTime employeeModifiedDate) {
         this.employeeId = employeeId;
         this.employeeName = employeeName;
         this.employeePassword = employeePassword;
         this.employeeEmail = employeeEmail;
         this.employeeJoinDate = employeeJoinDate;
+        this.employeeEmploymentStatus = employeeEmploymentStatus;
         this.employeeDepartment = employeeDepartment;
         this.employeeContact = employeeContact;
         this.employeeCompanyName = employeeCompanyName;
@@ -81,5 +86,9 @@ public class Employee {
         this.employeeName = modifyEmployeeRequestDTO.getEmployeeName();
         this.employeeEmail = modifyEmployeeRequestDTO.getEmployeeEmail();
         this.employeeContact = modifyEmployeeRequestDTO.getEmployeeContact();
+    }
+
+    public void savePassword(String password){
+        this.employeePassword = password;
     }
 }
