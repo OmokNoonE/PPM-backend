@@ -25,8 +25,7 @@ public class ProjectDashboardServiceImpl implements ProjectDashboardService {
 	private final ProjectDashboardRepository projectDashboardRepository;
 	private final ScheduleService scheduleService;
 
-	@Autowired
-	private MongoTemplate mongoTemplate;
+	private final MongoTemplate mongoTemplate;
 
 	// 프로젝트 Id를 통해 대시보드(그래프) 조회
 	public List<ProjectDashboard> viewProjectDashboardByProjectId(String projectId) {
