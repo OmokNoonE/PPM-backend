@@ -9,10 +9,10 @@ import java.util.List;
 public interface ProjectMemberService {
     List<viewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId);
 
-    String createProjectMember(CreateProjectMemberRequestDTO createProjectMemberRequestDTO);
+    Integer createProjectMember(CreateProjectMemberRequestDTO createProjectMemberRequestDTO);
 
     String removeProjectMember(Integer projectMemberId);
 
-    String modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO);
+    Integer modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO);
 
 }

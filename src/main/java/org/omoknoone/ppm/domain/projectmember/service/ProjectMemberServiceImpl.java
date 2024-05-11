@@ -1,5 +1,6 @@
 package org.omoknoone.ppm.domain.projectmember.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
@@ -24,6 +25,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         this.projectMemberRepository = projectMemberRepository;
         this.modelMapper = modelMapper;
     }
+
     @Transactional(readOnly = true)
     @Override
     public List<viewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId) {
@@ -37,8 +39,12 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Transactional
     @Override
-    public String createProjectMember(CreateProjectMemberRequestDTO createProjectMemberRequestDTO) {
-        return null;
+    public Integer createProjectMember(CreateProjectMemberRequestDTO dto) {
+        ProjectMember member = modelMapper.map(dto, ProjectMember.class);
+
+        projectMemberRepository.save(member);
+
+        return member.getProjectMemberId();
     }
 
     @Transactional
@@ -49,8 +55,15 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Transactional
     @Override
-    public String modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO) {
-        return null;
+    public Integer modifyProjectMember(ModifyProjectMemberRequestDTO dto) {
+
+        ProjectMember existingMember = projectMemberRepository.findById(dto.getProjectMemberId())
+                .orElseThrow(() -> new EntityNotFoundException("exception.data.entityNotFound"));
+        existingMember.modify(dto);
+
+        projectMemberRepository.save(existingMember);
+
+        return existingMember.getProjectMemberId();
     }
 
 }
