@@ -1,6 +1,7 @@
 package org.omoknoone.ppm.domain.task.controller;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.task.aggregate.Task;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -45,8 +47,29 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseTask);
     }
 
+    @GetMapping("/view/{taskId}")
+    public ResponseEntity<ResponseTask> viewTask(@PathVariable("taskId") Long taskId) {
+
+        TaskDTO taskDTO = taskService.viewTask(taskId);
+
+        ResponseTask responseTask = modelMapper.map(taskDTO, ResponseTask.class);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseTask);
+    }
+
+    @GetMapping("/list/{scheduleId}")
+    public ResponseEntity<List<ResponseTask>> viewScheduleTask(@PathVariable("scheduleId") Long scheduleId) {
+
+        List<TaskDTO> taskDTOList = taskService.viewScheduleTask(scheduleId);
+        List<ResponseTask> responseTaskList = modelMapper.map(taskDTOList, new TypeToken<List<TaskDTO>>() {
+        }.getType());
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseTaskList);
+    }
+
+
     @PutMapping("/modify")
-    public ResponseEntity<ResponseMessage> modifyTask(@RequestBody RequestModifyTaskDTO requestModifyTaskDTO){
+    public ResponseEntity<ResponseMessage> modifyTask(@RequestBody RequestModifyTaskDTO requestModifyTaskDTO) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
@@ -65,7 +88,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/remove/{taskId}")
-    public ResponseEntity<ResponseMessage> removeTask(@PathVariable("taskId") Long taskId){
+    public ResponseEntity<ResponseMessage> removeTask(@PathVariable("taskId") Long taskId) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
