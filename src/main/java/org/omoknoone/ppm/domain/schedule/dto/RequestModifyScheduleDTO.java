@@ -10,9 +10,8 @@ import lombok.ToString;
 
 @NoArgsConstructor
 @Getter
-@Setter
 @ToString
-public class ModifyScheduleDTO {
+public class RequestModifyScheduleDTO {
     private Long scheduleId;
     private String scheduleTitle;
     private String scheduleContent;
@@ -22,8 +21,8 @@ public class ModifyScheduleDTO {
     private Long scheduleStatus;
 
     @Builder
-    public ModifyScheduleDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate,
-        LocalDate scheduleEndDate, Integer schedulePriority, Long scheduleStatus) {
+    public RequestModifyScheduleDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate,
+                                    LocalDate scheduleEndDate, Integer schedulePriority, Long scheduleStatus) {
         this.scheduleId = scheduleId;
         this.scheduleTitle = scheduleTitle;
         this.scheduleContent = scheduleContent;
