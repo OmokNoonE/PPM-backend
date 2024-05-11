@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.omoknoone.ppm.domain.stakeholders.dto.ModifyStakeholdersDTO;
 
 @Getter
 @NoArgsConstructor
@@ -24,7 +25,7 @@ public class Stakeholders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stakeholders_id", nullable = false)
-    private Integer stakeholdersId;
+    private Long stakeholdersId;
 
     @JoinColumn(name = "stakeholders_type", nullable = false)
     private Long stakeholdersType;
@@ -42,7 +43,7 @@ public class Stakeholders {
     private Long stakeholdersProjectMemberId;
 
     @Builder
-    public Stakeholders(Integer stakeholdersId, Long stakeholdersType, Boolean stakeholdersIsDeleted,
+    public Stakeholders(Long stakeholdersId, Long stakeholdersType, Boolean stakeholdersIsDeleted,
         LocalDateTime stakeholdersDeletedDate, Long stakeholdersScheduleId, Long stakeholdersProjectMemberId) {
         this.stakeholdersId = stakeholdersId;
         this.stakeholdersType = stakeholdersType;
@@ -50,5 +51,16 @@ public class Stakeholders {
         this.stakeholdersDeletedDate = stakeholdersDeletedDate;
         this.stakeholdersScheduleId = stakeholdersScheduleId;
         this.stakeholdersProjectMemberId = stakeholdersProjectMemberId;
+    }
+
+    public void modify(ModifyStakeholdersDTO modifyStakeholdersDTO){
+        this.stakeholdersType = modifyStakeholdersDTO.getStakeholdersType();
+        this.stakeholdersProjectMemberId = modifyStakeholdersDTO.getStakeholdersProjectMemberId();
+    }
+
+    public void remove() {
+        this.stakeholdersIsDeleted = true;
+        this.stakeholdersDeletedDate = LocalDateTime.now();
+
     }
 }
