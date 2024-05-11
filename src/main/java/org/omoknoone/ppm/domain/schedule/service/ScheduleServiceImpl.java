@@ -115,7 +115,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     public Long modifySchedule(RequestModifyScheduleDTO requestModifyScheduleDTO) {
 
         Schedule schedule = scheduleRepository.findById(requestModifyScheduleDTO.getScheduleId())
-            .orElseThrow(IllegalAccessError::new);
+            .orElseThrow(IllegalArgumentException::new);
 
         /* 제목, 내용 수정 */
         schedule.modifyTitleAndContent(modifyScheduleTitleAndContent(requestModifyScheduleDTO));
