@@ -1,12 +1,6 @@
 package org.omoknoone.ppm.domain.schedule.dto;
 
-import java.time.LocalDateTime;
-
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @NoArgsConstructor
 @Getter
@@ -18,15 +12,12 @@ public class ModifyScheduleProgressDTO {
     private Long scheduleId;
     private Integer scheduleProgress;
     private Long scheduleStatus;
-    private LocalDateTime scheduleModifiedDate;
 
     @Builder
-    public ModifyScheduleProgressDTO(Long scheduleId, Integer scheduleProgress, Long scheduleStatus,
-        LocalDateTime scheduleModifiedDate) {
+    public ModifyScheduleProgressDTO(Long scheduleId, Integer scheduleProgress, Long scheduleStatus) {
         this.scheduleId = scheduleId;
         this.scheduleProgress = scheduleProgress;
         this.scheduleStatus = scheduleStatus;
-        this.scheduleModifiedDate = scheduleModifiedDate;
     }
 
     /* 일정 상태만 입력되었을 때 사용*/

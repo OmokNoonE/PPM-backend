@@ -1,13 +1,8 @@
 package org.omoknoone.ppm.domain.schedule.dto;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import lombok.*;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @Getter
@@ -20,16 +15,13 @@ public class ModifyScheduleDateDTO {
     private LocalDate scheduleStartDate;
     private LocalDate scheduleEndDate;
     private Integer scheduleManHours;
-    private LocalDateTime scheduleModifiedDate;
 
     @Builder
-    public ModifyScheduleDateDTO(Long scheduleId, LocalDate scheduleStartDate, LocalDate scheduleEndDate,
-        Integer scheduleManHours, LocalDateTime scheduleModifiedDate) {
+    public ModifyScheduleDateDTO(Long scheduleId, LocalDate scheduleStartDate, LocalDate scheduleEndDate, Integer scheduleManHours) {
         this.scheduleId = scheduleId;
         this.scheduleStartDate = scheduleStartDate;
         this.scheduleEndDate = scheduleEndDate;
         this.scheduleManHours = scheduleManHours;
-        this.scheduleModifiedDate = scheduleModifiedDate;
     }
 
     public void calculateScheduleManHours() {

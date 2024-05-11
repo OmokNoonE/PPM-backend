@@ -111,24 +111,20 @@ public class Schedule {
     public void modifyTitleAndContent(ModifyScheduleTitleAndContentDTO modifyScheduleTitleAndContentDTO) {
         this.scheduleTitle = modifyScheduleTitleAndContentDTO.getScheduleTitle();
         this.scheduleContent = modifyScheduleTitleAndContentDTO.getScheduleContent();
-        this.scheduleModifiedDate = modifyScheduleTitleAndContentDTO.getScheduleModifiedDate();
     }
 
     public void modifyDate(ModifyScheduleDateDTO modifyScheduleDateDTO) {
         this.scheduleStartDate = modifyScheduleDateDTO.getScheduleStartDate();
         this.scheduleEndDate = modifyScheduleDateDTO.getScheduleEndDate();
         this.scheduleManHours = modifyScheduleDateDTO.getScheduleManHours();
-        this.scheduleModifiedDate = modifyScheduleDateDTO.getScheduleModifiedDate();
     }
 
     public void modifyProgress(ModifyScheduleProgressDTO modifyScheduleProgressDTO) {
         this.scheduleProgress = modifyScheduleProgressDTO.getScheduleProgress();
         this.scheduleStatus = modifyScheduleProgressDTO.getScheduleStatus();
-        this.scheduleModifiedDate = modifyScheduleProgressDTO.getScheduleModifiedDate();
     }
 
     public void remove() {
-        this.scheduleModifiedDate = LocalDateTime.now();
         this.scheduleIsDeleted = true;
         this.scheduleDeletedDate = LocalDateTime.now();
     }
