@@ -1,7 +1,9 @@
-package org.omoknoone.ppm.schedule.dto;
+package org.omoknoone.ppm.domain.schedule.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +12,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * DTO for {@link org.omoknoone.ppm.schedule.aggregate.Schedule}
+ * DTO for {@link Schedule}
  */
 @NoArgsConstructor
 @Getter

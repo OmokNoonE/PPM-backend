@@ -1,22 +1,18 @@
-package org.omoknoone.ppm.schedule.aggregate;
+package org.omoknoone.ppm.domain.schedule.aggregate;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -92,7 +88,7 @@ public class Schedule {
         this.scheduleEndDate = scheduleEndDate;
         this.scheduleDepth = scheduleDepth;
         this.schedulePriority = schedulePriority;
-        this.scheduleProgress = scheduleProgress;
+        this.scheduleProgress = scheduleProgress != null ? scheduleProgress : 0; // 기본값 진행률 0% 설정
         this.scheduleStatus = scheduleStatus != null ? scheduleStatus : 10301L; // 기본값 (준비) 설정
         this.scheduleManHours = scheduleManHours;
         this.scheduleParentScheduleId = scheduleParentScheduleId;
@@ -103,4 +99,26 @@ public class Schedule {
         this.scheduleDeletedDate = scheduleDeletedDate;
         this.scheduleProjectId = scheduleProjectId;
     }
+
+    public void modifyTitleAndContent(ModifyScheduleTitleAndContentDTO modifyScheduleTitleAndContentDTO) {
+        this.scheduleTitle = modifyScheduleTitleAndContentDTO.getScheduleTitle();
+        this.scheduleContent = modifyScheduleTitleAndContentDTO.getScheduleContent();
+    }
+
+    public void modifyDate(ModifyScheduleDateDTO modifyScheduleDateDTO) {
+        this.scheduleStartDate = modifyScheduleDateDTO.getScheduleStartDate();
+        this.scheduleEndDate = modifyScheduleDateDTO.getScheduleEndDate();
+        this.scheduleManHours = modifyScheduleDateDTO.getScheduleManHours();
+    }
+
+    public void modifyProgress(ModifyScheduleProgressDTO modifyScheduleProgressDTO) {
+        this.scheduleProgress = modifyScheduleProgressDTO.getScheduleProgress();
+        this.scheduleStatus = modifyScheduleProgressDTO.getScheduleStatus();
+    }
+
+    public void remove() {
+        this.scheduleIsDeleted = true;
+        this.scheduleDeletedDate = LocalDateTime.now();
+    }
+
 }

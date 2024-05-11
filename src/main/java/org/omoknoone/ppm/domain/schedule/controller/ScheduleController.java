@@ -1,22 +1,31 @@
-package org.omoknoone.ppm.schedule.controller;
+package org.omoknoone.ppm.domain.schedule.controller;
 
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
-import org.omoknoone.ppm.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.schedule.dto.NewScheduleDTO;
-import org.omoknoone.ppm.schedule.dto.ScheduleDTO;
-import org.omoknoone.ppm.schedule.service.ScheduleService;
-import org.omoknoone.ppm.schedule.vo.RequestSchedule;
-import org.omoknoone.ppm.schedule.vo.ResponseSchedule;
+import org.omoknoone.ppm.common.ResponseMessage;
+import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
+import org.omoknoone.ppm.domain.schedule.vo.RequestSchedule;
+import org.omoknoone.ppm.domain.schedule.vo.ResponseSchedule;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,9 +48,9 @@ public class ScheduleController {
     public ResponseEntity<ResponseSchedule> createSchedule(@RequestBody RequestSchedule requestSchedule) {
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        NewScheduleDTO newScheduleDTO = modelMapper.map(requestSchedule, NewScheduleDTO.class);
+        CreateScheduleDTO createScheduleDTO = modelMapper.map(requestSchedule, CreateScheduleDTO.class);
 
-        Schedule newSchedule = scheduleService.createSchedule(newScheduleDTO);
+        Schedule newSchedule = scheduleService.createSchedule(createScheduleDTO);
 
         ResponseSchedule responseSchedule = modelMapper.map(newSchedule, ResponseSchedule.class);
 
@@ -93,7 +102,8 @@ public class ScheduleController {
             new TypeToken<List<ScheduleDTO>>() {
             }.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);    }
+        return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
+    }
 
     /* 일정 마감일순 목록 조회 */
     @GetMapping("/nearend/{projectId}")
@@ -105,5 +115,39 @@ public class ScheduleController {
             }.getType());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
+    }
+
+    /* 일정 수정 */
+    @PutMapping("/modify")
+    public ResponseEntity<ResponseMessage> modifySchedule(@RequestBody RequestModifyScheduleDTO requestModifyScheduleDTO) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+
+        Long scheduleId = scheduleService.modifySchedule(requestModifyScheduleDTO);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("result", scheduleId);
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .headers(headers)
+            .body(new ResponseMessage(200, "일정 수정 성공", responseMap));
+    }
+
+    /* 일정 제거(soft delete) */
+    @DeleteMapping("/remove/{scheduleId}")
+    public ResponseEntity<ResponseMessage> removeSchedule(@PathVariable("scheduleId") Long scheduleId){
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+
+        scheduleService.removeSchedule(scheduleId);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("result", scheduleId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .headers(headers)
+            .body(new ResponseMessage(204, "일정 삭제 성공", responseMap));
     }
 }

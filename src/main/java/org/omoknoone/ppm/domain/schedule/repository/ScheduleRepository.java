@@ -1,13 +1,10 @@
-package org.omoknoone.ppm.schedule.repository;
+package org.omoknoone.ppm.domain.schedule.repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-import org.omoknoone.ppm.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
@@ -38,4 +35,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         + "AND s.scheduleEndDate >= FUNCTION('CURRENT_DATE') "
         + "ORDER BY s.scheduleEndDate ASC")
     List<Schedule> findSchedulesByProjectNearByEnd(Long projectId);
+
+    List<Schedule> findSchedulesByScheduleParentScheduleId(Long scheduleId);
 }
