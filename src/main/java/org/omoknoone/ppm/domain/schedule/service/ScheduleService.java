@@ -1,14 +1,9 @@
 package org.omoknoone.ppm.domain.schedule.service;
 
-import java.util.List;
-
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.*;
+
+import java.util.List;
 
 public interface ScheduleService {
 
@@ -27,13 +22,13 @@ public interface ScheduleService {
     List<ScheduleDTO> viewScheduleNearByEnd(Long projectId);
 
     /* 수정 */
-    Long modifySchedule(ModifyScheduleDTO modifyScheduleDTO);
+    Long modifySchedule(RequestModifyScheduleDTO requestModifyScheduleDTO);
 
-    ModifyScheduleTitleAndContentDTO modifyScheduleTitleAndContent(ModifyScheduleDTO modifyScheduleDTO);
+    ModifyScheduleTitleAndContentDTO modifyScheduleTitleAndContent(RequestModifyScheduleDTO requestModifyScheduleDTO);
 
-    ModifyScheduleDateDTO modifyScheduleDate(ModifyScheduleDTO modifyScheduleDTO);
+    ModifyScheduleDateDTO modifyScheduleDate(RequestModifyScheduleDTO requestModifyScheduleDTO);
 
-    ModifyScheduleProgressDTO modifyScheduleProgress(ModifyScheduleDTO modifyScheduleDTO);
+    ModifyScheduleProgressDTO modifyScheduleProgress(RequestModifyScheduleDTO requestModifyScheduleDTO);
 
     /* 삭제 */
     void removeSchedule(Long scheduleId);

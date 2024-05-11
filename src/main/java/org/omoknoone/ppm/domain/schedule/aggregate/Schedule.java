@@ -1,26 +1,18 @@
 package org.omoknoone.ppm.domain.schedule.aggregate;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
-import org.omoknoone.ppm.domain.schedule.dto.RemoveScheduleDTO;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor

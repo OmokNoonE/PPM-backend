@@ -1,11 +1,9 @@
 package org.omoknoone.ppm.domain.schedule.controller;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -13,7 +11,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.omoknoone.ppm.domain.schedule.vo.RequestSchedule;
@@ -119,13 +117,14 @@ public class ScheduleController {
         return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
     }
 
+    /* 일정 수정 */
     @PutMapping("/modify")
-    public ResponseEntity<ResponseMessage> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO) {
+    public ResponseEntity<ResponseMessage> modifySchedule(@RequestBody RequestModifyScheduleDTO requestModifyScheduleDTO) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
-        Long scheduleId = scheduleService.modifySchedule(modifyScheduleDTO);
+        Long scheduleId = scheduleService.modifySchedule(requestModifyScheduleDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("result", scheduleId);
@@ -135,6 +134,7 @@ public class ScheduleController {
             .body(new ResponseMessage(200, "일정 수정 성공", responseMap));
     }
 
+    /* 일정 제거(soft delete) */
     @DeleteMapping("/remove/{scheduleId}")
     public ResponseEntity<ResponseMessage> removeSchedule(@PathVariable("scheduleId") Long scheduleId){
 
