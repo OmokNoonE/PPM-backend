@@ -31,31 +31,14 @@ public class RequirementsServiceImpl implements RequirementsService {
 		this.requirementsRepository = requirementsRepository;
 	}
 
-	// @Transactional(readOnly = true)
-	// @Override
-	// public List<ProjectRequirementsListDTO> viewProjectRequirementList(Long projectId) {
-	// 	log.info("프로젝트 ID {}에 해당하는 요구사항 목록을 조회 시작", projectId);
-	//
-	// 	List<Requirements> requirements = requirementsRepository.findByRequirementsProjectId(projectId);
-	//
-	// 	List<ProjectRequirementsListDTO> projectRequirementsList = requirements.stream()
-	// 		.map(requirement -> modelMapper.map(requirement, ProjectRequirementsListDTO.class))
-	// 		.toList();
-	// 	log.info("프로젝트 ID {}에 해당하는 요구사항 목록을 조회 완료, 총 {}건의 요구사항 발견", projectId, projectRequirementsList.size());
-	//
-	// 	return projectRequirementsList;
-	// }
-
 	@Transactional
 	@Override
 	public ResponseRequirement createRequirements(RequirementsDTO requirementsDTO) {
-		log.info("요구사항 생성 시작, 요구사항명: {}", requirementsDTO.getRequirementsName());
 
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		Requirements requirements = modelMapper.map(requirementsDTO, Requirements.class);
 
 		Requirements newRequirement = requirementsRepository.save(requirements);
-		log.info("요구사항 생성 완료, 요구사항ID: {}", newRequirement.getRequirementsId());
 
 		ResponseRequirement responseRequirement = modelMapper.map(newRequirement, ResponseRequirement.class);
 		return responseRequirement;
@@ -64,22 +47,18 @@ public class RequirementsServiceImpl implements RequirementsService {
 	@Override
 	public ResponseRequirement modifyRequirement(Long requirementsId,
 		RequestModifyRequirement requestModifyRequirement) {
-		log.info("요구사항 수정 시작, 요구사항 ID: {}", requirementsId);
 
 		Requirements requirements = requirementsRepository.findById(Long.valueOf(requirementsId))
 			.orElseThrow(() -> new EntityNotFoundException("exception.data.entityNotFound"));
 
-		log.info("요구사항 ID {}인 요구사항 확인, 수정 시작", requirementsId);
 		modelMapper.map(requestModifyRequirement, requirements);
 		Requirements updateRequirement = requirementsRepository.save(requirements);
-		log.info("요구사항 ID {}인 요구사항 수정 완료", requirementsId);
 
 		return modelMapper.map(updateRequirement, ResponseRequirement.class);
 	}
 
 	@Override
 	public ResponseRequirement removeRequirement(Long requirementsId) {
-		log.info("요구사항 삭제 시작, 요구사항 ID: {}", requirementsId);
 
 		Requirements requirements = requirementsRepository.findById(requirementsId)
 			.orElseThrow(IllegalArgumentException::new);
@@ -87,7 +66,6 @@ public class RequirementsServiceImpl implements RequirementsService {
 		requirements.remove();
 
 		requirementsRepository.save(requirements);
-		log.info("요구사항 ID {}인 요구사항 삭제 완료", requirementsId);
 
 		return modelMapper.map(requirements, ResponseRequirement.class);
 	}
