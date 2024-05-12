@@ -152,4 +152,56 @@ public class ProjectDashboardServiceImpl implements ProjectDashboardService {
 
 	}
 
+	// line
+	public void updateLine(String projectId, String type) {
+
+		ProjectDashboard projectDashboard = projectDashboardRepository.findAllByProjectIdAndType(projectId, type);
+		List<String> categories = projectDashboard.getCategories();
+		List<Map<String, Object>> series = projectDashboard.getSeries();
+
+		// update할 categoreis (날짜)
+		List<String> updateCategories = Arrays.asList(
+			"01/02/2023",
+			"02/02/2023",
+			"03/02/2023",
+			"04/02/2023",
+			"05/02/2023",
+			"06/02/2023",
+			"07/02/2023",
+			"08/02/2023",
+			"09/02/2023",
+			"10/02/2023",
+			"11/02/2023",
+			"12/02/2023"
+		);
+
+		// update할 section별 진행상황
+		Map<String, List<Integer>> updates = Map.of(
+			"예상진행률", Arrays.asList(5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5),
+			"실제진행률", Arrays.asList(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4)
+		);
+
+
+		// categories update
+		projectDashboard.getCategories().clear(); // 기존 카테고리를 모두 지우고
+		projectDashboard.getCategories().addAll(updateCategories); // 새로운 카테고리로 대체
+
+		// data update
+		for (Map.Entry<String, List<Integer>> entry : updates.entrySet()) {
+			String status = entry.getKey();
+			List<Integer> values = entry.getValue();
+
+			for (Map<String, Object> seriesItem : series) {
+				if (seriesItem.get("name").equals(status)) {
+					seriesItem.put("data", values);
+					break; // 해당 상태에 대한 값 업데이트 후 루프 종료
+				}
+			}
+		}
+
+		projectDashboardRepository.save(projectDashboard);
+
+	}
+
+
 }

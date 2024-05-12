@@ -12,4 +12,5 @@ public interface ProjectDashboardService {
 	void updateTable(String projectId, String type);
 
 	void updateColumn(String projectId, String type);
+	void updateLine(String projectId, String type);
 }
