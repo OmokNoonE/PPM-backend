@@ -78,8 +78,7 @@ public class ProjectDashboardServiceImpl implements ProjectDashboardService {
 			projectDashboard.getSeries().set(i, data);
 		}
 
-		List<Map<String, Object>> mapList = projectDashboardRepository.save(projectDashboard).getSeries();
-		System.out.println("mapList = " + mapList);
+		projectDashboardRepository.save(projectDashboard);
 
 	}
 
