@@ -67,4 +67,11 @@ public class ProjectMember {
         this.projectMemberExclusionDate = LocalDateTime.now();
     }
 
+    public void reactivate() {
+        if (!this.projectMemberIsExcluded) {
+            throw new IllegalStateException("이미 활성화된 구성원입니다. 다시 활성화할 수 없습니다.");
+        }
+        this.projectMemberIsExcluded = false;
+        this.projectMemberExclusionDate = null;
+    }
 }
