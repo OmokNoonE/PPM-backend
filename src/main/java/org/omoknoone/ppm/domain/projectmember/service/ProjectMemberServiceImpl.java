@@ -40,17 +40,21 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Transactional
     @Override
     public Integer createProjectMember(CreateProjectMemberRequestDTO dto) {
-        ProjectMember member = modelMapper.map(dto, ProjectMember.class);
+        ProjectMember newMember = modelMapper.map(dto, ProjectMember.class);
 
-        projectMemberRepository.save(member);
+        projectMemberRepository.save(newMember);
 
-        return member.getProjectMemberId();
+        return newMember.getProjectMemberId();
     }
 
     @Transactional
     @Override
-    public String removeProjectMember(Integer projectMemberId) {
-        return null;
+    public void removeProjectMember(Integer projectMemberId) {
+        ProjectMember excludedMember = projectMemberRepository.findById(projectMemberId)
+                .orElseThrow(() -> new EntityNotFoundException("exception.data.entityNotFound"));
+        excludedMember.remove();
+
+        projectMemberRepository.save(excludedMember);
     }
 
     @Transactional
