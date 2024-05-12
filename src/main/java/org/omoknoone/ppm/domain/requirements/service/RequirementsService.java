@@ -10,9 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface RequirementsService {
 
-	@Transactional(readOnly = true)
-	// List<ProjectRequirementsListDTO> viewProjectRequirementList(Long projectId);
-
 	ResponseRequirement createRequirements(RequirementsDTO requirementsDTO);
 
 	ResponseRequirement modifyRequirement(Long requirementsId, RequestModifyRequirement requestModifyRequirement);
