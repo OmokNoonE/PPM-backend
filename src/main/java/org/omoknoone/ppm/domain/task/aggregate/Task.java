@@ -1,21 +1,13 @@
 package org.omoknoone.ppm.domain.task.aggregate;
 
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
+import org.omoknoone.ppm.domain.task.dto.ModifyTaskDTO;
+
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -53,5 +45,15 @@ public class Task {
         this.taskIsDeleted = taskIsDeleted != null ? taskIsDeleted : false; // 기본값 설정
         this.taskDeletedDate = taskDeletedDate;
         this.taskScheduleId = taskScheduleId;
+    }
+
+    public void modify(ModifyTaskDTO modifyTaskDTO) {
+        this.taskTitle = modifyTaskDTO.getTaskTitle();
+        this.taskIsCompleted = modifyTaskDTO.getTaskIsCompleted();
+    }
+
+    public void remove(){
+        this.taskIsDeleted = true;
+        this.taskDeletedDate = LocalDateTime.now();
     }
 }
