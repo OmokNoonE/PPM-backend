@@ -10,4 +10,6 @@ public interface ProjectDashboardService {
 	void updateGauge(String projectId);
 	void updatePie(String projectId, String type);
 	void updateTable(String projectId, String type);
+
+	void updateColumn(String projectId, String type);
 }

@@ -1,6 +1,7 @@
 package org.omoknoone.ppm.projectDashboard.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +88,6 @@ public class ProjectDashboardServiceImpl implements ProjectDashboardService {
 
 		// example data
 		// projectId = 1, type = table
-
 		ProjectDashboard projectDashboard = projectDashboardRepository.findAllByProjectIdAndType(projectId, type);
 		List<Map<String, Object>> series = projectDashboard.getSeries();
 
@@ -108,9 +108,48 @@ public class ProjectDashboardServiceImpl implements ProjectDashboardService {
 			}
 		}
 
-		projectDashboardRepository.save(projectDashboard).getSeries();
+		projectDashboardRepository.save(projectDashboard);
 
 	}
 
+	// column
+	public void updateColumn(String projectId, String type) {
+
+		ProjectDashboard projectDashboard = projectDashboardRepository.findAllByProjectIdAndType(projectId, type);
+		List<String> categories = projectDashboard.getCategories();
+		List<Map<String, Object>> series = projectDashboard.getSeries();
+
+		// update할 categoreis (section명들)
+		List<String> updateCategories = Arrays.asList("섹션명1", "섹션명2", "섹션명3");
+
+		// update할 section별 진행상황
+		Map<String, List<Integer>> updates = Map.of(
+			"준비", List.of(1, 1, 1),
+			"진행", List.of(2, 2, 2),
+			"완료", List.of(3, 3, 3)
+		);
+
+		// categories를 업데이트
+		projectDashboard.getCategories().clear(); // 기존 카테고리를 모두 지우고
+		projectDashboard.getCategories().addAll(updateCategories); // 새로운 카테고리로 대체
+
+		// 각 상태(준비, 진행, 완료)에 대한 값을 업데이트
+		for (Map.Entry<String, List<Integer>> entry : updates.entrySet()) {
+			String status = entry.getKey();
+			List<Integer> values = entry.getValue();
+
+			// 현재 상태에 대한 값을 업데이트
+			for (Map<String, Object> seriesItem : series) {
+				if (seriesItem.get("name").equals(status)) {
+					seriesItem.put("data", values);
+					break; // 해당 상태에 대한 값 업데이트 후 루프 종료
+				}
+			}
+		}
+
+		// 업데이트된 데이터를 저장
+		projectDashboardRepository.save(projectDashboard);
+
+	}
 
 }
