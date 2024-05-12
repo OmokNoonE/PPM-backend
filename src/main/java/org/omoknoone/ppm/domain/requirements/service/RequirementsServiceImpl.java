@@ -79,6 +79,7 @@ public class RequirementsServiceImpl implements RequirementsService {
 
 	@Override
 	public ResponseRequirement removeRequirement(Long requirementsId) {
+		log.info("요구사항 삭제 시작, 요구사항 ID: {}", requirementsId);
 
 		Requirements requirements = requirementsRepository.findById(requirementsId)
 			.orElseThrow(IllegalArgumentException::new);
@@ -86,7 +87,8 @@ public class RequirementsServiceImpl implements RequirementsService {
 		requirements.remove();
 
 		requirementsRepository.save(requirements);
+		log.info("요구사항 ID {}인 요구사항 삭제 완료", requirementsId);
 
-		return null;
+		return modelMapper.map(requirements, ResponseRequirement.class);
 	}
 }
