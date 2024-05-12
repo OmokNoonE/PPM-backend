@@ -13,6 +13,8 @@ public interface ProjectMemberService {
 
     void removeProjectMember(Integer projectMemberId);
 
+    void reactivateProjectMember(Integer projectMemberId);
+
     Integer modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO);
 
 }

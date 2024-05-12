@@ -57,6 +57,15 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         projectMemberRepository.save(excludedMember);
     }
 
+    @Override
+    public void reactivateProjectMember(Integer projectMemberId) {
+        ProjectMember reactivatedMember = projectMemberRepository.findById(projectMemberId)
+                .orElseThrow(() -> new EntityNotFoundException("exception.data.entityNotFound"));
+        reactivatedMember.reactivate();
+
+        projectMemberRepository.save(reactivatedMember);
+    }
+
     @Transactional
     @Override
     public Integer modifyProjectMember(ModifyProjectMemberRequestDTO dto) {
