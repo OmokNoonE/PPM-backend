@@ -1,5 +1,6 @@
 package org.omoknoone.ppm.projectDashboard.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,35 @@ public class ProjectDashboardServiceImpl implements ProjectDashboardService {
 
 	}
 
+	// table (구성원별 진행상태)
+	public void updateTable(String projectId, String type) {
+
+		// example data
+		// projectId = 1, type = table
+
+		ProjectDashboard projectDashboard = projectDashboardRepository.findAllByProjectIdAndType(projectId, type);
+		List<Map<String, Object>> series = projectDashboard.getSeries();
+
+		// update 할 data를 담고 있는 Map
+		Map<String, Map<String, Integer>> updates = Map.of(
+			"조예린", Map.of("준비", 55, "진행", 55, "완료", 55),
+			"오목이", Map.of("준비", 3, "진행", 2, "완료", 1)
+		);
+
+		// 새로운 값으로 update
+		for(Map<String, Object> data : series) {
+			String memberName = (String)data.get("구성원명");
+			if(updates.containsKey(memberName)) {
+				Map<String, Integer> memberUpdates = updates.get(memberName);
+				for(Map.Entry<String, Integer> entry : memberUpdates.entrySet()) {
+					data.put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+
+		projectDashboardRepository.save(projectDashboard).getSeries();
+
+	}
 
 
 }

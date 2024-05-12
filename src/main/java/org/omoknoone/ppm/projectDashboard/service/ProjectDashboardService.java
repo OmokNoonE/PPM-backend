@@ -9,4 +9,5 @@ public interface ProjectDashboardService {
 	List<ProjectDashboardDTO> viewProjectDashboardByProjectId(String projectId);
 	void updateGauge(String projectId);
 	void updatePie(String projectId, String type);
+	void updateTable(String projectId, String type);
 }
