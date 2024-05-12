@@ -23,14 +23,12 @@ public class ProjectMember {
     @Column(name = "project_member_created_date", nullable = false, length = 30)
     private LocalDateTime projectMemberCreatedDate;
 
-    @LastModifiedDate
     @Column(name = "project_member_modified_date", length = 30)
     private LocalDateTime projectMemberModifiedDate;
 
     @Column(name = "project_member_is_excluded", nullable = false)
     private Boolean projectMemberIsExcluded = false;
 
-    @LastModifiedDate
     @Column(name = "project_member_exclusion_date", length = 30)
     private LocalDateTime projectMemberExclusionDate;
 
@@ -52,15 +50,21 @@ public class ProjectMember {
         this.projectMemberProjectId = projectMemberProjectId;
         this.projectMemberRoleId = projectMemberRoleId;
         this.projectMemberEmployeeId = projectMemberEmployeeId;
-        this.projectMemberIsExcluded = projectMemberIsExcluded;
+        this.projectMemberIsExcluded
+                = projectMemberIsExcluded != null ? projectMemberIsExcluded : false; // null일 경우 기본값 false
         this.projectMemberExclusionDate = projectMemberExclusionDate;
         this.projectMemberCreatedDate = projectMemberCreatedDate;
         this.projectMemberModifiedDate = projectMemberModifiedDate;
     }
 
     public void modify(ModifyProjectMemberRequestDTO dto) {
-        this.projectMemberId = dto.getProjectMemberId();
         this.projectMemberRoleId = dto.getProjectMemberRoleId();
+        this.projectMemberModifiedDate = LocalDateTime.now();
+    }
+
+    public void remove() {
+        this.projectMemberIsExcluded = true;
+        this.projectMemberExclusionDate = LocalDateTime.now();
     }
 
 }
