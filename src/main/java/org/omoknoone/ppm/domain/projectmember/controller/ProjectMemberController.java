@@ -60,6 +60,27 @@ public class ProjectMemberController {
                 .body(new ResponseMessage(200, "성공적으로 구성원이 추가되었습니다.", responseMap));
     }
 
+    @DeleteMapping("/remove/{projectMemberId}")
+    public ResponseEntity<ResponseMessage> removeProjectMember(@PathVariable Integer projectMemberId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+        try {
+            projectMemberService.removeProjectMember(projectMemberId);
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put("제외된 프로젝트 멤버 ID", projectMemberId);
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .body(new ResponseMessage(200, "구성원 제외가 완료되었습니다.", responseMap));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseMessage(404, "구성원을 찾을 수 없습니다."));
+        }
+    }
+
     @PutMapping("/modify")
     public ResponseEntity<ResponseMessage> modifyProjectMember(@RequestBody ModifyProjectMemberRequestDTO requestDTO) {
         HttpHeaders headers = new HttpHeaders();
