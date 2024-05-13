@@ -178,4 +178,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     public boolean isTaskSchedule(Long scheduleId) {
         return scheduleRepository.findSchedulesByScheduleParentScheduleId(scheduleId) != null;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle) {
+		return scheduleRepository.searchScheduleByScheduleTitle(scheduleTitle);
+    }
 }
