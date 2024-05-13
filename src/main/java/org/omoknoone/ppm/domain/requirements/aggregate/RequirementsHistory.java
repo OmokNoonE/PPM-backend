@@ -34,7 +34,7 @@ public class RequirementsHistory {
 	private LocalDateTime requirementHistoryModifiedDate;
 
 	@Column(name = "requirement_history_requirement_id", nullable = false)
-	private Long requirementHistoryScheduleId;
+	private Long requirementHistoryRequirementId;
 
 	@Column(name = "requirement_history_project_member_id", nullable = false)
 	private Long requirementHistoryProjectMemberId;
@@ -47,13 +47,13 @@ public class RequirementsHistory {
 
 	@Builder
 	public RequirementsHistory(Long requirementHistoryId, String requirementHistoryReason,
-		LocalDateTime requirementHistoryModifiedDate, Long requirementHistoryScheduleId,
+		LocalDateTime requirementHistoryModifiedDate, Long requirementHistoryRequirementId,
 		Long requirementHistoryProjectMemberId, Boolean requirementHistoryIsDeleted,
 		LocalDateTime requirementHistoryDeletedDate) {
 		this.requirementHistoryId = requirementHistoryId;
 		this.requirementHistoryReason = requirementHistoryReason;
 		this.requirementHistoryModifiedDate = requirementHistoryModifiedDate;
-		this.requirementHistoryScheduleId = requirementHistoryScheduleId;
+		this.requirementHistoryRequirementId = requirementHistoryRequirementId;
 		this.requirementHistoryProjectMemberId = requirementHistoryProjectMemberId;
 		this.requirementHistoryIsDeleted = requirementHistoryIsDeleted;
 		this.requirementHistoryDeletedDate = requirementHistoryDeletedDate;

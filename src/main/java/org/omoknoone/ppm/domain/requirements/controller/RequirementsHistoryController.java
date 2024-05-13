@@ -1,13 +1,19 @@
 package org.omoknoone.ppm.domain.requirements.controller;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.requirements.aggregate.RequirementsHistory;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsHistoryDTO;
 import org.omoknoone.ppm.domain.requirements.service.RequirementsHistoryService;
+import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirementHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,8 +45,14 @@ public class RequirementsHistoryController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(requirementHistoryDTO);
 	}
 
-	/* 일정Id를 통한 요구사항 수정내역 조회 */
+	/* 요구사항Id를 통한 요구사항 수정내역 조회 */
+	@GetMapping("view/{requirementsId}")
+	public ResponseEntity<List<ResponseRequirementHistory>> viewRequirementHistoryByfScheduleId(@PathVariable Long requirementsId){
+		List<RequirementsHistoryDTO> requirementsHistoryDTOList =
+			requirementsHistoryService.viewRequirementHistoryList(requirementsId);
+		List<ResponseRequirementHistory> requirementHistoryList =
+			modelMapper.map(requirementsHistoryDTOList, new TypeToken<List<ResponseRequirementHistory>>() {}.getType());
 
-
-	/* 프로젝트 Id를 통한 요구사항 수정내역 조회 */
+		return ResponseEntity.status(HttpStatus.OK).body(requirementHistoryList);
+	}
 }
