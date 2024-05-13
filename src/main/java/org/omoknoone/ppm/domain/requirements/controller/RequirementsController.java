@@ -4,14 +4,13 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.omoknoone.ppm.domain.requirements.aggregate.Requirements;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsDTO;
+import org.omoknoone.ppm.domain.requirements.dto.RequirementsListByProjectDTO;
 import org.omoknoone.ppm.domain.requirements.service.RequirementsService;
-import org.omoknoone.ppm.domain.requirements.dto.ProjectRequirementsListDTO;
 import org.omoknoone.ppm.domain.requirements.vo.RequestModifyRequirement;
 import org.omoknoone.ppm.domain.requirements.vo.RequestRequirement;
-import org.omoknoone.ppm.domain.requirements.vo.ResponseProjectRequirementsList;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirement;
+import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirementsListByProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,29 @@ public class RequirementsController {
 	public RequirementsController(RequirementsService requirementsService, ModelMapper modelMapper) {
 		this.requirementsService = requirementsService;
 		this.modelMapper = modelMapper;
+	}
+
+	/* ProjectId를 통한 requirements 조회 */
+	@GetMapping("/list/{projectId}")
+	public ResponseEntity<ResponseRequirementsListByProject>viewRequirementsList(@PathVariable Long projectId){
+
+		List<RequirementsListByProjectDTO> projectRequirements =
+			requirementsService.viewRequirementsByProjectId(projectId);
+
+		ResponseRequirementsListByProject projectRequirementsList =
+			new ResponseRequirementsListByProject(projectRequirements);
+
+		return ResponseEntity.ok(projectRequirementsList);
+	}
+
+	/* requirementsId를 통한 requirement 조회 */
+	@GetMapping("/{projectId}/{requirementsId}")
+	public ResponseEntity<RequirementsDTO>viewRequirement(@PathVariable Long projectId, @PathVariable Long requirementsId){
+		RequirementsDTO projectRequirement = requirementsService.viewRequirement(projectId, requirementsId);
+
+		RequirementsDTO projectAndRequirementsIdRequirement = new RequirementsDTO(projectRequirement);
+
+		return ResponseEntity.ok(projectAndRequirementsIdRequirement);
 	}
 
 	/* requirements 등록 */

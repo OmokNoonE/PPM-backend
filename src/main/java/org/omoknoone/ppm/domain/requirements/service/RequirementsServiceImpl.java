@@ -31,33 +31,33 @@ public class RequirementsServiceImpl implements RequirementsService {
 		this.requirementsRepository = requirementsRepository;
 	}
 
+	/* ProjectId를 통한 RequirementsList 조회 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<RequirementsListByProjectDTO> viewRequirementsByProjectId(Long projectId) {
-			log.info("프로젝트 ID {}에 해당하는 요구사항 목록을 조회 시작", projectId);
 
 			List<Requirements> requirements = requirementsRepository.findByRequirementsProjectId(projectId);
 
 			List<RequirementsListByProjectDTO> projectRequirementsList = requirements.stream()
 				.map(requirement -> modelMapper.map(requirement, RequirementsListByProjectDTO.class))
 				.toList();
-			log.info("프로젝트 ID {}에 해당하는 요구사항 목록을 조회 완료, 총 {}건의 요구사항 발견", projectId, projectRequirementsList.size());
 
 			return projectRequirementsList;
 	}
 
+	/* ProjectId, RequirementsId를 통한 Requirement 조회 */
 	@Transactional(readOnly = true)
 	@Override
 	public RequirementsDTO viewRequirement(Long projectId, Long requirementsId) {
-		log.info("프로젝트 ID {}, 요구사항ID {} 에 해당하는 요구사항을 조회 시작", projectId, requirementsId);
 		Requirements requirements =
-			requirementsRepository.findRequirementByProjectIdAndRequirementsId(projectId, requirementsId);
+			requirementsRepository.findRequirementByRequirementsProjectIdAndRequirementsId(projectId, requirementsId);
 
 		RequirementsDTO requirementsDTO = modelMapper.map(requirements, RequirementsDTO.class);
 
 		return requirementsDTO;
 	}
 
+	/* 일정 생성 */
 	@Transactional
 	@Override
 	public ResponseRequirement createRequirements(RequirementsDTO requirementsDTO) {
@@ -71,6 +71,7 @@ public class RequirementsServiceImpl implements RequirementsService {
 		return responseRequirement;
 	}
 
+	/* 일정 수정 */
 	@Override
 	public ResponseRequirement modifyRequirement(Long requirementsId,
 		RequestModifyRequirement requestModifyRequirement) {
@@ -84,6 +85,7 @@ public class RequirementsServiceImpl implements RequirementsService {
 		return modelMapper.map(updateRequirement, ResponseRequirement.class);
 	}
 
+	/* 일정 삭제 */
 	@Override
 	public ResponseRequirement removeRequirement(Long requirementsId) {
 
