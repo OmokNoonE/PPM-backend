@@ -2,6 +2,7 @@ package org.omoknoone.ppm.domain.projectDashboard.controller;
 
 import java.util.List;
 
+import org.omoknoone.ppm.domain.projectDashboard.dto.ProjectDashboardDTO;
 import org.omoknoone.ppm.domain.projectDashboard.service.ProjectDashboardService;
 import org.omoknoone.ppm.domain.projectDashboard.aggregate.ProjectDashboard;
 import org.springframework.beans.factory.annotation.Autowired;
