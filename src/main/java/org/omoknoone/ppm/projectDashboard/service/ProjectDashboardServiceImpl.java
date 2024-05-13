@@ -4,17 +4,15 @@ import java.util.List;
 
 import org.omoknoone.ppm.projectDashboard.aggregate.ProjectDashboard;
 import org.omoknoone.ppm.projectDashboard.repository.ProjectDashboardRepository;
-import org.omoknoone.ppm.schedule.service.ScheduleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.data.mongodb.core.query.Query;
 
 
 @Slf4j

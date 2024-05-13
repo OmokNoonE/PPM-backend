@@ -44,8 +44,12 @@ public class PLPermission {
         Long plPermissionProjectMemberId, Long plPermissionScheduleId) {
         this.plPermissionId = plPermissionId;
         this.plPermissionIsDeleted = plPermissionIsDeleted;
-        this.plPermissionDeletedDate = plPermissionDeletedDate;
         this.plPermissionProjectMemberId = plPermissionProjectMemberId;
         this.plPermissionScheduleId = plPermissionScheduleId;
+    }
+
+    public void remove(){
+        this.plPermissionIsDeleted = true;
+        this.plPermissionDeletedDate = LocalDateTime.now();
     }
 }
