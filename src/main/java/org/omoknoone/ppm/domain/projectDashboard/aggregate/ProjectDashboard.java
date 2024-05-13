@@ -1,5 +1,6 @@
 package org.omoknoone.ppm.domain.projectDashboard.aggregate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,5 +27,7 @@ public class ProjectDashboard {
 	private String projectId;
 
 	private String type;
+
+	private List<String> categories;
 
 }

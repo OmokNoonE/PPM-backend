@@ -24,9 +24,9 @@ public class ProjectDashboardController {
 
 	// projectId로 graph에 들어갈 JSON 데이터 조회
 	@GetMapping("/{projectId}")
-	public List<ProjectDashboard> viewProjectDashboardByProjectId(@PathVariable String projectId) {
+	public List<ProjectDashboardDTO> viewProjectDashboardByProjectId(@PathVariable String projectId) {
 
-		List<ProjectDashboard> projectDashboard = projectDashboardService.viewProjectDashboardByProjectId(projectId);
+		List<ProjectDashboardDTO> projectDashboard = projectDashboardService.viewProjectDashboardByProjectId(projectId);
 
 		return ResponseEntity.ok(projectDashboard).getBody();
 	}
