@@ -24,7 +24,7 @@ public interface ProjectDashboardRepository extends MongoRepository<ProjectDashb
 	// @Query("{'projectId': ?0, 'type': 'pie', 'series': {'$elemMatch': {'name': { '$in': ['준비', '진행', '완료'] }}}}")
 	// void updatePieChartData(String projectId, Float newData);
 
-
+	ProjectDashboard findAllByProjectIdAndType(String projectId, String type);
 
 
 
