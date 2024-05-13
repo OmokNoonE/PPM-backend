@@ -37,4 +37,6 @@ public interface ScheduleService {
     /* 도구 */
     /* 업무 일정인지 확인 */
     boolean isTaskSchedule(Long scheduleId);
+
+    List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle);
 }

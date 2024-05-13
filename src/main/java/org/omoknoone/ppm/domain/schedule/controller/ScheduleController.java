@@ -13,9 +13,11 @@ import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.omoknoone.ppm.domain.schedule.vo.RequestSchedule;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseSchedule;
+import org.omoknoone.ppm.domain.schedule.vo.ResponseSearchScheduleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -149,5 +151,13 @@ public class ScheduleController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .headers(headers)
             .body(new ResponseMessage(204, "일정 삭제 성공", responseMap));
+    }
+
+    /* 일정 검색 */
+    @GetMapping("/search/{scheduleTitle}")
+    public ResponseEntity<ResponseSearchScheduleList> searchScheduleByTitle(@PathVariable String scheduleTitle){
+        List<SearchScheduleListDTO> searchScheduleListDTO = scheduleService.searchSchedulesByTitle(scheduleTitle);
+        ResponseSearchScheduleList searchResult = new ResponseSearchScheduleList(searchScheduleListDTO);
+        return ResponseEntity.ok(searchResult);
     }
 }
