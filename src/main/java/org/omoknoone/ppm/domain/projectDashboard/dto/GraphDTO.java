@@ -3,17 +3,15 @@ package org.omoknoone.ppm.domain.projectDashboard.dto;
 import java.util.List;
 import java.util.Map;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @NoArgsConstructor
 @Getter
 @ToString
-public class ProjectDashboardDTO {
+public class GraphDTO {
 
     private String id;
 
@@ -24,7 +22,7 @@ public class ProjectDashboardDTO {
     private String type;
 
     @Builder
-    public ProjectDashboardDTO(String id, List<Map<String, Object>> series, String projectId, String type) {
+    public GraphDTO(String id, List<Map<String, Object>> series, String projectId, String type) {
         this.id = id;
         this.series = series;
         this.projectId = projectId;

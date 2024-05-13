@@ -2,18 +2,18 @@ package org.omoknoone.ppm.domain.projectDashboard.repository;
 
 import java.util.List;
 
-import org.omoknoone.ppm.domain.projectDashboard.aggregate.ProjectDashboard;
+import org.omoknoone.ppm.domain.projectDashboard.aggregate.Graph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProjectDashboardRepository extends MongoRepository<ProjectDashboard, String> {
+public interface GraphRepository extends MongoRepository<Graph, String> {
 
 	@Query("{'projectId' : ?0}")
-	List<ProjectDashboard> findAllByProjectId(String projectId);
+	List<Graph> findAllByProjectId(String projectId);
 
-	ProjectDashboard findByProjectIdAndType(String projectId, String type);
+	Graph findByProjectIdAndType(String projectId, String type);
 
 	// // 게이지 그래프 전체 진행률 데이터 업데이트
 	// @Query("{'projectId': ?0, 'type': 'gauge', 'series': {'$elemMatch': {'name': '전체진행률'}}}")
@@ -23,7 +23,7 @@ public interface ProjectDashboardRepository extends MongoRepository<ProjectDashb
 	// @Query("{'projectId': ?0, 'type': 'pie', 'series': {'$elemMatch': {'name': { '$in': ['준비', '진행', '완료'] }}}}")
 	// void updatePieChartData(String projectId, Float newData);
 
-	ProjectDashboard findAllByProjectIdAndType(String projectId, String type);
+	Graph findAllByProjectIdAndType(String projectId, String type);
 
 
 

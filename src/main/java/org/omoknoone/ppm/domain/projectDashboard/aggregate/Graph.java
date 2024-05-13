@@ -1,6 +1,5 @@
 package org.omoknoone.ppm.domain.projectDashboard.aggregate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,14 +9,13 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 // mongoDB document
-@Document(collection = "ProjectDashboard")
+@Document(collection = "Graph")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectDashboard {
+public class Graph {
 
 	@Id
 	private String id;

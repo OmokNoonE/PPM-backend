@@ -42,4 +42,15 @@ public class RequirementsDTO {
 		this.requirementsModifiedDate = requirementsModifiedDate;
 		this.requirementsDeletedDate = requirementsDeletedDate;
 	}
+
+	public RequirementsDTO(RequirementsDTO requirementsDTO) {
+		this.requirementsId = requirementsDTO.requirementsId;
+		this.requirementsProjectId = requirementsDTO.requirementsProjectId;
+		this.requirementsName = requirementsDTO.requirementsName;
+		this.requirementsContent = requirementsDTO.requirementsContent;
+		this.requirementsIsDeleted = requirementsDTO.requirementsIsDeleted;
+		this.requirementsCreatedDate = requirementsDTO.requirementsCreatedDate;
+		this.requirementsModifiedDate = requirementsDTO.requirementsModifiedDate;
+		this.requirementsDeletedDate = requirementsDTO.requirementsDeletedDate;
+	}
 }
