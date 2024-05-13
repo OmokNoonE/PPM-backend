@@ -6,5 +6,4 @@ import org.omoknoone.ppm.domain.requirements.aggregate.Requirements;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RequirementsRepository extends JpaRepository<Requirements, Long> {
-	// List<Requirements> findByRequirementsProjectId(Long projectId);
 }

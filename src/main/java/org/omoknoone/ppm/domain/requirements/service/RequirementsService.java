@@ -4,6 +4,8 @@ import org.omoknoone.ppm.domain.requirements.dto.RequirementsDTO;
 import org.omoknoone.ppm.domain.requirements.vo.RequestModifyRequirement;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirement;
 
+import java.util.List;
+
 public interface RequirementsService {
 
 	ResponseRequirement createRequirements(RequirementsDTO requirementsDTO);

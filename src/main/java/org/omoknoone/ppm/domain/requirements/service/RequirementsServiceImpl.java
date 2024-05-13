@@ -8,15 +8,12 @@ import org.omoknoone.ppm.domain.requirements.dto.RequirementsDTO;
 import org.omoknoone.ppm.domain.requirements.repository.RequirementsRepository;
 import org.omoknoone.ppm.domain.requirements.vo.RequestModifyRequirement;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RequirementsServiceImpl implements RequirementsService {
-	private static final Logger log = LoggerFactory.getLogger(RequirementsServiceImpl.class);
 	private final ModelMapper modelMapper;
 	private final RequirementsRepository requirementsRepository;
 
@@ -35,8 +32,7 @@ public class RequirementsServiceImpl implements RequirementsService {
 
 		Requirements newRequirement = requirementsRepository.save(requirements);
 
-		ResponseRequirement responseRequirement = modelMapper.map(newRequirement, ResponseRequirement.class);
-		return responseRequirement;
+		return modelMapper.map(newRequirement, ResponseRequirement.class);
 	}
 
 	@Override
