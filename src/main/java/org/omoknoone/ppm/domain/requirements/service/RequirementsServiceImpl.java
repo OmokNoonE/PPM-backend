@@ -5,6 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.requirements.aggregate.Requirements;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsDTO;
+import org.omoknoone.ppm.domain.requirements.dto.RequirementsListByProjectDTO;
 import org.omoknoone.ppm.domain.requirements.repository.RequirementsRepository;
 import org.omoknoone.ppm.domain.requirements.vo.RequestModifyRequirement;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirement;
@@ -26,6 +27,33 @@ public class RequirementsServiceImpl implements RequirementsService {
 		this.requirementsRepository = requirementsRepository;
 	}
 
+	/* ProjectId를 통한 RequirementsList 조회 */
+	@Transactional(readOnly = true)
+	@Override
+	public List<RequirementsListByProjectDTO> viewRequirementsByProjectId(Long projectId) {
+
+			List<Requirements> requirements = requirementsRepository.findByRequirementsProjectId(projectId);
+
+			List<RequirementsListByProjectDTO> projectRequirementsList = requirements.stream()
+				.map(requirement -> modelMapper.map(requirement, RequirementsListByProjectDTO.class))
+				.toList();
+
+			return projectRequirementsList;
+	}
+
+	/* ProjectId, RequirementsId를 통한 Requirement 조회 */
+	@Transactional(readOnly = true)
+	@Override
+	public RequirementsDTO viewRequirement(Long projectId, Long requirementsId) {
+		Requirements requirements =
+			requirementsRepository.findRequirementByRequirementsProjectIdAndRequirementsId(projectId, requirementsId);
+
+		RequirementsDTO requirementsDTO = modelMapper.map(requirements, RequirementsDTO.class);
+
+		return requirementsDTO;
+	}
+
+	/* 일정 생성 */
 	@Transactional
 	@Override
 	public ResponseRequirement createRequirements(RequirementsDTO requirementsDTO) {
@@ -39,6 +67,7 @@ public class RequirementsServiceImpl implements RequirementsService {
 		return responseRequirement;
 	}
 
+	/* 일정 수정 */
 	@Override
 	public ResponseRequirement modifyRequirement(Long requirementsId,
 		RequestModifyRequirement requestModifyRequirement) {
@@ -52,6 +81,7 @@ public class RequirementsServiceImpl implements RequirementsService {
 		return modelMapper.map(updateRequirement, ResponseRequirement.class);
 	}
 
+	/* 일정 삭제 */
 	@Override
 	public ResponseRequirement removeRequirement(Long requirementsId) {
 
@@ -64,4 +94,5 @@ public class RequirementsServiceImpl implements RequirementsService {
 
 		return modelMapper.map(requirements, ResponseRequirement.class);
 	}
+
 }
