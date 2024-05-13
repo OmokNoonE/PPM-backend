@@ -180,6 +180,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle) {
 		return scheduleRepository.searchScheduleByScheduleTitle(scheduleTitle);
     }
