@@ -1,6 +1,7 @@
 package org.omoknoone.ppm.domain.stakeholders.service;
 
-import lombok.Builder;
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
@@ -12,8 +13,6 @@ import org.omoknoone.ppm.domain.stakeholders.repository.StakeholdersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class StakeholdersServiceImpl implements StakeholdersService {
@@ -44,7 +43,8 @@ public class StakeholdersServiceImpl implements StakeholdersService {
     @Transactional(readOnly = true)
     public List<StakeholdersDTO> viewStakeholders(Long scheduleId) {
 
-        List<Stakeholders> stakeholdersList = stakeholdersRepository.findStakeholdersByStakeholdersScheduleId(scheduleId);
+        List<Stakeholders> stakeholdersList = stakeholdersRepository.findStakeholdersByStakeholdersScheduleId(
+            scheduleId);
         if (stakeholdersList == null || stakeholdersList.isEmpty()) {
             throw new IllegalArgumentException(scheduleId + " 스케쥴에 해당하는 이해관계자가 존재하지 않습니다.");
         }
@@ -58,7 +58,7 @@ public class StakeholdersServiceImpl implements StakeholdersService {
     public Long modifyStakeholder(ModifyStakeholdersDTO modifyStakeholdersDTO) {
 
         Stakeholders stakeholders = stakeholdersRepository.findById(modifyStakeholdersDTO.getStakeholdersId())
-                .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(IllegalArgumentException::new);
 
         stakeholders.modify(modifyStakeholdersDTO);
 
@@ -72,7 +72,7 @@ public class StakeholdersServiceImpl implements StakeholdersService {
     public Long removeStakeholder(Long stakeholdersId) {
 
         Stakeholders stakeholders = stakeholdersRepository.findById(stakeholdersId)
-                .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(IllegalArgumentException::new);
 
         stakeholders.remove();
 
