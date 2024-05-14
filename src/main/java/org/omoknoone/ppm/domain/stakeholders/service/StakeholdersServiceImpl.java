@@ -9,6 +9,7 @@ import org.omoknoone.ppm.domain.stakeholders.dto.CreateStakeholdersDTO;
 import org.omoknoone.ppm.domain.stakeholders.dto.ModifyStakeholdersDTO;
 import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersDTO;
 import org.omoknoone.ppm.domain.stakeholders.repository.StakeholdersRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,7 @@ public class StakeholdersServiceImpl implements StakeholdersService {
 
     private final ModelMapper modelMapper;
 
-    @Builder
+    @Autowired
     public StakeholdersServiceImpl(StakeholdersRepository stakeholdersRepository, ModelMapper modelMapper) {
         this.stakeholdersRepository = stakeholdersRepository;
         this.modelMapper = modelMapper;
