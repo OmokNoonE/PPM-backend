@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 public class ResponsePermission {
     private Long permissionId;
 
+    private Long permissionRoleName;
+
     private Boolean permissionIsDeleted;
 
     private LocalDateTime permissionDeletedDate;

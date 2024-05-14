@@ -9,11 +9,15 @@ import lombok.ToString;
 @Getter
 @ToString
 public class RequestCreatePermissionDTO {
+    Long permissionRoleName;
     Long permissionProjectMemberId;
     Long PermissionScheduleId;
 
+
     @Builder
-    public RequestCreatePermissionDTO(Long permissionProjectMemberId, Long permissionScheduleId) {
+    public RequestCreatePermissionDTO(Long permissionRoleName, Long permissionProjectMemberId,
+        Long permissionScheduleId) {
+        this.permissionRoleName = permissionRoleName;
         this.permissionProjectMemberId = permissionProjectMemberId;
         PermissionScheduleId = permissionScheduleId;
     }

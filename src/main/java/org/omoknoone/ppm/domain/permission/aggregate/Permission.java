@@ -26,6 +26,9 @@ public class Permission {
     @Column(name = "permission_id", nullable = false)
     private Long permissionId;
 
+    @Column(name = "permission_role_name", nullable = false)
+    private Long permissionRoleName;
+
     @Column(name = "permission_is_deleted", nullable = false)
     private Boolean permissionIsDeleted;
 
@@ -39,14 +42,17 @@ public class Permission {
     private Long permissionScheduleId;
 
     @Builder
-    public Permission(Long permissionId, Boolean permissionIsDeleted, LocalDateTime permissionDeletedDate,
-        Long permissionProjectMemberId, Long permissionScheduleId) {
+    public Permission(Long permissionId, Long permissionRoleName, Boolean permissionIsDeleted,
+        LocalDateTime permissionDeletedDate, Long permissionProjectMemberId, Long permissionScheduleId) {
         this.permissionId = permissionId;
+        this.permissionRoleName = permissionRoleName;
         this.permissionIsDeleted = permissionIsDeleted;
         this.permissionDeletedDate = permissionDeletedDate;
         this.permissionProjectMemberId = permissionProjectMemberId;
         this.permissionScheduleId = permissionScheduleId;
     }
+
+
 
     public void remove() {
         this.permissionIsDeleted = true;

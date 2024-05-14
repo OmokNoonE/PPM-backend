@@ -19,15 +19,17 @@ import lombok.ToString;
 @ToString
 public class PermissionDTO {
     Long permissionId;
+    Long permissionRoleName;
     Boolean permissionIsDeleted;
     LocalDateTime permissionDeletedDate;
     Long permissionProjectMemberId;
     Long permissionScheduleId;
 
     @Builder
-    public PermissionDTO(Long permissionId, Boolean permissionIsDeleted, LocalDateTime permissionDeletedDate,
-        Long permissionProjectMemberId, Long permissionScheduleId) {
+    public PermissionDTO(Long permissionId, Long permissionRoleName, Boolean permissionIsDeleted,
+        LocalDateTime permissionDeletedDate, Long permissionProjectMemberId, Long permissionScheduleId) {
         this.permissionId = permissionId;
+        this.permissionRoleName = permissionRoleName;
         this.permissionIsDeleted = permissionIsDeleted;
         this.permissionDeletedDate = permissionDeletedDate;
         this.permissionProjectMemberId = permissionProjectMemberId;
