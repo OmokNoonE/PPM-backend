@@ -1,21 +1,18 @@
 package org.omoknoone.ppm.domain.requirements.vo;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
-import lombok.AllArgsConstructor;
+import org.omoknoone.ppm.domain.requirements.dto.RequirementsHistoryDTO;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @ToString
 public class ResponseRequirementHistory {
-	private Long requirementHistoryId;
-	private String requirementHistoryReason;
-	private LocalDateTime requirementHistoryModifiedDate;
-	private Long requirementHistoryRequirementId;
-	private Long requirementHistoryProjectMemberId;
+	private final List<RequirementsHistoryDTO> requirementsHistoryDTOList;
 
+	public ResponseRequirementHistory(List<RequirementsHistoryDTO> requirementsHistoryDTOList) {
+		this.requirementsHistoryDTOList = requirementsHistoryDTOList;
+	}
 }
