@@ -48,4 +48,9 @@ public class ScheduleRequirementMap {
         this.scheduleRequirementMapIsDeleted = scheduleRequirementMapIsDeleted != null ? scheduleRequirementMapIsDeleted : false; // 기본값 설정
         this.scheduleRequirementMapDeletedDate = scheduleRequirementMapDeletedDate;
     }
+
+    public void remove(){
+        this.scheduleRequirementMapIsDeleted = true;
+        this.scheduleRequirementMapDeletedDate = LocalDateTime.now();
+    }
 }
