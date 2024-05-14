@@ -8,8 +8,6 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.requirements.aggregate.RequirementsHistory;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsHistoryDTO;
 import org.omoknoone.ppm.domain.requirements.repository.RequirementsHistoryRepository;
-import org.omoknoone.ppm.domain.schedule.aggregate.ScheduleHistory;
-import org.omoknoone.ppm.domain.schedule.dto.ScheduleHistoryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
