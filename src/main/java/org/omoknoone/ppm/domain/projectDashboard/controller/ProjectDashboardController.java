@@ -30,19 +30,6 @@ public class ProjectDashboardController {
 	private final ProjectDashboardService projectDashboardService;
 	private final ModelMapper modelMapper;
 
-	// 대시보드 init (프로젝트 생성 시 초기값으로 자동 생성 되어야 함)
-	// @GetMapping("/init/{projectId}")
-	// public ResponseEntity<ResponseProjectDashboard> initDashboard(@PathVariable InitProjectDashboardDTO initProjectDashboardDTO) {
-	//
-	// 	ProjectDashboardDTO projectDashboardDTO = projectDashboardService.initDashboard(initProjectDashboardDTO);
-	//
-	// 	ResponseProjectDashboard responseProjectDashboard = modelMapper.map(projectDashboardDTO, ResponseProjectDashboard.class);
-	//
-	// 	return ResponseEntity.status(HttpStatus.CREATED).body(responseProjectDashboard);
-	//
-	// }
-
-
 	// 대시보드 위치 저장 기능
 	@PutMapping("/set")
 	public ResponseEntity<ResponseMessage> setDashboard(@RequestBody ProjectDashboardDTO requestDTO) {
