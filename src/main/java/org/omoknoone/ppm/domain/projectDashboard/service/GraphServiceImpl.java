@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ public class GraphServiceImpl implements GraphService {
 
 
     // 프로젝트 Id를 통해 대시보드(그래프) 조회
+    @Transactional(readOnly = true)
     public List<GraphDTO> viewProjectDashboardByProjectId(String projectId) {
 
         List<Graph> graphs = graphRepository.findAllByProjectId(projectId);
@@ -47,6 +49,7 @@ public class GraphServiceImpl implements GraphService {
 
 
     // 전체진행률 (게이지) 업데이트
+    @Transactional
     public void updateGauge(String projectId) {
 
         Criteria criteria = new Criteria().andOperator(
@@ -58,7 +61,7 @@ public class GraphServiceImpl implements GraphService {
         Query query = new Query(criteria);
 
         Update update = new Update();
-        update.set("series.$.data", 55);
+        update.set("series.$.data", scheduleService.updateGauge(Long.parseLong(projectId)));
 
         mongoTemplate.updateMulti(
                 query,
@@ -69,8 +72,10 @@ public class GraphServiceImpl implements GraphService {
     }
 
     // pie (준비, 진행, 완료)
+    @Transactional
     public void updatePie(String projectId, String type) {
-        int[] datas = new int[]{10, 30, 50};
+        // int[] datas = new int[]{10, 30, 50};
+        int[] datas = scheduleService.updatePie(Long.parseLong(projectId));
 
         Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
 
@@ -94,10 +99,14 @@ public class GraphServiceImpl implements GraphService {
         List<Map<String, Object>> series = graph.getSeries();
 
         // update 할 data를 담고 있는 Map
-        Map<String, Map<String, Integer>> updates = Map.of(
-                "조예린", Map.of("준비", 55, "진행", 55, "완료", 55),
-                "오목이", Map.of("준비", 3, "진행", 2, "완료", 1)
-        );
+        // Map<String, Map<String, Integer>> updates = Map.of(
+        //         "조예린", Map.of("준비", 55, "진행", 55, "완료", 55),
+        //         "오목이", Map.of("준비", 3, "진행", 2, "완료", 1)
+        // );
+
+        Map<String, Map<String, Integer>> updates = scheduleService.updateTable(Long.parseLong(projectId));
+
+        System.out.println("updates = " + updates);
 
         // 새로운 값으로 update
         for (Map<String, Object> data : series) {

@@ -1,9 +1,16 @@
 package org.omoknoone.ppm.domain.schedule.service;
 
-import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.*;
-
 import java.util.List;
+import java.util.Map;
+
+import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
+import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
 
 public interface ScheduleService {
 
@@ -39,4 +46,17 @@ public interface ScheduleService {
     boolean isTaskSchedule(Long scheduleId);
 
     List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle);
+
+    /* 설명. 대시보드 게이지 제공 데이터 추출 */
+    int updateGauge(Long projectId);
+
+    /* 설명. 대시보드 파이 제공 데이터 추출 */
+    int[] updatePie(Long projectId);
+
+    /* 설명. 대시보드 테이블 제공 데이터 추출 */
+    Map<String, Map<String, Integer>> updateTable(Long projectId);
+
+    /* 설명. 대시보드 컬럼 제공 데이터 추출 */
+
+    /* 설명. 대시보드 라인 제공 데이터 추출 */
 }

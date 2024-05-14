@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
+import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
+import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -37,6 +39,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         + "AND s.scheduleEndDate >= FUNCTION('CURRENT_DATE') "
         + "ORDER BY s.scheduleEndDate ASC")
     List<Schedule> findSchedulesByProjectNearByEnd(Long projectId);
+
     List<Schedule> findSchedulesByScheduleParentScheduleId(Long scheduleId);
 
     /* 일정 검색 */
@@ -46,4 +49,43 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         "FROM Schedule a " +
         "WHERE a.scheduleTitle LIKE %:scheduleTitle%")
     List<SearchScheduleListDTO> searchScheduleByScheduleTitle(String scheduleTitle);
+
+    @Query("SELECT new org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO (" +
+        "COUNT(s) as totalScheduleCount, " +
+        "SUM(CASE WHEN s.scheduleStatus = 10301 THEN 1 ELSE 0 END) as todoScheduleCount, " +
+        "SUM(CASE WHEN s.scheduleStatus = 10302 THEN 1 ELSE 0 END) as inProgressScheduleCount, " +
+        "SUM(CASE WHEN s.scheduleStatus = 10303 THEN 1 ELSE 0 END) as doneScheduleCount) " +
+        "FROM Schedule s " +
+        "WHERE s.scheduleProjectId = :projectId")
+    UpdateDataDTO countScheduleStatusByProjectId(Long projectId);
+
+    /* 담당자 별, 업무 현황 */
+    @Query("SELECT new org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO ("
+        + "    e.employeeName,"
+        // + "    pm.projectMemberEmployeeId,"
+        + "    COUNT(CASE WHEN s.scheduleStatus = 10301 THEN 1 END) AS todoCount,"
+        + "    COUNT(CASE WHEN s.scheduleStatus = 10302 THEN 1 END) AS inProgressCount,"
+        + "    COUNT(CASE WHEN s.scheduleStatus = 10303 THEN 1 END) AS doneCount) "
+        + "FROM "
+        + "    ProjectMember pm "
+        + "JOIN "
+        + "    Stakeholders st ON pm.projectMemberId = st.stakeholdersProjectMemberId "
+        + "JOIN "
+        + "    Schedule s ON st.stakeholdersScheduleId = s.scheduleId "
+        + "JOIN    "
+        + "    Employee e ON pm.projectMemberEmployeeId = e.employeeId "
+        + "WHERE "
+        + "    st.stakeholdersType = 10402 "
+        + "    AND pm.projectMemberId IN ( "
+        + "        SELECT "
+        + "            pm2.projectMemberId "
+        + "        FROM "
+        + "            ProjectMember pm2  "
+        + "        WHERE "
+        + "            pm2.projectMemberProjectId = :projectId "
+        + "    ) "
+        + "GROUP BY "
+        + "    pm.projectMemberId ")
+    List<UpdateTableDataDTO> UpdateTableData(Long projectId);
+
 }
