@@ -1,16 +1,26 @@
 package org.omoknoone.ppm.domain.schedule.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.*;
+import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
+import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
+import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
+import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
@@ -132,7 +142,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public ModifyScheduleTitleAndContentDTO modifyScheduleTitleAndContent(RequestModifyScheduleDTO requestModifyScheduleDTO) {
+    public ModifyScheduleTitleAndContentDTO modifyScheduleTitleAndContent(
+        RequestModifyScheduleDTO requestModifyScheduleDTO) {
         /* modifyScheduleDTO를 ModifyScheduleTilteAndContentDTO에 담기 */
         /* 별도로 빼놓은 이유는 혹여 다른 일정과 연계되었을 때 추가적인 작업을 작성하려고 */
         return modelMapper.map(requestModifyScheduleDTO, ModifyScheduleTitleAndContentDTO.class);
@@ -141,7 +152,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public ModifyScheduleDateDTO modifyScheduleDate(RequestModifyScheduleDTO requestModifyScheduleDTO) {
         /* modifyScheduleDTO를 ModifyScheduleDateDTO 담기 */
-        ModifyScheduleDateDTO modifyScheduleDateDTO = modelMapper.map(requestModifyScheduleDTO, ModifyScheduleDateDTO.class);
+        ModifyScheduleDateDTO modifyScheduleDateDTO = modelMapper.map(requestModifyScheduleDTO,
+            ModifyScheduleDateDTO.class);
 
         /* 공수 계산 후 DTO에 저장 */
         modifyScheduleDateDTO.calculateScheduleManHours();
@@ -182,6 +194,51 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     @Transactional(readOnly = true)
     public List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle) {
-		return scheduleRepository.searchScheduleByScheduleTitle(scheduleTitle);
+
+        return scheduleRepository.searchScheduleByScheduleTitle(scheduleTitle);
+    }
+
+    /* 전체 진행률 제공 메소드 (대시보드) */
+    @Override
+    public int updateGauge(Long projectId) {
+        UpdateDataDTO updateDataDTO = scheduleRepository.countScheduleStatusByProjectId(projectId);
+
+        double totalScheduleCount = updateDataDTO.getTotalScheduleCount().doubleValue();
+        double doneScheduleCount = updateDataDTO.getDoneScheduleCount().doubleValue();
+
+        // 결과 계산
+        double result = (doneScheduleCount / totalScheduleCount) * 100;
+
+        return (int)result;
+    }
+
+    @Override
+    public int[] updatePie(Long projectId) {
+        UpdateDataDTO updateDataDTO = scheduleRepository.countScheduleStatusByProjectId(projectId);
+
+        return new int[]{
+            updateDataDTO.getTotalScheduleCount().intValue(),
+            updateDataDTO.getTodoScheduleCount().intValue(),
+            updateDataDTO.getInProgressScheduleCount().intValue(),
+            updateDataDTO.getDoneScheduleCount().intValue()
+        };
+    }
+
+    @Override
+    public Map<String, Map<String, Integer>> updateTable(Long projectId) {
+        List<UpdateTableDataDTO> updateTableDataDTO = scheduleRepository.UpdateTableData(projectId);
+
+        Map<String, Map<String, Integer>> updates = new HashMap<>();
+
+        for (UpdateTableDataDTO dto : updateTableDataDTO) {
+            Map<String, Integer> innerMap = new HashMap<>();
+            innerMap.put("준비", dto.getTodoCount().intValue());
+            innerMap.put("진행", dto.getInProgressCount().intValue());
+            innerMap.put("완료", dto.getDoneCount().intValue());
+
+            updates.put(dto.getEmployeeName(), innerMap);
+        }
+
+        return updates;
     }
 }

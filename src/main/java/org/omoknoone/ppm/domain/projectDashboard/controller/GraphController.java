@@ -40,5 +40,12 @@ public class GraphController {
 
 	}
 
+	@GetMapping("/test2/{projectId}/{type}")
+	public void testMethod2(@PathVariable String projectId, @PathVariable String type) {
+
+		graphService.updateTable(projectId,type);
+
+	}
+
 
 }
