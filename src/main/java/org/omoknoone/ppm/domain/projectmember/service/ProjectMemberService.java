@@ -17,4 +17,5 @@ public interface ProjectMemberService {
 
     Integer modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO);
 
+    Integer viewProjectMemberId(String employeeId, Integer projectId);
 }

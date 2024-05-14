@@ -1,6 +1,7 @@
 package org.omoknoone.ppm.domain.commoncode.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCode;
 import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeGroupResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.repository.CommonCodeGroupRepository;
@@ -33,7 +34,8 @@ public class CommonCodeServiceImpl implements CommonCodeService {
             throw new IllegalArgumentException("exception.service.illegalArgument");
         }
         try {
-            List<CommonCodeResponseDTO> codes = commonCodeRepository.findByCodeGroupId(groupId);
+            System.out.println("[viewCommonCodesByGroup] groupId = " + groupId);
+            List<CommonCode> codes = commonCodeRepository.findByCodeGroupId(groupId);
             if (codes.isEmpty()) {
                 throw new EntityNotFoundException("exception.data.entityNotFound");
             }

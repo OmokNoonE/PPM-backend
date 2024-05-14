@@ -42,7 +42,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     public Integer createProjectMember(CreateProjectMemberRequestDTO dto) {
         ProjectMember newMember = modelMapper.map(dto, ProjectMember.class);
 
-        projectMemberRepository.save(newMember);
+//        projectMemberRepository.save(newMember);
 
         return newMember.getProjectMemberId();
     }
@@ -77,6 +77,17 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         projectMemberRepository.save(existingMember);
 
         return existingMember.getProjectMemberId();
+    }
+
+    @Override
+    public Integer viewProjectMemberId(String employeeId, Integer projectId) {
+        System.out.println("viewProjectMemberId()");
+        System.out.println("employeeId = " + employeeId);
+        System.out.println("projectId = " + projectId);
+        ProjectMember projectMember = projectMemberRepository.
+                findByProjectMemberEmployeeIdAndProjectMemberProjectId(employeeId, projectId);
+        System.out.println("projectMember = " + projectMember);
+        return projectMember.getProjectMemberId();
     }
 
 }
