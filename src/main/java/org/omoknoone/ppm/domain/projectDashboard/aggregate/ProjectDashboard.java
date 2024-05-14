@@ -2,6 +2,8 @@ package org.omoknoone.ppm.domain.projectDashboard.aggregate;
 
 import java.time.LocalDateTime;
 
+import org.omoknoone.ppm.domain.projectDashboard.dto.ModifyProjectDashboardDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +25,7 @@ public class ProjectDashboard {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "project_dashboartd_id")
+	@Column(name = "project_dashboard_id")
 	private Integer projectDashboardId;
 
 	@Column(name = "project_dashboard_title")
@@ -46,5 +48,9 @@ public class ProjectDashboard {
 		this.projectDashboardLayout = projectDashboardLayout;
 		this.projectDashboardProjectMemberId = projectDashboardProjectMemberId;
 		this.projectDashboardDeletedDate = projectDashboardDeletedDate;
+	}
+
+	public void modifyLayout(Integer layout) {
+		this.projectDashboardLayout = layout;
 	}
 }
