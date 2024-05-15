@@ -42,7 +42,6 @@ public class ProjectServiceImpl implements ProjectService {
         /* 수정 로그 작성 */
         projectHistoryService.createProjectHistory(modifyProjectHistoryDTO);
 
-        // return projectRepository.save(project).getId();
         return projectRepository.findById(modifyProjectHistoryDTO.getProjectId()).get().getId();
     }
 }
