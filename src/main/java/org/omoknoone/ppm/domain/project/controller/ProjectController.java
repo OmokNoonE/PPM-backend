@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
+import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.springframework.http.HttpHeaders;
@@ -41,11 +42,11 @@ public class ProjectController {
 
     // 프로젝트 수정
     @PutMapping("/modify")
-    public ResponseEntity<ResponseMessage> modifyProject(@RequestBody ModifyProjectRequestDTO modifyProjectRequestDTO) {
+    public ResponseEntity<ResponseMessage> modifyProject(@RequestBody ModifyProjectHistoryDTO modifyProjectHistoryDTO) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-        int projectId = projectService.modifyProject(modifyProjectRequestDTO);
+        int projectId = projectService.modifyProject(modifyProjectHistoryDTO);
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("projectId", projectId);
 
