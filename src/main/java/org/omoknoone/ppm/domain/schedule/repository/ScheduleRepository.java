@@ -42,7 +42,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findSchedulesByScheduleParentScheduleId(Long scheduleId);
 
-    /* 일정 검색 */
+    /* Title을 통한 일정 검색 */
     @Query("SELECT" + " new org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO" +
         "(a.scheduleId, a.scheduleTitle, a.scheduleContent, a.scheduleStartDate"
         + ", a.scheduleEndDate, a.scheduleProgress, a.scheduleStatus) " +
@@ -88,4 +88,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         + "    pm.projectMemberId ")
     List<UpdateTableDataDTO> UpdateTableData(Long projectId);
 
+    /* 일정 상태값에 따른 일정 목록 확인 */
+    List<Schedule> findByScheduleStatusIn(List<Long> codeIds);
 }

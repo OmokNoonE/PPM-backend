@@ -191,6 +191,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepository.findSchedulesByScheduleParentScheduleId(scheduleId) != null;
     }
 
+    /* Title을 통한 일정 검색 */
     @Override
     @Transactional(readOnly = true)
     public List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle) {
@@ -240,5 +241,11 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
 
         return updates;
+    }
+
+    /* 일정 상태값에 따른 일정 목록 확인 */
+    @Override
+    public List<Schedule> getSchedulesByStatusCodes(List<Long> codeIds) {
+        return scheduleRepository.findByScheduleStatusIn(codeIds);
     }
 }
