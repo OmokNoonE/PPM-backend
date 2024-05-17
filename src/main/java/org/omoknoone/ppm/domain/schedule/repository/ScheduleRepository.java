@@ -88,9 +88,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         + "    pm.projectMemberId ")
     List<UpdateTableDataDTO> UpdateTableData(Long projectId);
 
-    /* 일정 상태값이 1개일 때 일정 목록 확인 */
-    List<Schedule> findByScheduleStatus(Long codeId);
-
-    /* 일정 상태값이 2개 이상일 때 일정 목록 확인 */
+    /* 일정 상태값에 따른 일정 목록 확인 */
     List<Schedule> findByScheduleStatusIn(List<Long> codeIds);
 }

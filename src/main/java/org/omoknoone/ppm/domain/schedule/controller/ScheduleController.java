@@ -162,14 +162,8 @@ public class ScheduleController {
         return ResponseEntity.ok(searchResult);
     }
 
-    /* 일정 상태값이 1개일 때 일정 목록 확인 */
-    @GetMapping("/status/{codeId}")
-    public List<Schedule> getSchedulesByStatusCode(@PathVariable Long codeId) {
-        return scheduleService.getSchedulesByStatusCode(codeId);
-    }
-
-    /* 일정 상태값이 2개 이상일 때 일정 목록 확인 */
-    @GetMapping("/statuses")
+    /* 일정 상태값에 따른 일정 목록 확인 */
+    @GetMapping("/status")
     public List<Schedule> getSchedulesByStatusCodes(@RequestParam List<Long> codeIds) {
         return scheduleService.getSchedulesByStatusCodes(codeIds);
     }

@@ -243,13 +243,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         return updates;
     }
 
-    /* 일정 상태값이 1개일 때 일정 목록 확인 */
-    @Override
-    public List<Schedule> getSchedulesByStatusCode(Long codeId) {
-        return scheduleRepository.findByScheduleStatus(codeId);
-    }
-
-    /* 일정 상태값이 2개 이상일 때 일정 목록 확인 */
+    /* 일정 상태값에 따른 일정 목록 확인 */
     @Override
     public List<Schedule> getSchedulesByStatusCodes(List<Long> codeIds) {
         return scheduleRepository.findByScheduleStatusIn(codeIds);
