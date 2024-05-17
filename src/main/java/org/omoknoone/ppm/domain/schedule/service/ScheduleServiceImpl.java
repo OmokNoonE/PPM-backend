@@ -178,7 +178,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 		/* modifyScheduleDTO를 ModifyScheduleProgressDTO 담기 */
 		ModifyScheduleProgressDTO modifyScheduleProgressDTO = modelMapper.map(requestModifyScheduleDTO,
 			ModifyScheduleProgressDTO.class);
-
+    
 		/* 업무를 가지지 않은 비업무 일정인 경우, 일정 상태에 따른 진행률 설정 */
 		if (!isTaskSchedule(requestModifyScheduleDTO.getScheduleId())) {
 			modifyScheduleProgressDTO.calculateScheduleProgress();
