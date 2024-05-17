@@ -61,10 +61,7 @@ public interface ScheduleService {
 
     /* 설명. 대시보드 라인 제공 데이터 추출 */
 
-    /* 상태 코드가 1개일 때 해당 일정 확인 */
-    List<Schedule> getSchedulesByStatusCode(Long codeId);
-
-    /* 상태 코드가 2개 이상일 때 해당 일정 확인 */
+    /* 상태 코드에 따른 해당 일정 확인 */
     List<Schedule> getSchedulesByStatusCodes(List<Long> codeIds);
 
 }
