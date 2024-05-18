@@ -3,9 +3,12 @@ package org.omoknoone.ppm.common.aop;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.omoknoone.ppm.common.annotation.Permission;
 import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
 import org.omoknoone.ppm.domain.permission.dto.PermissionDTO;
@@ -15,6 +18,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -33,46 +37,59 @@ public class AuthorizationAspect {
     private void annotationPointcut() {}
 
     @Before("annotationPointcut()")
-    public void checkProjectMemberPermission() throws AccessDeniedException {
-        log.info("[AOP 실행]");
-        // HttpServletRequest 객체를 사용하여 요청 헤더 정보 추출
+    public void checkProjectMemberPermission(JoinPoint joinPoint) throws AccessDeniedException {
+
+        // 해당 메서드에 적용된 Permission 어노테이션의 값을 가져옴
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Permission permissionAnnotation = signature.getMethod().getAnnotation(Permission.class);
+
+        // '권한 역할명' 공통 코드 조회
+        List<CommonCodeResponseDTO> commonCodeList = commonCodeService
+                                                        .viewCommonCodesByGroupName("권한 역할명");
+
+        // 요청자의 권한 코드 알아내기
+        PermissionDTO permissionDTO = getRequesterPermissionCode();
+
+        // 요정차의 권한 이름 가져오기
+        String requesterPermission = getRequesterPermission(commonCodeList, permissionDTO);
+
+        if (permissionAnnotation.PM() && requesterPermission.equals("PM")) {            // PM 권한
+            log.info("요청자의 권한은 {}입니다", requesterPermission);
+        } else if (permissionAnnotation.PL() && requesterPermission.equals("PL")) {     // PL 권한
+            log.info("요청자의 권한은 {}입니다", requesterPermission);
+        } else if (permissionAnnotation.PA() && requesterPermission.equals("PA")) {     // PA 권한
+            log.info("요청자의 권한은 {}입니다", requesterPermission);
+        } else {                                                                        // 권한 없음
+            throw new AccessDeniedException("Access Denied\n요청자의 권한 : " + requesterPermission);
+        }
+    }
+
+    // 요청자의 권한 코드 알아내기
+    private PermissionDTO getRequesterPermissionCode() {
         String employeeId = request.getHeader("employeeId");
         Integer projectId = Integer.parseInt(request.getHeader("projectId"));
-        log.info("employeeId : {}, projectId : {}", employeeId, projectId);
+
         // projectId와 employeeId로 구성원Id 조회
         Integer projectMemberId = projectMemberService.viewProjectMemberId(employeeId, projectId);
-        log.info("projectMemberID : {}", projectMemberId);
 
         // 구성원Id로 권한 목록 조회 (PL or 개발자는 여러개 일 수 있다)
-        List<PermissionDTO> projectPermissionList = permissionService.viewMemberPermission(Long.valueOf(projectMemberId));
-        for (PermissionDTO permissionDTO : projectPermissionList) {
-            log.info("permissionDTO : {}", permissionDTO);
-        }
+        List<PermissionDTO> projectPermissionList = permissionService
+                                                            .viewMemberPermission(Long.valueOf(projectMemberId));
 
-        // 권한 역할명(PM, PL, 참여자) 조회
-        List<CommonCodeResponseDTO> permissionNameCommonCodeList = commonCodeService.viewCommonCodesByGroup(106L);
-        for (CommonCodeResponseDTO commonCodeResponseDTO : permissionNameCommonCodeList) {
-            log.info("commonCodeResponseDTO : {}", commonCodeResponseDTO);
-        }
+        // 가장 높은 권한을 가진 Permission 반환
+        return projectPermissionList.stream()
+                .min(Comparator.comparing(PermissionDTO::getPermissionRoleName))
+                .orElse(null);
+    }
 
-        // 권한Id가 여러개일 경우(여러 일정을 담당하는 개발자 or 여러 섹션을 관리하는 PL)
-        for (PermissionDTO projectPermission : projectPermissionList) {    // 프로젝트 권한 목록
-            for (CommonCodeResponseDTO permissionNameCommonCode : permissionNameCommonCodeList) {    // 권한 역할 목록
-                String codeName = permissionNameCommonCode.getCodeName();
-                Long codeId = permissionNameCommonCode.getCodeId();
-
-                // TODO. 여기 코드 수정 해야 함
-
-                if("PM".equals(codeName) && codeId.equals(projectPermission.getPermissionRoleName())) {
-                    log.info("PM이다!!!");
-                    continue;
-                } else if ("PL".equals(codeName) && codeId.equals(projectPermission.getPermissionProjectMemberId())) {
-                    // 권한이 PL인 경우
-                    log.info("PL이다!!!");
-                } else {
-                    throw new AccessDeniedException(environment.getProperty("exception.controller.accessDenied"));
-                }
+    // 요정차의 권한 이름 가져오기
+    private static String getRequesterPermission(List<CommonCodeResponseDTO> commonCodeList, PermissionDTO permissionDTO) {
+        String requesterPermission = null;
+        for (CommonCodeResponseDTO commonCode : commonCodeList) {
+            if (permissionDTO.getPermissionRoleName().equals(commonCode.getCodeId())){
+                requesterPermission = commonCode.getCodeName();
             }
         }
+        return requesterPermission;
     }
 }
