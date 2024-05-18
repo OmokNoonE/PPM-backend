@@ -81,12 +81,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Override
     public Integer viewProjectMemberId(String employeeId, Integer projectId) {
-        System.out.println("viewProjectMemberId()");
-        System.out.println("employeeId = " + employeeId);
-        System.out.println("projectId = " + projectId);
         ProjectMember projectMember = projectMemberRepository.
                 findByProjectMemberEmployeeIdAndProjectMemberProjectId(employeeId, projectId);
-        System.out.println("projectMember = " + projectMember);
         return projectMember.getProjectMemberId();
     }
 

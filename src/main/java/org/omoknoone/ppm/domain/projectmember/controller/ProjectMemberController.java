@@ -45,10 +45,8 @@ public class ProjectMemberController {
                 .body(new ResponseMessage(200, "프로젝트 구성원 조회 성공", responseMap));
     }
 
-    @Permission
     @PostMapping("/create")
     public ResponseEntity<ResponseMessage> createProjectMember(@RequestBody CreateProjectMemberRequestDTO requestDTO) {
-        log.info("[Controller] requestDTO : {}", requestDTO);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 

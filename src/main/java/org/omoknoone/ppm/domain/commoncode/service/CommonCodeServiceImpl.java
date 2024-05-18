@@ -35,7 +35,6 @@ public class CommonCodeServiceImpl implements CommonCodeService {
             throw new IllegalArgumentException("exception.service.illegalArgument");
         }
         try {
-            System.out.println("[viewCommonCodesByGroup] groupId = " + groupId);
             List<CommonCode> codes = commonCodeRepository.findByCodeGroupId(groupId);
             if (codes.isEmpty()) {
                 throw new EntityNotFoundException("exception.data.entityNotFound");
