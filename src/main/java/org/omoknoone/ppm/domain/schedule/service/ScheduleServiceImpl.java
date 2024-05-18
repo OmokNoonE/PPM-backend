@@ -1,8 +1,6 @@
 package org.omoknoone.ppm.domain.schedule.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -240,5 +238,24 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
 
         return updates;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<ScheduleDTO> viewSubSchedules(Long scheduleId) {
+        List<ScheduleDTO> subSchedules = new ArrayList<>();
+        Stack<Long> stack = new Stack<>();
+        stack.push(scheduleId);
+
+        while (!stack.isEmpty()) {
+            Long currentId = stack.pop();
+            List<Schedule> childSchedules = scheduleRepository.findByScheduleParentScheduleId(currentId);
+            for (Schedule childSchedule : childSchedules) {
+                subSchedules.add(modelMapper.map(childSchedule, ScheduleDTO.class));
+                stack.push(childSchedule.getScheduleId());
+            }
+        }
+
+        return subSchedules;
     }
 }
