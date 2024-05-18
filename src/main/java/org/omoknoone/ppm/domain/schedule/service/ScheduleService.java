@@ -45,6 +45,7 @@ public interface ScheduleService {
     /* 업무 일정인지 확인 */
     boolean isTaskSchedule(Long scheduleId);
 
+    /* Title을 통한 일정 검색 */
     List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle);
 
     /* 설명. 대시보드 게이지 제공 데이터 추출 */
@@ -62,4 +63,8 @@ public interface ScheduleService {
 
     // 현재 일정의 모든 하위 일정 조회
     List<ScheduleDTO> viewSubSchedules(Long scheduleId);
+
+    /* 상태 코드에 따른 해당 일정 확인 */
+    List<Schedule> getSchedulesByStatusCodes(List<Long> codeIds);
+
 }

@@ -2,7 +2,6 @@ package org.omoknoone.ppm.domain.requirements.service;
 
 import java.util.List;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.requirements.aggregate.Requirements;
@@ -15,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class RequirementsServiceImpl implements RequirementsService {
@@ -55,18 +54,14 @@ public class RequirementsServiceImpl implements RequirementsService {
 	}
 
 	/* 일정 생성 */
-	@Transactional
 	@Override
-	public ResponseRequirement createRequirements(RequirementsDTO requirementsDTO) {
-
+	public Requirements createRequirement(RequirementsDTO requirementsDTO) {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		Requirements requirements = modelMapper.map(requirementsDTO, Requirements.class);
 
-		Requirements newRequirement = requirementsRepository.save(requirements);
-
-		ResponseRequirement responseRequirement = modelMapper.map(newRequirement, ResponseRequirement.class);
-		return responseRequirement;
+		return requirementsRepository.save(requirements);
 	}
+
 
 	/* 일정 수정 */
 	@Override

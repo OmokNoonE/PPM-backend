@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.omoknoone.ppm.domain.requirements.aggregate.Requirements;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsDTO;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsListByProjectDTO;
 import org.omoknoone.ppm.domain.requirements.service.RequirementsService;
@@ -15,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/requirements")
@@ -59,7 +58,7 @@ public class RequirementsController {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		RequirementsDTO requirementsDTO = modelMapper.map(requestRequirement, RequirementsDTO.class);
 
-		ResponseRequirement newRequirement = requirementsService.createRequirements(requirementsDTO);
+		Requirements newRequirement = requirementsService.createRequirement(requirementsDTO);
 		ResponseRequirement responseRequirement = modelMapper.map(newRequirement, ResponseRequirement.class);  // requirementsService에서 요구사항 생성
 
 		return new ResponseEntity<>(responseRequirement, HttpStatus.CREATED);

@@ -8,8 +8,6 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.requirements.aggregate.RequirementsHistory;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsHistoryDTO;
 import org.omoknoone.ppm.domain.requirements.repository.RequirementsHistoryRepository;
-import org.omoknoone.ppm.domain.schedule.aggregate.ScheduleHistory;
-import org.omoknoone.ppm.domain.schedule.dto.ScheduleHistoryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,16 +35,19 @@ public class RequirementsHistoryServiceImpl implements RequirementsHistoryServic
 		return requirementsHistoryRepository.save(requirementsHistory);
 	}
 
+	/* 요구사항 Id를 통한 요구사항 수정내역 조회 */
 	@Transactional(readOnly = true)
 	@Override
 	public List<RequirementsHistoryDTO> viewRequirementHistoryList(Long requirementsId) {
 		List<RequirementsHistory> requirementsHistoryList = requirementsHistoryRepository.
 			findRequirementHistoryByRequirementHistoryRequirementId(requirementsId);
+
 		if (requirementsHistoryList == null || requirementsHistoryList.isEmpty()) {
-			throw new IllegalArgumentException(requirementsId + "요구사항에 해당하는 수정 내역이 존재하지 않습니다.");
+			throw new IllegalArgumentException("exception.service.illegalArgument");
 		}
 
-		return modelMapper.map(requirementsHistoryList, new TypeToken<List<RequirementsHistoryDTO>>() {
-		}.getType());
+		return requirementsHistoryList.stream()
+			.map(requirementsHistory -> modelMapper.map(requirementsHistory, RequirementsHistoryDTO.class))
+			.toList();
 	}
 }

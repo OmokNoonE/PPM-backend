@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -153,11 +154,17 @@ public class ScheduleController {
             .body(new ResponseMessage(204, "일정 삭제 성공", responseMap));
     }
 
-    /* 일정 검색 */
+    /* Title을 통한 일정 검색 */
     @GetMapping("/search/{scheduleTitle}")
     public ResponseEntity<ResponseSearchScheduleList> searchScheduleByTitle(@PathVariable String scheduleTitle){
         List<SearchScheduleListDTO> searchScheduleListDTO = scheduleService.searchSchedulesByTitle(scheduleTitle);
         ResponseSearchScheduleList searchResult = new ResponseSearchScheduleList(searchScheduleListDTO);
         return ResponseEntity.ok(searchResult);
+    }
+
+    /* 일정 상태값에 따른 일정 목록 확인 */
+    @GetMapping("/status")
+    public List<Schedule> getSchedulesByStatusCodes(@RequestParam List<Long> codeIds) {
+        return scheduleService.getSchedulesByStatusCodes(codeIds);
     }
 }

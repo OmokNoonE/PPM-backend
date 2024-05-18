@@ -3,11 +3,11 @@ package org.omoknoone.ppm.domain.requirements.controller;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.requirements.aggregate.RequirementsHistory;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsHistoryDTO;
 import org.omoknoone.ppm.domain.requirements.service.RequirementsHistoryService;
+import org.omoknoone.ppm.domain.requirements.vo.RequestCreateRequirementsHistory;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirementHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,26 +33,26 @@ public class RequirementsHistoryController {
 
 	/* 요구사항 수정 내역 등록 */
 	@PostMapping("/create")
-	public ResponseEntity<RequirementsHistoryDTO> createRequirementHistory(@RequestBody RequirementsHistoryDTO requirementsHistoryDTO) {
+	public ResponseEntity<ResponseRequirementHistory> createRequirementHistory(@RequestBody RequestCreateRequirementsHistory requestCreateRequirementsHistory) {
 
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		RequirementsHistoryDTO requirementHistory = modelMapper.map(requirementsHistoryDTO, RequirementsHistoryDTO.class);
+		RequirementsHistoryDTO requirementHistoryDTO = modelMapper.map(requestCreateRequirementsHistory, RequirementsHistoryDTO.class);
 
-		RequirementsHistory newRequirementHistory = requirementsHistoryService.createRequirementHistory(requirementHistory);
+		RequirementsHistory newRequirementHistory = requirementsHistoryService.createRequirementHistory(requirementHistoryDTO);
 
-		RequirementsHistoryDTO requirementHistoryDTO = modelMapper.map(newRequirementHistory, RequirementsHistoryDTO.class);
+		ResponseRequirementHistory responseRequirementHistory = modelMapper.map(newRequirementHistory, ResponseRequirementHistory.class);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(requirementHistoryDTO);
+		return ResponseEntity.status(HttpStatus.CREATED).body(responseRequirementHistory);
 	}
 
 	/* 요구사항Id를 통한 요구사항 수정내역 조회 */
 	@GetMapping("view/{requirementsId}")
-	public ResponseEntity<List<ResponseRequirementHistory>> viewRequirementHistoryByfScheduleId(@PathVariable Long requirementsId){
+	public ResponseEntity<ResponseRequirementHistory> viewRequirementHistoryByfScheduleId(@PathVariable Long requirementsId){
 		List<RequirementsHistoryDTO> requirementsHistoryDTOList =
 			requirementsHistoryService.viewRequirementHistoryList(requirementsId);
-		List<ResponseRequirementHistory> requirementHistoryList =
-			modelMapper.map(requirementsHistoryDTOList, new TypeToken<List<ResponseRequirementHistory>>() {}.getType());
+		ResponseRequirementHistory requirementHistoryList =
+			new ResponseRequirementHistory(requirementsHistoryDTOList);
 
-		return ResponseEntity.status(HttpStatus.OK).body(requirementHistoryList);
+		return ResponseEntity.ok(requirementHistoryList);
 	}
 }

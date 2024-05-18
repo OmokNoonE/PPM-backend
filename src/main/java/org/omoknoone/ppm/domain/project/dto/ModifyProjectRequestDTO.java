@@ -16,13 +16,16 @@ public class ModifyProjectRequestDTO {
     private LocalDateTime projectStartDate;
     private LocalDateTime projectEndDate;
     private int projectStatus;
+    private boolean projectIsDeleted;
 
     @Builder
-    public ModifyProjectRequestDTO(int projectId, String projectTitle, LocalDateTime projectStartDate, LocalDateTime projectEndDate, int projectStatus) {
+    public ModifyProjectRequestDTO(int projectId, String projectTitle, LocalDateTime projectStartDate,
+        LocalDateTime projectEndDate, int projectStatus, boolean projectIsDeleted) {
         this.projectId = projectId;
         this.projectTitle = projectTitle;
         this.projectStartDate = projectStartDate;
         this.projectEndDate = projectEndDate;
         this.projectStatus = projectStatus;
+        this.projectIsDeleted = projectIsDeleted;
     }
 }

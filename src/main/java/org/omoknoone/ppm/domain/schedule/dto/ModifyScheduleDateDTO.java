@@ -23,10 +23,4 @@ public class ModifyScheduleDateDTO {
         this.scheduleEndDate = scheduleEndDate;
         this.scheduleManHours = scheduleManHours;
     }
-
-    public void calculateScheduleManHours() {
-        /* TODO. 공수 기능 구현*/
-        // this.scheduleManHours = this.scheduleEndDate - this.scheduleStartDate +1 - 휴일;
-    }
-
 }
