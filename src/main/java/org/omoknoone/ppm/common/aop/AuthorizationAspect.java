@@ -14,6 +14,7 @@ import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
 import org.omoknoone.ppm.domain.permission.dto.PermissionDTO;
 import org.omoknoone.ppm.domain.permission.service.PermissionService;
 import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
@@ -25,13 +26,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Aspect
 @Component
+@Order(1)
 public class AuthorizationAspect {
 
     private final HttpServletRequest request;
     private final ProjectMemberService projectMemberService;
     private final PermissionService permissionService;
     private final CommonCodeService commonCodeService;
-    private final Environment environment;
 
     @Pointcut("@annotation(org.omoknoone.ppm.common.annotation.Permission)")
     private void annotationPointcut() {}
