@@ -3,9 +3,9 @@ package org.omoknoone.ppm.domain.notification.service;
 import org.junit.jupiter.api.Test;
 import org.omoknoone.ppm.domain.employee.aggregate.Employee;
 import org.omoknoone.ppm.domain.employee.repository.EmployeeRepository;
-import org.omoknoone.ppm.domain.notification.aggregate.Notification;
-import org.omoknoone.ppm.domain.notification.aggregate.NotificationSetting;
-import org.omoknoone.ppm.domain.notification.aggregate.SendTemplate;
+import org.omoknoone.ppm.domain.notification.aggregate.entity.Notification;
+import org.omoknoone.ppm.domain.notification.aggregate.entity.NotificationSetting;
+import org.omoknoone.ppm.domain.notification.aggregate.entity.SendTemplate;
 import org.omoknoone.ppm.domain.notification.repository.NotificationHistoryRepository;
 import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
 import org.omoknoone.ppm.domain.notification.repository.NotificationSettingRepository;
@@ -79,13 +79,13 @@ class NotificationServiceTest {
                 .sendTemplateId(1L)
                 .sendTemplateType("email")
                 .notificationTitle("Notification: {title}")
-                .content("Dear {employeeName},\n\n{content}\n\nBest regards,\n당신의 Team")
+                .notificationContent("Dear {employeeName},\n\n{content}\n\nBest regards,\n당신의 Team")
                 .build();
 
         Notification notification = Notification.builder()
                 .notificationId(1L)
                 .notificationTitle(title)
-                .content(content)
+                .notificationContent(content)
                 .read(false)
                 .notificationCreatedDate(LocalDateTime.now())
                 .employeeId(employeeId)

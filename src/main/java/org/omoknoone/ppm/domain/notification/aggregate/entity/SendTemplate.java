@@ -1,10 +1,11 @@
-package org.omoknoone.ppm.domain.notification.aggregate;
+package org.omoknoone.ppm.domain.notification.aggregate.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.omoknoone.ppm.domain.employee.aggregate.Employee;
+import org.omoknoone.ppm.domain.notification.aggregate.enums.NotificationType;
 
 @NoArgsConstructor
 @Getter
@@ -16,21 +17,22 @@ public class SendTemplate {
     @Column(name = "send_template_id", nullable = false)
     private Long sendTemplateId;
 
-    @Column(name = "send_template_type", nullable = false)
-    private String sendTemplateType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "notification_type")
+    private NotificationType notificationType;
 
     @JoinColumn(name = "notification_title", nullable = false)
     private String notificationTitle;       // 제목 (메시지의 경우 null)
 
-    @JoinColumn(name = "content", nullable = false)
-    private String content;                 // 본문
+    @JoinColumn(name = "notification_content", nullable = false)
+    private String notificationContent;                 // 본문
 
     @Builder
-    public SendTemplate(Long sendTemplateId, String sendTemplateType, String notificationTitle, String content) {
+    public SendTemplate(Long sendTemplateId, NotificationType notificationType, String notificationTitle, String notificationContent) {
         this.sendTemplateId = sendTemplateId;
-        this.sendTemplateType = sendTemplateType;
+        this.notificationType = notificationType;
         this.notificationTitle = notificationTitle;
-        this.content = content;
+        this.notificationContent = notificationContent;
     }
 
     public String createTitle(Notification notification) {
@@ -39,9 +41,9 @@ public class SendTemplate {
     }
 
     public String createContent(Employee employee, Notification notification) {
-        return this.content
+        return this.notificationContent
                 .replace("{employeeName}", employee.getEmployeeName())
                 .replace("{notificationTitle}", notification.getNotificationTitle())
-                .replace("{content}", notification.getContent());
+                .replace("{content}", notification.getNotificationContent());
     }
 }

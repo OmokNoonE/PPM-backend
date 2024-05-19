@@ -1,4 +1,4 @@
-package org.omoknoone.ppm.domain.notification.aggregate;
+package org.omoknoone.ppm.domain.notification.aggregate.entity;
 
 
 import jakarta.persistence.*;
@@ -23,15 +23,20 @@ public class NotificationSetting {
     @Column(name = "message_enabled", nullable = false)
     private boolean messageEnabled;
 
+    @Column(name = "slack_enabled", nullable = false)
+    private boolean slackEnabled;
+
     @JoinColumn(name = "employee_id", nullable = false)
     private String employeeId;
 
     @Builder
-    public NotificationSetting(Long notificationSettingId, boolean emailEnabled, boolean messageEnabled,
-                               String employeeId) {
+
+    public NotificationSetting(Long notificationSettingId, boolean emailEnabled,
+                               boolean messageEnabled, boolean slackEnabled, String employeeId) {
         this.notificationSettingId = notificationSettingId;
         this.emailEnabled = emailEnabled;
         this.messageEnabled = messageEnabled;
+        this.slackEnabled = slackEnabled;
         this.employeeId = employeeId;
     }
 }

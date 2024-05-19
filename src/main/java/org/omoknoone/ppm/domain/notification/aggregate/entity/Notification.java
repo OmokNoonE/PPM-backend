@@ -1,4 +1,4 @@
-package org.omoknoone.ppm.domain.notification.aggregate;
+package org.omoknoone.ppm.domain.notification.aggregate.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -23,8 +23,8 @@ public class Notification {
     @Column(name = "notification_title", nullable = false)
     private String notificationTitle;
 
-    @Column(name = "content", nullable = false)
-    private String content;
+    @Column(name = "notification_content", nullable = false)
+    private String notificationContent;
 
     @Column(name = "read", nullable = false)
     private boolean read;
@@ -36,11 +36,11 @@ public class Notification {
     private String employeeId;
 
     @Builder
-    public Notification(Long notificationId, String notificationTitle, String content,
+    public Notification(Long notificationId, String notificationTitle, String notificationContent,
                         boolean read, LocalDateTime notificationCreatedDate, String employeeId) {
         this.notificationId = notificationId;
         this.notificationTitle = notificationTitle;
-        this.content = content;
+        this.notificationContent = notificationContent;
         this.read = read;
         this.notificationCreatedDate = notificationCreatedDate;
         this.employeeId = employeeId;

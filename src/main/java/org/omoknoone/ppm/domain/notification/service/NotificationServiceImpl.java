@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.domain.employee.aggregate.Employee;
 import org.omoknoone.ppm.domain.employee.repository.EmployeeRepository;
-import org.omoknoone.ppm.domain.notification.aggregate.Notification;
-import org.omoknoone.ppm.domain.notification.aggregate.NotificationHistory;
-import org.omoknoone.ppm.domain.notification.aggregate.NotificationSetting;
-import org.omoknoone.ppm.domain.notification.aggregate.SendTemplate;
+import org.omoknoone.ppm.domain.notification.aggregate.entity.Notification;
+import org.omoknoone.ppm.domain.notification.aggregate.entity.NotificationHistory;
+import org.omoknoone.ppm.domain.notification.aggregate.entity.NotificationSetting;
+import org.omoknoone.ppm.domain.notification.aggregate.entity.SendTemplate;
 import org.omoknoone.ppm.domain.notification.repository.NotificationHistoryRepository;
 import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
 import org.omoknoone.ppm.domain.notification.repository.NotificationSettingRepository;
@@ -58,7 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         Notification notification = Notification.builder()
                 .notificationTitle(title)
-                .content(content)
+                .notificationContent(content)
                 .read(false)
                 .notificationCreatedDate(LocalDateTime.now())
                 .employeeId(employeeId)

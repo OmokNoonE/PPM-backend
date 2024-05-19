@@ -1,6 +1,6 @@
 package org.omoknoone.ppm.domain.notification.service;
 
-import org.omoknoone.ppm.domain.notification.aggregate.Notification;
+import org.omoknoone.ppm.domain.notification.aggregate.entity.Notification;
 
 import java.util.List;
 
