@@ -6,6 +6,7 @@ import org.omoknoone.ppm.domain.employee.repository.EmployeeRepository;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.Notification;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.NotificationSetting;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.SendTemplate;
+import org.omoknoone.ppm.domain.notification.aggregate.enums.NotificationType;
 import org.omoknoone.ppm.domain.notification.repository.NotificationHistoryRepository;
 import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
 import org.omoknoone.ppm.domain.notification.repository.NotificationSettingRepository;
@@ -77,7 +78,7 @@ class NotificationServiceTest {
 
         SendTemplate sendTemplate = SendTemplate.builder()
                 .sendTemplateId(1L)
-                .sendTemplateType("email")
+                .notificationType(NotificationType.EMAIL)
                 .notificationTitle("Notification: {title}")
                 .notificationContent("Dear {employeeName},\n\n{content}\n\nBest regards,\n당신의 Team")
                 .build();
