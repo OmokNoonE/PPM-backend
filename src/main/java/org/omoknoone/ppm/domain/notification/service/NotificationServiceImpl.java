@@ -10,6 +10,8 @@ import org.omoknoone.ppm.domain.notification.aggregate.entity.Notification;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.NotificationHistory;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.NotificationSetting;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.SendTemplate;
+import org.omoknoone.ppm.domain.notification.aggregate.enums.NotificationSentStatus;
+import org.omoknoone.ppm.domain.notification.aggregate.enums.NotificationType;
 import org.omoknoone.ppm.domain.notification.repository.NotificationHistoryRepository;
 import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
 import org.omoknoone.ppm.domain.notification.repository.NotificationSettingRepository;
@@ -101,11 +103,16 @@ public class NotificationServiceImpl implements NotificationService {
         logNotification(notification, type);
     }
 
-    private void logNotification(Notification notification, String deliveryType) {
+    private void logNotification(Notification notification, NotificationType notificationType, NotificationSentStatus status) {
         NotificationHistory log = NotificationHistory.builder()
-                .notificationType(deliveryType)
+                .notificationType(notificationType)
                 .notificationSentDate(LocalDateTime.now())
+                .status(status)
                 .notificationId(notification.getNotificationId())
+                .employeeId(notification.getEmployeeId())
+                .employeeName("Employee Name")
+                .notificationTitle(notification.getNotificationTitle())
+                .notificationContent(notification.getNotificationContent())
                 .build();
         notificationHistoryRepository.save(log);
     }
