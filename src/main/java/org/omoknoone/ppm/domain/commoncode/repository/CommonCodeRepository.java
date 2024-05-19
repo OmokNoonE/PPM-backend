@@ -9,6 +9,6 @@ import java.util.List;
 public interface CommonCodeRepository extends JpaRepository<CommonCode, Long> {
 
     // 외래 키를 기준으로 CommonCode 검색
-    List<CommonCodeResponseDTO> findByCodeGroupId(Long codeGroupId);
+    List<CommonCode> findByCodeGroupId(Long codeGroupId);
 
 }

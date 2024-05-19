@@ -61,6 +61,9 @@ public interface ScheduleService {
 
     /* 설명. 대시보드 라인 제공 데이터 추출 */
 
+    // 현재 일정의 모든 하위 일정 조회
+    List<ScheduleDTO> viewSubSchedules(Long scheduleId);
+
     /* 상태 코드에 따른 해당 일정 확인 */
     List<Schedule> getSchedulesByStatusCodes(List<Long> codeIds);
 

@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.common.ResponseMessage;
+import org.omoknoone.ppm.common.annotation.Permission;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.viewProjectMembersByProjectResponseDTO;

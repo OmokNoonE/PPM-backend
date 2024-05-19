@@ -1,10 +1,8 @@
 package org.omoknoone.ppm.domain.schedule.service;
 
+import java.util.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -164,7 +162,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	public ModifyScheduleDateDTO modifyScheduleDate(RequestModifyScheduleDTO requestModifyScheduleDTO) {
 		ModifyScheduleDateDTO modifyScheduleDateDTO = modelMapper.map(requestModifyScheduleDTO,
 			ModifyScheduleDateDTO.class);
-
+    
 		/* 공수 계산 후 DTO에 저장 */
 		int workingDays = calculateWorkingDays(modifyScheduleDateDTO.getScheduleStartDate(),
 			modifyScheduleDateDTO.getScheduleEndDate());
@@ -290,4 +288,23 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 		return workingDays;
 	}
+  
+  @Transactional(readOnly = true)
+    @Override
+    public List<ScheduleDTO> viewSubSchedules(Long scheduleId) {
+        List<ScheduleDTO> subSchedules = new ArrayList<>();
+        Stack<Long> stack = new Stack<>();
+        stack.push(scheduleId);
+
+        while (!stack.isEmpty()) {
+            Long currentId = stack.pop();
+            List<Schedule> childSchedules = scheduleRepository.findByScheduleParentScheduleId(currentId);
+            for (Schedule childSchedule : childSchedules) {
+                subSchedules.add(modelMapper.map(childSchedule, ScheduleDTO.class));
+                stack.push(childSchedule.getScheduleId());
+            }
+        }
+
+        return subSchedules;
+    }
 }

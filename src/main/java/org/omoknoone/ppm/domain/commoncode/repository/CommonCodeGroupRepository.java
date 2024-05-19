@@ -4,4 +4,5 @@ import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCodeGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CommonCodeGroupRepository extends JpaRepository<CommonCodeGroup, Long> {
+    CommonCodeGroup findByCodeGroupName(String codeGroupName);
 }
