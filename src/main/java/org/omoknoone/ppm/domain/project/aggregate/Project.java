@@ -5,8 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
-import org.omoknoone.ppm.domain.project.dto.ModifyProjectRequestDTO;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -18,16 +18,16 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_id", nullable = false)
-    private Integer id;
+    private Integer projectId;
 
     @Column(name = "project_title", nullable = false, length = 30)
     private String projectTitle;
 
     @Column(name = "project_start_date", nullable = false, length = 20)
-    private LocalDateTime projectStartDate;
+    private LocalDate projectStartDate;
 
     @Column(name = "project_end_date", nullable = false, length = 20)
-    private LocalDateTime projectEndDate;
+    private LocalDate projectEndDate;
 
     @Column(name = "project_status", nullable = false, length = 11)
     private int projectStatus;
@@ -40,15 +40,33 @@ public class Project {
     @Column(name = "project_modified_date", length = 30)
     private String projectModifiedDate;
 
+    @Column(name = "project_is_deleted", nullable = false)
+    private Boolean projectIsDeleted = false;
+
+    @Column(name = "project_deleted_date", length = 30)
+    private String projectDeletedDate;
+
     @Builder
-    public Project(Integer id, String projectTitle, LocalDateTime projectStartDate, LocalDateTime projectEndDate, int projectStatus, String projectCreatedDate, String projectModifiedDate) {
-        this.id = id;
+    public Project(Integer projectId, String projectTitle, LocalDate projectStartDate, LocalDate projectEndDate, int projectStatus, String projectCreatedDate, String projectModifiedDate, Boolean projectIsDeleted, String projectDeletedDate) {
+        this.projectId = projectId;
         this.projectTitle = projectTitle;
         this.projectStartDate = projectStartDate;
         this.projectEndDate = projectEndDate;
         this.projectStatus = projectStatus;
         this.projectCreatedDate = projectCreatedDate;
         this.projectModifiedDate = projectModifiedDate;
+        this.projectIsDeleted = projectIsDeleted;
+        this.projectDeletedDate = projectDeletedDate;
+    }
+
+    public Project copy() {
+        return Project.builder()
+                .projectTitle(this.projectTitle)
+                .projectStartDate(this.projectStartDate)
+                .projectEndDate(this.projectEndDate)
+                .projectStatus(10201)           // 계획 상태
+                .projectIsDeleted(false)
+                .build();
     }
 
     public void modify(ModifyProjectHistoryDTO modifyProjectRequestDTO) {

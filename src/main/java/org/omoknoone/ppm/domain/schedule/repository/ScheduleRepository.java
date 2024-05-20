@@ -13,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    List<Schedule> findSchedulesByScheduleProjectId(Long projectId);
+    List<Schedule> findSchedulesByScheduleProjectIdAndScheduleIsDeleted(Long projectId, boolean isDeleted);
 
     @Query("SELECT s "
         + "FROM Schedule s "

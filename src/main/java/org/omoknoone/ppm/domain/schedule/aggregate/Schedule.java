@@ -121,4 +121,25 @@ public class Schedule {
         this.scheduleDeletedDate = LocalDateTime.now();
     }
 
+    public Schedule copy(Long newProjectId) {
+        return Schedule.builder()
+                .scheduleTitle(this.scheduleTitle)
+                .scheduleContent(this.scheduleContent)
+                .scheduleStartDate(this.scheduleStartDate)
+                .scheduleEndDate(this.scheduleEndDate)
+                .scheduleDepth(this.scheduleDepth)
+                .schedulePriority(this.schedulePriority)
+                .scheduleProgress(this.scheduleProgress)
+                .scheduleStatus(this.scheduleStatus)
+                .scheduleManHours(this.scheduleManHours)
+                .scheduleParentScheduleId(this.scheduleParentScheduleId)
+                .schedulePrecedingScheduleId(this.schedulePrecedingScheduleId)
+                .scheduleCreatedDate(LocalDateTime.now())           // 새로운 생성 날짜
+                .scheduleModifiedDate(LocalDateTime.now())          // 새로운 수정 날짜
+                .scheduleIsDeleted(false)
+                .scheduleProjectId(newProjectId)                    // 새로운 프로젝트 ID
+                .build();
+    }
+
+
 }
