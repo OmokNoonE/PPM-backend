@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.employee.aggregate.Employee;
 import org.omoknoone.ppm.domain.employee.dto.ModifyEmployeeRequestDTO;
+import org.omoknoone.ppm.domain.employee.dto.ModifyPasswordRequestDTO;
 import org.omoknoone.ppm.domain.employee.dto.SignUpEmployeeRequestDTO;
 import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
@@ -75,7 +76,7 @@ public class EmployeeController {
                 .headers(headers)
                 .body(new ResponseMessage(200, "회원 가입 성공", responseMap));
     }
-
+  
     /* employeeName을 통한 사원검색 */
     @GetMapping("/search/{employeeName}")
     public ResponseEntity<ViewEmployeeResponseDTO> searchEmployeeByName(@PathVariable String employeeName){
@@ -83,5 +84,24 @@ public class EmployeeController {
         ViewEmployeeResponseDTO viewEmployeeResponseDTO = employeeService.searchEmployeeByName(employeeName);
 
         return ResponseEntity.ok(viewEmployeeResponseDTO);
+  
+    @PutMapping("/password/{employeeId}")
+    public ResponseEntity<ResponseMessage> modifyPassword(
+                    @PathVariable String employeeId, @RequestBody ModifyPasswordRequestDTO modifyPasswordRequestDTO) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+        modifyPasswordRequestDTO.setEmployeeId(employeeId);
+
+        String modifiedEmployeeId = employeeService.modifyPassword(modifyPasswordRequestDTO);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("employeeId", modifiedEmployeeId);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "비밀번호 변경 성공", responseMap));
     }
 }
