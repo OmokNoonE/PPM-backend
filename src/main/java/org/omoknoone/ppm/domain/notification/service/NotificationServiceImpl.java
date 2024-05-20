@@ -4,18 +4,19 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.employee.aggregate.Employee;
 import org.omoknoone.ppm.domain.employee.repository.EmployeeRepository;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.Notification;
-import org.omoknoone.ppm.domain.notification.aggregate.entity.NotificationHistory;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.NotificationSetting;
-import org.omoknoone.ppm.domain.notification.aggregate.entity.SendTemplate;
+import org.omoknoone.ppm.domain.notification.aggregate.entity.Sent;
 import org.omoknoone.ppm.domain.notification.aggregate.enums.NotificationSentStatus;
 import org.omoknoone.ppm.domain.notification.aggregate.enums.NotificationType;
-import org.omoknoone.ppm.domain.notification.repository.NotificationHistoryRepository;
+import org.omoknoone.ppm.domain.notification.dto.NotificationRequestDTO;
+import org.omoknoone.ppm.domain.notification.dto.NotificationResponseDTO;
+import org.omoknoone.ppm.domain.notification.dto.NotificationSettingResponseDTO;
 import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
-import org.omoknoone.ppm.domain.notification.repository.NotificationSettingRepository;
-import org.omoknoone.ppm.domain.notification.repository.SendTemplateRepository;
+import org.omoknoone.ppm.domain.notification.repository.SentRepository;
 import org.omoknoone.ppm.domain.notification.service.strategy.EmailNotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.NotificationStrategy;
 import org.omoknoone.ppm.domain.task.aggregate.Task;
@@ -37,191 +38,211 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final EmployeeRepository employeeRepository;
-    private final SendTemplateRepository sendTemplateRepository;
-    private final NotificationSettingRepository notificationSettingRepository;
-    private final NotificationHistoryRepository notificationHistoryRepository;
-    private final TaskRepository taskRepository;
+    private final NotificationSettingService notificationSettingService;
     private final JavaMailSender javaMailSender;
+    private final ModelMapper modelMapper;
+    private final SentRepository sentRepository;
+    private final TaskRepository taskRepository;
 
-    private Map<String, NotificationStrategy> strategyMap;
+    private Map<NotificationType, NotificationStrategy> strategyMap;
 
     @PostConstruct
     public void init() {
         strategyMap = new HashMap<>();
-        strategyMap.put("email", new EmailNotificationStrategy(javaMailSender));
+        strategyMap.put(NotificationType.EMAIL, new EmailNotificationStrategy(javaMailSender));
     }
 
     @Transactional
     @Override
-    public Notification createNotification(String employeeId, String title, String content) {
+    public NotificationResponseDTO createNotification(NotificationRequestDTO requestDTO) {
 
-        Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new EntityNotFoundException(employeeId));
+        Employee employee = employeeRepository.findById(requestDTO.getEmployeeId())
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + requestDTO.getEmployeeId()));
 
         Notification notification = Notification.builder()
-                .notificationTitle(title)
-                .notificationContent(content)
+                .notificationTitle(requestDTO.getNotificationTitle())
+                .notificationContent(requestDTO.getNotificationContent())
                 .read(false)
                 .notificationCreatedDate(LocalDateTime.now())
-                .employeeId(employeeId)
+                .employeeId(requestDTO.getEmployeeId())
                 .build();
         notificationRepository.save(notification);
 
         sendNotificationToEmployee(employee, notification);
-        return notification;
+
+        return modelMapper.map(notification, NotificationResponseDTO.class);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Notification> viewRecentNotifications(String employeeId) {
-        return notificationRepository
+    public List<NotificationResponseDTO> viewRecentNotifications(String employeeId) {
+        List<Notification> notifications = notificationRepository
                 .findTop10ByEmployeeIdOrderByNotificationCreatedDateDesc(employeeId);
+
+        return notifications.stream()
+                .map(notification -> modelMapper.map(notification, NotificationResponseDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Transactional
     @Override
-    public Notification markAsRead(Long notificationId) {
+    public NotificationResponseDTO markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("Notification not found with id: " + notificationId));
         notification.read();
-        return notificationRepository.save(notification);
+
+        notificationRepository.save(notification);
+
+        return modelMapper.map(notification, NotificationResponseDTO.class);
     }
 
     private void sendNotificationToEmployee(Employee employee, Notification notification) {
-        NotificationSetting settings = notificationSettingRepository.findByEmployeeId(employee.getEmployeeId());
+        NotificationSettingResponseDTO settings = notificationSettingService.viewNotificationSetting(employee.getEmployeeId());
+
         if (settings.isEmailEnabled()) {
-            sendNotificationWithStrategy(employee, notification, "email");
+            sendNotificationWithStrategy(employee, notification, NotificationType.EMAIL);
         }
     }
 
-    private void sendNotificationWithStrategy(Employee employee, Notification notification, String type) {
-        SendTemplate template = sendTemplateRepository.findBySendTemplateType(type);
+    private void sendNotificationWithStrategy(Employee employee, Notification notification, NotificationType type) {
         NotificationStrategy strategy = strategyMap.get(type);
         if (strategy != null) {
-            strategy.send(employee, notification, template);
+            strategy.send(employee, notification);
         }
-        logNotification(notification, type);
     }
 
     private void logNotification(Notification notification, NotificationType notificationType, NotificationSentStatus status) {
-        NotificationHistory log = NotificationHistory.builder()
+        Sent log = Sent.builder()
                 .notificationType(notificationType)
-                .notificationSentDate(LocalDateTime.now())
-                .status(status)
+                .sentDate(LocalDateTime.now())
+                .sentStatus(status)
                 .notificationId(notification.getNotificationId())
                 .employeeId(notification.getEmployeeId())
-                .employeeName("Employee Name")
-                .notificationTitle(notification.getNotificationTitle())
-                .notificationContent(notification.getNotificationContent())
                 .build();
-        notificationHistoryRepository.save(log);
+        sentRepository.save(log);
+    }
+
+    private String createTitle(Notification notification) {
+        // 템플릿을 이용하여 제목 생성
+        String templateTitle = "Notification: {title}";
+        return templateTitle.replace("{title}", notification.getNotificationTitle());
+    }
+
+    private String createContent(Employee employee, Notification notification) {
+        // 템플릿을 이용하여 내용 생성
+        String templateContent = "Dear {employeeName},\n\n{content}\n\nBest regards,\nYour Team";
+        return templateContent
+                .replace("{employeeName}", employee.getEmployeeName())
+                .replace("{content}", notification.getNotificationContent());
     }
 
     /* 필기. 현재 테스트 중인 메소드입니다. */
-    @Transactional
-    @Override
-    public void checkConditionsAndSendNotifications() {
-
-        // 임시로 가상의 프로젝트 ID와 조건을 사용
-        Long projectId = 1L;
-
-        List<Task> tasks = taskRepository.findByProjectId(projectId);
-        List<Task> incompleteTasks = tasks.stream()
-                .filter(task -> !task.getTaskIsCompleted())
-                .collect(Collectors.toList());
-
-        int totalTasks = tasks.size();
-        int completedTasks = totalTasks - incompleteTasks.size();
-        double completionRate = (double) completedTasks / totalTasks;
-
-        // 프로젝트 매니저에게 알림 전송
-        if (completionRate < 0.9) {
-            String managerId = "managerId";
-            String title = "프로젝트 진행률 경고";
-            String content = "이번 주의 프로젝트 진행률이 90% 미만입니다.";
-            createNotification(managerId, title, content);
-        }
-
-        // 각 직원에게 알림 전송
-        for (Task task : incompleteTasks) {
-            String title = "할당된 작업 미완료 알림";
-            String content = String.format("작업 '%s'가 아직 완료되지 않았습니다.", task.getTaskTitle());
-            createNotification(task.getEmployeeId(), title, content);
-        }
-    }
-
-    /* 필기. 테스트용 임시 데이터 생성 메소드 */
-    @Transactional
-    @Override
-    public void createTestData() {
-        Employee employee1 = Employee.builder()
-                .employeeId("employee1")
-                .employeeName("Employee One")
-                .employeePassword("password")
-                .employeeEmail("jlee38266@example.com")
-                .employeeJoinDate("2022-01-01")
-                .employeeEmploymentStatus(1)
-                .employeeContact("010-1234-5678")
-                .build();
-
-        Employee employee2 = Employee.builder()
-                .employeeId("employee2")
-                .employeeName("Employee Two")
-                .employeePassword("password")
-                .employeeEmail("jlee38266@example.com")
-                .employeeJoinDate("2022-01-01")
-                .employeeEmploymentStatus(1)
-                .employeeContact("010-1234-5678")
-                .build();
-
-        employeeRepository.save(employee1);
-        employeeRepository.save(employee2);
-
-        Task task1 = Task.builder()
-                .taskTitle("Task 1")
-                .taskIsCompleted(true)
-                .taskIsDeleted(false)
-                .taskScheduleId(1L)
-                .projectId(1L)
-                .employeeId("employee1")
-                .build();
-
-        Task task2 = Task.builder()
-                .taskTitle("Task 2")
-                .taskIsCompleted(false)
-                .taskIsDeleted(false)
-                .taskScheduleId(1L)
-                .projectId(1L)
-                .employeeId("employee1")
-                .build();
-
-        Task task3 = Task.builder()
-                .taskTitle("Task 3")
-                .taskIsCompleted(false)
-                .taskIsDeleted(false)
-                .taskScheduleId(1L)
-                .projectId(1L)
-                .employeeId("employee2")
-                .build();
-
-        taskRepository.save(task1);
-        taskRepository.save(task2);
-        taskRepository.save(task3);
-
-        NotificationSetting setting1 = NotificationSetting.builder()
-                .emailEnabled(true)
-                .messageEnabled(false)
-                .employeeId("employee1")
-                .build();
-
-        NotificationSetting setting2 = NotificationSetting.builder()
-                .emailEnabled(true)
-                .messageEnabled(false)
-                .employeeId("employee2")
-                .build();
-
-        notificationSettingRepository.save(setting1);
-        notificationSettingRepository.save(setting2);
-    }
+//    @Transactional
+//    @Override
+//    public void checkConditionsAndSendNotifications() {
+//        Long projectId = 1L;
+//
+//        List<Task> tasks = taskRepository.findByProjectId(projectId);
+//        List<Task> incompleteTasks = tasks.stream()
+//                .filter(task -> !task.getTaskIsCompleted())
+//                .collect(Collectors.toList());
+//
+//        int totalTasks = tasks.size();
+//        int completedTasks = totalTasks - incompleteTasks.size();
+//        double completionRate = (double) completedTasks / totalTasks;
+//
+//        if (completionRate < 0.9) {
+//            String managerId = "managerId";
+//            NotificationRequestDTO managerNotificationRequest = new NotificationRequestDTO(
+//                    managerId,
+//                    "프로젝트 진행률 경고",
+//                    "이번 주의 프로젝트 진행률이 90% 미만입니다."
+//            );
+//            createNotification(managerNotificationRequest);
+//        }
+//
+//        for (Task task : incompleteTasks) {
+//            NotificationRequestDTO employeeNotificationRequest = new NotificationRequestDTO(
+//                    task.getEmployeeId(),
+//                    "할당된 작업 미완료 알림",
+//                    String.format("작업 '%s'가 아직 완료되지 않았습니다.", task.getTaskTitle())
+//            );
+//            createNotification(employeeNotificationRequest);
+//        }
+//    }
+//
+//    /* 필기. 테스트용 임시 데이터 생성 메소드 */
+//    @Transactional
+//    @Override
+//    public void createTestData() {
+//        Employee employee1 = Employee.builder()
+//                .employeeId("employee1")
+//                .employeeName("Employee One")
+//                .employeePassword("password")
+//                .employeeEmail("jlee38266@example.com")
+//                .employeeJoinDate("2022-01-01")
+//                .employeeEmploymentStatus(1)
+//                .employeeContact("010-1234-5678")
+//                .build();
+//
+//        Employee employee2 = Employee.builder()
+//                .employeeId("employee2")
+//                .employeeName("Employee Two")
+//                .employeePassword("password")
+//                .employeeEmail("jlee38266@example.com")
+//                .employeeJoinDate("2022-01-01")
+//                .employeeEmploymentStatus(1)
+//                .employeeContact("010-1234-5678")
+//                .build();
+//
+//        employeeRepository.save(employee1);
+//        employeeRepository.save(employee2);
+//
+//        Task task1 = Task.builder()
+//                .taskTitle("Task 1")
+//                .taskIsCompleted(true)
+//                .taskIsDeleted(false)
+//                .taskScheduleId(1L)
+//                .projectId(1L)
+//                .employeeId("employee1")
+//                .build();
+//
+//        Task task2 = Task.builder()
+//                .taskTitle("Task 2")
+//                .taskIsCompleted(false)
+//                .taskIsDeleted(false)
+//                .taskScheduleId(1L)
+//                .projectId(1L)
+//                .employeeId("employee1")
+//                .build();
+//
+//        Task task3 = Task.builder()
+//                .taskTitle("Task 3")
+//                .taskIsCompleted(false)
+//                .taskIsDeleted(false)
+//                .taskScheduleId(1L)
+//                .projectId(1L)
+//                .employeeId("employee2")
+//                .build();
+//
+//        taskRepository.save(task1);
+//        taskRepository.save(task2);
+//        taskRepository.save(task3);
+//
+//        NotificationSetting setting1 = NotificationSetting.builder()
+//                .emailEnabled(true)
+//                .messageEnabled(false)
+//                .employeeId("employee1")
+//                .build();
+//
+//        NotificationSetting setting2 = NotificationSetting.builder()
+//                .emailEnabled(true)
+//                .messageEnabled(false)
+//                .employeeId("employee2")
+//                .build();
+//
+//        notificationSettingRepository.save(setting1);
+//        notificationSettingRepository.save(setting2);
+//    }
 
 }

@@ -5,12 +5,10 @@ import org.omoknoone.ppm.domain.employee.aggregate.Employee;
 import org.omoknoone.ppm.domain.employee.repository.EmployeeRepository;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.Notification;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.NotificationSetting;
-import org.omoknoone.ppm.domain.notification.aggregate.entity.SendTemplate;
-import org.omoknoone.ppm.domain.notification.aggregate.enums.NotificationType;
-import org.omoknoone.ppm.domain.notification.repository.NotificationHistoryRepository;
+import org.omoknoone.ppm.domain.notification.dto.NotificationRequestDTO;
 import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
 import org.omoknoone.ppm.domain.notification.repository.NotificationSettingRepository;
-import org.omoknoone.ppm.domain.notification.repository.SendTemplateRepository;
+import org.omoknoone.ppm.domain.notification.repository.SentRepository;
 import org.omoknoone.ppm.domain.task.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +30,7 @@ class NotificationServiceTest {
     private NotificationService notificationService;
 
     @Autowired
-    private JavaMailSender javaMailSender; // 실제 JavaMailSender 사용
+    private JavaMailSender javaMailSender;
 
     @MockBean
     private NotificationRepository notificationRepository;
@@ -41,13 +39,10 @@ class NotificationServiceTest {
     private EmployeeRepository employeeRepository;
 
     @MockBean
-    private SendTemplateRepository sendTemplateRepository;
-
-    @MockBean
     private NotificationSettingRepository notificationSettingRepository;
 
     @MockBean
-    private NotificationHistoryRepository notificationHistoryRepository;
+    private SentRepository sentRepository;
 
     @MockBean
     private TaskRepository taskRepository;
@@ -62,9 +57,7 @@ class NotificationServiceTest {
         Employee employee = Employee.builder()
                 .employeeId(employeeId)
                 .employeeName("ppmtest")
-//                .employeeEmail("jlee38266@gmail.com")
                 .employeeEmail("akdmf23@naver.com")
-//                .employeeEmail("wkdalstjr94@gmail.com")
                 .employeeJoinDate("2022-01-01")
                 .employeeEmploymentStatus(1)
                 .employeeContact("010-1234-5678")
@@ -72,15 +65,8 @@ class NotificationServiceTest {
 
         NotificationSetting notificationSetting = NotificationSetting.builder()
                 .emailEnabled(true)
-                .messageEnabled(false)
+                .slackEnabled(false)
                 .employeeId(employeeId)
-                .build();
-
-        SendTemplate sendTemplate = SendTemplate.builder()
-                .sendTemplateId(1L)
-                .notificationType(NotificationType.EMAIL)
-                .notificationTitle("Notification: {title}")
-                .notificationContent("Dear {employeeName},\n\n{content}\n\nBest regards,\n당신의 Team")
                 .build();
 
         Notification notification = Notification.builder()
@@ -92,20 +78,19 @@ class NotificationServiceTest {
                 .employeeId(employeeId)
                 .build();
 
+        NotificationRequestDTO requestDTO = new NotificationRequestDTO(employeeId, title, content);
+
         // When
         when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
         when(notificationSettingRepository.findByEmployeeId(employeeId)).thenReturn(notificationSetting);
-        when(sendTemplateRepository.findBySendTemplateType("email")).thenReturn(sendTemplate);
         when(notificationRepository.save(any(Notification.class))).thenReturn(notification);
 
-        // 실제 이메일 전송
-        notificationService.createNotification(employeeId, title, content);
+        notificationService.createNotification(requestDTO);
 
         // Then
         verify(notificationRepository, times(1)).save(any(Notification.class));
-        // Additional Verification
         verify(employeeRepository, times(1)).findById(employeeId);
         verify(notificationSettingRepository, times(1)).findByEmployeeId(employeeId);
-        verify(sendTemplateRepository, times(1)).findBySendTemplateType("email");
+        verify(sentRepository, times(1)).save(any());
     }
 }

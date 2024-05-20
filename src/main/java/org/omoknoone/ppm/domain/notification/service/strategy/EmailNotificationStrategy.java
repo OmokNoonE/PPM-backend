@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.domain.employee.aggregate.Employee;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.Notification;
-import org.omoknoone.ppm.domain.notification.aggregate.entity.SendTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -19,9 +18,10 @@ public class EmailNotificationStrategy implements NotificationStrategy {
 
     @Transactional
     @Override
-    public void send(Employee employee, Notification notification, SendTemplate sendTemplate) {
-        String title = sendTemplate.createTitle(notification);
-        String content = sendTemplate.createContent(employee, notification);
+    public void send(Employee employee, Notification notification) {
+        String title = notification.getNotificationTitle();
+        String content = "Dear " + employee.getEmployeeName()
+                + ",\n\n" + notification.getNotificationContent() + "\n\nBest regards,\nYour Team";
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(employee.getEmployeeEmail());             // 동적으로 수신자 이메일 설정

@@ -18,24 +18,18 @@ public class NotificationSetting {
     private Long notificationSettingId;
 
     @Column(name = "email_enabled", nullable = false)
-    private boolean emailEnabled;
-
-    @Column(name = "message_enabled", nullable = false)
-    private boolean messageEnabled;
+    private boolean emailEnabled = false;
 
     @Column(name = "slack_enabled", nullable = false)
-    private boolean slackEnabled;
+    private boolean slackEnabled = false;
 
     @JoinColumn(name = "employee_id", nullable = false)
     private String employeeId;
 
     @Builder
-
-    public NotificationSetting(Long notificationSettingId, boolean emailEnabled,
-                               boolean messageEnabled, boolean slackEnabled, String employeeId) {
+    public NotificationSetting(Long notificationSettingId, boolean emailEnabled, boolean slackEnabled, String employeeId) {
         this.notificationSettingId = notificationSettingId;
         this.emailEnabled = emailEnabled;
-        this.messageEnabled = messageEnabled;
         this.slackEnabled = slackEnabled;
         this.employeeId = employeeId;
     }

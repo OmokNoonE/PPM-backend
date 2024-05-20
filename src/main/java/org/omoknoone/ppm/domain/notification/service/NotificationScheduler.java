@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationScheduler {
 
-    private final NotificationService notificationService;
-
-    @Scheduled(fixedRate = 10000) // 10초마다 실행
-    public void scheduleNotificationCheck() {
-        notificationService.checkConditionsAndSendNotifications();
-    }
+//    private final NotificationService notificationService;
+//
+//    @Scheduled(fixedRate = 10000) // 10초마다 실행
+//    public void scheduleNotificationCheck() {
+//        notificationService.checkConditionsAndSendNotifications();
+//    }
 
 }
