@@ -2,30 +2,26 @@ package org.omoknoone.ppm.domain.requirements.service;
 
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.requirements.aggregate.Requirements;
+import org.omoknoone.ppm.domain.requirements.dto.ModifyRequirementRequestDTO;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsDTO;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsListByProjectDTO;
 import org.omoknoone.ppm.domain.requirements.repository.RequirementsRepository;
-import org.omoknoone.ppm.domain.requirements.vo.RequestModifyRequirement;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirement;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 
+@RequiredArgsConstructor
 @Service
 public class RequirementsServiceImpl implements RequirementsService {
 	private final ModelMapper modelMapper;
 	private final RequirementsRepository requirementsRepository;
-
-	@Autowired
-	public RequirementsServiceImpl(ModelMapper modelMapper, RequirementsRepository requirementsRepository) {
-		this.modelMapper = modelMapper;
-		this.requirementsRepository = requirementsRepository;
-	}
+	private final RequirementsHistoryService requirementsHistoryService;
 
 	/* ProjectId를 통한 RequirementsList 조회 */
 	@Transactional(readOnly = true)
@@ -64,29 +60,34 @@ public class RequirementsServiceImpl implements RequirementsService {
 
 
 	/* 일정 수정 */
+	@Transactional
 	@Override
-	public ResponseRequirement modifyRequirement(Long requirementsId,
-		RequestModifyRequirement requestModifyRequirement) {
+	public ResponseRequirement modifyRequirement(ModifyRequirementRequestDTO requirementRequestDTO) {
 
-		Requirements requirements = requirementsRepository.findById(Long.valueOf(requirementsId))
+		Requirements requirements = requirementsRepository.findById(requirementRequestDTO.getRequirementsId())
 			.orElseThrow(() -> new EntityNotFoundException("exception.data.entityNotFound"));
 
-		modelMapper.map(requestModifyRequirement, requirements);
+		modelMapper.map(requirementRequestDTO, requirements);
 		Requirements updateRequirement = requirementsRepository.save(requirements);
+
+		requirementsHistoryService.createRequirementHistory(requirementRequestDTO);
 
 		return modelMapper.map(updateRequirement, ResponseRequirement.class);
 	}
 
 	/* 일정 삭제 */
+	@Transactional
 	@Override
-	public ResponseRequirement removeRequirement(Long requirementsId) {
+	public ResponseRequirement removeRequirement(ModifyRequirementRequestDTO requirementRequestDTO) {
 
-		Requirements requirements = requirementsRepository.findById(requirementsId)
+		Requirements requirements = requirementsRepository.findById(requirementRequestDTO.getRequirementsId())
 			.orElseThrow(IllegalArgumentException::new);
 
 		requirements.remove();
 
 		requirementsRepository.save(requirements);
+
+		requirementsHistoryService.createRequirementHistory(requirementRequestDTO);
 
 		return modelMapper.map(requirements, ResponseRequirement.class);
 	}

@@ -3,9 +3,9 @@ package org.omoknoone.ppm.domain.requirements.service;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.requirements.aggregate.RequirementsHistory;
+import org.omoknoone.ppm.domain.requirements.dto.ModifyRequirementRequestDTO;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsHistoryDTO;
 import org.omoknoone.ppm.domain.requirements.repository.RequirementsHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +28,16 @@ public class RequirementsHistoryServiceImpl implements RequirementsHistoryServic
 	/* 요구사항 수정내역 등록 */
 	@Transactional
 	@Override
-	public RequirementsHistory createRequirementHistory(RequirementsHistoryDTO requirementsHistoryDTO) {
-		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		RequirementsHistory requirementsHistory = modelMapper.map(requirementsHistoryDTO, RequirementsHistory.class);
+	public void createRequirementHistory(ModifyRequirementRequestDTO requirementsHistoryDTO) {
+		RequirementsHistory requirementsHistory = RequirementsHistory
+				.builder()
+				.requirementHistoryReason(requirementsHistoryDTO.getRequirementHistoryReason())
+				.requirementHistoryRequirementId(requirementsHistoryDTO.getRequirementsId())
+				.requirementHistoryProjectMemberId(requirementsHistoryDTO.getRequirementHistoryProjectMemberId())
+				.requirementHistoryIsDeleted(false)
+				.build();
 
-		return requirementsHistoryRepository.save(requirementsHistory);
+		requirementsHistoryRepository.save(requirementsHistory);
 	}
 
 	/* 요구사항 Id를 통한 요구사항 수정내역 조회 */
