@@ -1,5 +1,6 @@
 package org.omoknoone.ppm.domain.schedule.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
@@ -8,6 +9,7 @@ import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
@@ -92,4 +94,10 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     /* 일정 상태값에 따른 일정 목록 확인 */
     List<Schedule> findByScheduleStatusIn(List<Long> codeIds);
+
+    /* 날짜 설정 범위에 따른 일정 확인 */
+    @Query("SELECT s FROM Schedule s WHERE s.scheduleStartDate <= :endDate "
+        + "AND s.scheduleEndDate >= :startDate AND s.scheduleIsDeleted = false")
+    List<Schedule> findSchedulesByDateRange(@Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate);
 }
