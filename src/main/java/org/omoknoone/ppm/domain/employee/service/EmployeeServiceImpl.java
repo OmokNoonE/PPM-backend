@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.employee.aggregate.Employee;
-import org.omoknoone.ppm.domain.employee.dto.LoginEmployeeDTO;
-import org.omoknoone.ppm.domain.employee.dto.ModifyEmployeeRequestDTO;
-import org.omoknoone.ppm.domain.employee.dto.SignUpEmployeeRequestDTO;
-import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
+import org.omoknoone.ppm.domain.employee.dto.*;
+import org.omoknoone.ppm.domain.employee.exception.PasswordMismatchException;
 import org.omoknoone.ppm.domain.employee.repository.EmployeeRepository;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -67,7 +66,20 @@ public class EmployeeServiceImpl implements EmployeeService{
         Employee employee = modelMapper.map(signUpEmployeeRequestDTO, Employee.class);
         employee.savePassword(bCryptPasswordEncoder.encode(signUpEmployeeRequestDTO.getEmployeePassword()));
 
+        return employeeRepository.save(employee).getEmployeeId();
+    }
 
+    @Transactional
+    @Override
+    public String modifyPassword(ModifyPasswordRequestDTO modifyPasswordRequestDTO) {
+
+        if(!modifyPasswordRequestDTO.getNewPassword().equals(modifyPasswordRequestDTO.getConfirmPassword())) {
+            throw new PasswordMismatchException();
+        }
+        
+        Employee employee = employeeRepository.findById(
+                                modifyPasswordRequestDTO.getEmployeeId()).orElseThrow(IllegalArgumentException::new);
+        employee.savePassword(bCryptPasswordEncoder.encode(modifyPasswordRequestDTO.getNewPassword()));
 
         return employeeRepository.save(employee).getEmployeeId();
     }
