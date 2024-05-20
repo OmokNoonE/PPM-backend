@@ -12,6 +12,7 @@ import lombok.ToString;
 @Getter
 @ToString
 public class RequestModifyScheduleDTO {
+    @Setter
     private Long scheduleId;
     private String scheduleTitle;
     private String scheduleContent;
@@ -19,10 +20,11 @@ public class RequestModifyScheduleDTO {
     private LocalDate scheduleEndDate;
     private Integer schedulePriority;
     private Long scheduleStatus;
+    private String scheduleHistoryReason;
+    private Long scheduleHistoryProjectMemberId;
 
     @Builder
-    public RequestModifyScheduleDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate,
-                                    LocalDate scheduleEndDate, Integer schedulePriority, Long scheduleStatus) {
+    public RequestModifyScheduleDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate, LocalDate scheduleEndDate, Integer schedulePriority, Long scheduleStatus, String scheduleHistoryReason, Long scheduleHistoryProjectMemberId) {
         this.scheduleId = scheduleId;
         this.scheduleTitle = scheduleTitle;
         this.scheduleContent = scheduleContent;
@@ -30,5 +32,7 @@ public class RequestModifyScheduleDTO {
         this.scheduleEndDate = scheduleEndDate;
         this.schedulePriority = schedulePriority;
         this.scheduleStatus = scheduleStatus;
+        this.scheduleHistoryReason = scheduleHistoryReason;
+        this.scheduleHistoryProjectMemberId = scheduleHistoryProjectMemberId;
     }
 }

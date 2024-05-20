@@ -4,6 +4,7 @@ import java.util.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
@@ -20,24 +21,17 @@ import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@RequiredArgsConstructor
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
 	private final ModelMapper modelMapper;
 	private final HolidayRepository holidayRepository;
 	private final ScheduleRepository scheduleRepository;
-
-	@Autowired
-	public ScheduleServiceImpl(ModelMapper modelMapper, HolidayRepository holidayRepository,
-		ScheduleRepository scheduleRepository) {
-		this.modelMapper = modelMapper;
-		this.holidayRepository = holidayRepository;
-		this.scheduleRepository = scheduleRepository;
-	}
+	private final ScheduleHistoryService scheduleHistoryService;
 
 	@Override
 	@Transactional
@@ -148,6 +142,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 		scheduleRepository.save(schedule);
 
+		scheduleHistoryService.createScheduleHistory(requestModifyScheduleDTO);
+
 		return schedule.getScheduleId();
 	}
 
@@ -187,14 +183,16 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Override
 	@Transactional
-	public void removeSchedule(Long scheduleId) {
+	public void removeSchedule(RequestModifyScheduleDTO requestScheduleDTO) {
 
-		Schedule schedule = scheduleRepository.findById(scheduleId)
+		Schedule schedule = scheduleRepository.findById(requestScheduleDTO.getScheduleId())
 			.orElseThrow(IllegalArgumentException::new);
 
 		schedule.remove();
 
 		scheduleRepository.save(schedule);
+
+		scheduleHistoryService.createScheduleHistory(requestScheduleDTO);
 	}
 
 	@Override

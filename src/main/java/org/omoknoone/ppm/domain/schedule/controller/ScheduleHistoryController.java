@@ -32,7 +32,7 @@ public class ScheduleHistoryController {
     }
 
     /* 일정 수정 내역 등록 */
-    @PostMapping("/create")
+/*    @PostMapping("/create")
     public ResponseEntity<ResponseScheduleHistory> createScheduleHistory(@RequestBody RequestCreateScheduleHistoryDTO requestCreateScheduleHistoryDTO) {
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -43,7 +43,7 @@ public class ScheduleHistoryController {
         ResponseScheduleHistory responseScheduleHistory = modelMapper.map(newScheduleHistory, ResponseScheduleHistory.class);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseScheduleHistory);
-    }
+    }*/
 
     /* 일정 수정 내역 조회 */
     @GetMapping("/view/{scheduleId}")
