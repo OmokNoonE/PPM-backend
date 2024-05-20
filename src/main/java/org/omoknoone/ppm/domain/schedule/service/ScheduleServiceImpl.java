@@ -1,8 +1,13 @@
 package org.omoknoone.ppm.domain.schedule.service;
 
-import java.util.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -314,4 +319,13 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         return subSchedules;
     }
+
+	/* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
+	@Override
+	public List<Schedule> getSchedulesForThisWeek() {
+		LocalDate today = LocalDate.now();
+		LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		LocalDate thisSunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+		return scheduleRepository.getSchedulesForThisWeek(thisMonday, thisSunday);
+	}
 }

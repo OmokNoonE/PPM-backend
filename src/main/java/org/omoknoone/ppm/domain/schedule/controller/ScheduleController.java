@@ -181,4 +181,11 @@ public class ScheduleController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
     }
+
+    /* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
+    @GetMapping("/thisweek")
+    public ResponseEntity<List<Schedule>> findSchedulesForThisWeek(){
+        List<Schedule> schedules = scheduleService.getSchedulesForThisWeek();
+        return ResponseEntity.ok(schedules);
+    }
 }
