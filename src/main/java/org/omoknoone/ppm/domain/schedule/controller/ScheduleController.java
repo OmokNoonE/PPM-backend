@@ -1,6 +1,7 @@
 package org.omoknoone.ppm.domain.schedule.controller;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -166,5 +167,18 @@ public class ScheduleController {
     @GetMapping("/status")
     public List<Schedule> getSchedulesByStatusCodes(@RequestParam List<Long> codeIds) {
         return scheduleService.getSchedulesByStatusCodes(codeIds);
+    }
+
+    /* 날짜 설정 범위에 따른 일정 확인 */
+    @GetMapping("/range")
+    public ResponseEntity<List<ResponseSchedule>> viewSchedulesByDateRange(
+        @RequestParam("startDate") LocalDate startDate,
+        @RequestParam("endDate") LocalDate endDate) {
+
+        List<ScheduleDTO> scheduleDTOList = scheduleService.viewSchedulesByDateRange(startDate, endDate);
+        List<ResponseSchedule> responseScheduleList =
+            modelMapper.map(scheduleDTOList, new TypeToken<List<ResponseSchedule>>() {}.getType());
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
     }
 }

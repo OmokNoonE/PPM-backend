@@ -259,6 +259,13 @@ public class ScheduleServiceImpl implements ScheduleService {
 		return scheduleRepository.findByScheduleStatusIn(codeIds);
 	}
 
+	/* 날짜 설정 범위에 따른 일정 확인 */
+	@Override
+	public List<ScheduleDTO> viewSchedulesByDateRange(LocalDate startDate, LocalDate endDate) {
+		List<Schedule> schedules = scheduleRepository.findSchedulesByDateRange(startDate, endDate);
+		return modelMapper.map(schedules, new TypeToken<List<ScheduleDTO>>(){}.getType());
+	}
+
 	/* workingDays 계산 */
 	private int calculateWorkingDays(LocalDate scheduleStartDate, LocalDate scheduleEndDate) {
 		int workingDays = 0;

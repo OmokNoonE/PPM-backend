@@ -1,5 +1,6 @@
 package org.omoknoone.ppm.domain.schedule.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -67,4 +68,6 @@ public interface ScheduleService {
     /* 상태 코드에 따른 해당 일정 확인 */
     List<Schedule> getSchedulesByStatusCodes(List<Long> codeIds);
 
+    /* 날짜 설정 범위에 따른 일정 확인 */
+    List<ScheduleDTO> viewSchedulesByDateRange(LocalDate startDate, LocalDate endDate);
 }
