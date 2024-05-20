@@ -16,12 +16,14 @@ public class NotificationSettingController {
 
     private final NotificationSettingService notificationSettingService;
 
+    /* 설명. 알림 옵션을 보여줍니다. */
     @GetMapping("/{employeeId}")
     public ResponseEntity<NotificationSettingResponseDTO> viewNotificationSetting(@PathVariable String employeeId) {
         NotificationSettingResponseDTO responseDTO = notificationSettingService.viewNotificationSetting(employeeId);
         return ResponseEntity.ok(responseDTO);
     }
 
+    /* 설명. 알림 온오프 기능을 제공합니다. */
     @PutMapping
     public ResponseEntity<NotificationSettingResponseDTO> updateNotificationSettings
             (@RequestBody NotificationSettingRequestDTO requestDTO) {

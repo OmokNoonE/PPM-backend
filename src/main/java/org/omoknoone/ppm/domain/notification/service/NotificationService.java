@@ -7,7 +7,7 @@ import org.omoknoone.ppm.domain.notification.dto.NotificationResponseDTO;
 import java.util.List;
 
 public interface NotificationService {
-
+    
     NotificationResponseDTO createNotification(NotificationRequestDTO requestDTO);
 
     List<NotificationResponseDTO> viewRecentNotifications(String employeeId);

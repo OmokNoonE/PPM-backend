@@ -8,9 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.employee.aggregate.Employee;
 import org.omoknoone.ppm.domain.employee.repository.EmployeeRepository;
 import org.omoknoone.ppm.domain.notification.aggregate.entity.Notification;
-import org.omoknoone.ppm.domain.notification.aggregate.entity.NotificationSetting;
-import org.omoknoone.ppm.domain.notification.aggregate.entity.Sent;
-import org.omoknoone.ppm.domain.notification.aggregate.enums.NotificationSentStatus;
 import org.omoknoone.ppm.domain.notification.aggregate.enums.NotificationType;
 import org.omoknoone.ppm.domain.notification.dto.NotificationRequestDTO;
 import org.omoknoone.ppm.domain.notification.dto.NotificationResponseDTO;
@@ -19,7 +16,6 @@ import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
 import org.omoknoone.ppm.domain.notification.repository.SentRepository;
 import org.omoknoone.ppm.domain.notification.service.strategy.EmailNotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.NotificationStrategy;
-import org.omoknoone.ppm.domain.task.aggregate.Task;
 import org.omoknoone.ppm.domain.task.repository.TaskRepository;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -46,18 +42,20 @@ public class NotificationServiceImpl implements NotificationService {
 
     private Map<NotificationType, NotificationStrategy> strategyMap;
 
+    /* 설명. 알림 전송 전략을 저장하는 맵 (ex. email, slack etc...) */
     @PostConstruct
     public void init() {
         strategyMap = new HashMap<>();
         strategyMap.put(NotificationType.EMAIL, new EmailNotificationStrategy(javaMailSender));
     }
 
+    /* 설명. 알림 생성 */
     @Transactional
     @Override
     public NotificationResponseDTO createNotification(NotificationRequestDTO requestDTO) {
 
         Employee employee = employeeRepository.findById(requestDTO.getEmployeeId())
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + requestDTO.getEmployeeId()));
+                .orElseThrow(() -> new EntityNotFoundException("해당 직원 Id는 존재 하지 않습니다: " + requestDTO.getEmployeeId()));
 
         Notification notification = Notification.builder()
                 .notificationTitle(requestDTO.getNotificationTitle())
@@ -68,11 +66,13 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
         notificationRepository.save(notification);
 
+        /* 설명. 알림 생성 후 해당 메소드를 호출 하여 알림을 발송할 수 있는 조건이 활성화 되어 있는지 확인 */
         sendNotificationToEmployee(employee, notification);
 
         return modelMapper.map(notification, NotificationResponseDTO.class);
     }
 
+    /* 설명. 최신 알림 10개를 조회 */
     @Transactional(readOnly = true)
     @Override
     public List<NotificationResponseDTO> viewRecentNotifications(String employeeId) {
@@ -84,11 +84,12 @@ public class NotificationServiceImpl implements NotificationService {
                 .collect(Collectors.toList());
     }
 
+    /* 설명. 알림 읽음 처리 */
     @Transactional
     @Override
     public NotificationResponseDTO markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new EntityNotFoundException("Notification not found with id: " + notificationId));
+                .orElseThrow(() -> new EntityNotFoundException("해당 알림 Id는 존재 하지 않습니다: " + notificationId));
         notification.read();
 
         notificationRepository.save(notification);
@@ -96,6 +97,7 @@ public class NotificationServiceImpl implements NotificationService {
         return modelMapper.map(notification, NotificationResponseDTO.class);
     }
 
+    /* 설명. 해당 직원이 이메일 또는 슬렉과 같은 발송 선택지를 활성화 했는지 확인 */
     private void sendNotificationToEmployee(Employee employee, Notification notification) {
         NotificationSettingResponseDTO settings = notificationSettingService.viewNotificationSetting(employee.getEmployeeId());
 
@@ -104,22 +106,14 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    /* 설명. 발송 선택지가 활성화 되어 있다는 조건 하에 알림을 전송 */
     private void sendNotificationWithStrategy(Employee employee, Notification notification, NotificationType type) {
         NotificationStrategy strategy = strategyMap.get(type);
         if (strategy != null) {
-            strategy.send(employee, notification);
+            String title = createTitle(notification);
+            String content = createContent(employee, notification);
+            strategy.send(employee, title, content, type);
         }
-    }
-
-    private void logNotification(Notification notification, NotificationType notificationType, NotificationSentStatus status) {
-        Sent log = Sent.builder()
-                .notificationType(notificationType)
-                .sentDate(LocalDateTime.now())
-                .sentStatus(status)
-                .notificationId(notification.getNotificationId())
-                .employeeId(notification.getEmployeeId())
-                .build();
-        sentRepository.save(log);
     }
 
     private String createTitle(Notification notification) {
@@ -130,10 +124,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     private String createContent(Employee employee, Notification notification) {
         // 템플릿을 이용하여 내용 생성
-        String templateContent = "Dear {employeeName},\n\n{content}\n\nBest regards,\nYour Team";
+        String templateContent = "{employeeName}에게,\n\n{notificationContent}\n\nPPM 드림";
         return templateContent
                 .replace("{employeeName}", employee.getEmployeeName())
-                .replace("{content}", notification.getNotificationContent());
+                .replace("{notificationContent}", notification.getNotificationContent());
     }
 
     /* 필기. 현재 테스트 중인 메소드입니다. */
