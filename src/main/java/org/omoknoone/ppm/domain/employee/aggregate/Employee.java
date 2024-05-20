@@ -9,6 +9,7 @@ import org.omoknoone.ppm.domain.employee.dto.SignUpEmployeeRequestDTO;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -30,7 +31,7 @@ public class Employee {
     private String employeeEmail;
 
     @Column(name = "employee_join_date", nullable = false, length = 20)
-    private String employeeJoinDate;
+    private LocalDate employeeJoinDate;
 
 //    @ManyToOne(fetch = FetchType.LAZY, optional = false)
 //    @JoinColumn(name = "employee_employment_status", nullable = false)
@@ -65,7 +66,7 @@ public class Employee {
     private LocalDateTime employeeModifiedDate;
 
     @Builder
-    public Employee(String employeeId, String employeeName, String employeePassword, String employeeEmail, String employeeJoinDate, Integer employeeEmploymentStatus, String employeeDepartment, String employeeContact, String employeeCompanyName, Boolean employeeIsExternalPartner, LocalDateTime employeeWithdrawalDate, Boolean employeeIsWithdrawn, LocalDateTime employeeCreatedDate, LocalDateTime employeeModifiedDate) {
+    public Employee(String employeeId, String employeeName, String employeePassword, String employeeEmail, LocalDate employeeJoinDate, Integer employeeEmploymentStatus, String employeeDepartment, String employeeContact, String employeeCompanyName, Boolean employeeIsExternalPartner, LocalDateTime employeeWithdrawalDate, Boolean employeeIsWithdrawn, LocalDateTime employeeCreatedDate, LocalDateTime employeeModifiedDate) {
         this.employeeId = employeeId;
         this.employeeName = employeeName;
         this.employeePassword = employeePassword;

@@ -78,7 +78,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 	@Transactional(readOnly = true)
 	public List<ScheduleDTO> viewScheduleByProject(Long projectId) {
 
-		List<Schedule> scheduleList = scheduleRepository.findSchedulesByScheduleProjectId(projectId);
+		List<Schedule> scheduleList = scheduleRepository
+				.findSchedulesByScheduleProjectIdAndScheduleIsDeleted(projectId, false);
 		if (scheduleList == null || scheduleList.isEmpty()) {
 			throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
 		}

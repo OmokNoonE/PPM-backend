@@ -12,13 +12,15 @@ import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
-import org.omoknoone.ppm.domain.project.aggregate.ProjectHistory;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
-import org.omoknoone.ppm.domain.project.dto.ModifyProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
+import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,12 +30,13 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectHistoryService projectHistoryService;
     private final ProjectRepository projectRepository;
     private final HolidayRepository holidayRepository;
+    private final ScheduleRepository scheduleRepository;
     private final ModelMapper modelMapper;
 
     @Transactional
     @Override
     public int createProject(CreateProjectRequestDTO createProjectRequestDTO) {
-        return projectRepository.save(modelMapper.map(createProjectRequestDTO, Project.class)).getId();
+        return projectRepository.save(modelMapper.map(createProjectRequestDTO, Project.class)).getProjectId();
     }
 
     @Transactional
@@ -49,7 +52,33 @@ public class ProjectServiceImpl implements ProjectService {
         /* 수정 로그 작성 */
         projectHistoryService.createProjectHistory(modifyProjectHistoryDTO);
 
-        return projectRepository.findById(modifyProjectHistoryDTO.getProjectId()).get().getId();
+        return projectRepository.findById(modifyProjectHistoryDTO.getProjectId()).get().getProjectId();
+    }
+
+    @Transactional
+    @Override
+    public int copyProject(int copyProjectId) {
+
+        // 복사할 프로젝트 조회
+        Project copyProject = projectRepository.findById(copyProjectId)
+                                                    .orElseThrow(IllegalArgumentException::new);
+
+        // 복사할 프로젝트의 일정들 조회
+        List<Schedule> copyProjectSchedules = scheduleRepository
+                    .findSchedulesByScheduleProjectIdAndScheduleIsDeleted(Long.valueOf(copyProjectId), false);
+
+        Project newProject = copyProject.copy();
+
+        int newProjectId = projectRepository.save(newProject).getProjectId();
+
+        // 일정들 복사
+        List<Schedule> newProjectSchedules = copyProjectSchedules.stream()
+                .map(schedule -> schedule.copy(Long.valueOf(newProjectId)))
+                .toList();
+
+        scheduleRepository.saveAll(newProjectSchedules);
+
+        return newProjectId;
     }
 
     @Override

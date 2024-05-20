@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor
@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 public class ModifyProjectRequestDTO {
     private int projectId;
     private String projectTitle;
-    private LocalDateTime projectStartDate;
-    private LocalDateTime projectEndDate;
+    private LocalDate projectStartDate;
+    private LocalDate projectEndDate;
     private int projectStatus;
     private boolean projectIsDeleted;
 
     @Builder
-    public ModifyProjectRequestDTO(int projectId, String projectTitle, LocalDateTime projectStartDate,
-        LocalDateTime projectEndDate, int projectStatus, boolean projectIsDeleted) {
+    public ModifyProjectRequestDTO(int projectId, String projectTitle, LocalDate projectStartDate,
+                                   LocalDate projectEndDate, int projectStatus, boolean projectIsDeleted) {
         this.projectId = projectId;
         this.projectTitle = projectTitle;
         this.projectStartDate = projectStartDate;
