@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import org.omoknoone.ppm.domain.employee.aggregate.Employee;
+
 @NoArgsConstructor
 @Getter
 public class ViewEmployeeResponseDTO {
@@ -26,5 +28,15 @@ public class ViewEmployeeResponseDTO {
         this.employeeContact = employeeContact;
         this.employeeCompanyName = employeeCompanyName;
         this.employeeIsExternalPartner = employeeIsExternalPartner;
+    }
+
+    public ViewEmployeeResponseDTO(Employee employee) {
+        this.employeeId = employee.getEmployeeId();
+        this.employeeName = employee.getEmployeeName();
+        this.employeeEmail = employee.getEmployeeEmail();
+        this.employeeDepartment = employee.getEmployeeDepartment();
+        this.employeeContact = employee.getEmployeeContact();
+        this.employeeCompanyName = employee.getEmployeeCompanyName();
+        this.employeeIsExternalPartner = employee.getEmployeeIsExternalPartner();
     }
 }

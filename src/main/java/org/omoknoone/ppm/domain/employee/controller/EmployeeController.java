@@ -3,6 +3,7 @@ package org.omoknoone.ppm.domain.employee.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.common.ResponseMessage;
+import org.omoknoone.ppm.domain.employee.aggregate.Employee;
 import org.omoknoone.ppm.domain.employee.dto.ModifyEmployeeRequestDTO;
 import org.omoknoone.ppm.domain.employee.dto.SignUpEmployeeRequestDTO;
 import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
@@ -73,5 +74,14 @@ public class EmployeeController {
                 .ok()
                 .headers(headers)
                 .body(new ResponseMessage(200, "회원 가입 성공", responseMap));
+    }
+
+    /* employeeName을 통한 사원검색 */
+    @GetMapping("/search/{employeeName}")
+    public ResponseEntity<ViewEmployeeResponseDTO> searchEmployeeByName(@PathVariable String employeeName){
+
+        ViewEmployeeResponseDTO viewEmployeeResponseDTO = employeeService.searchEmployeeByName(employeeName);
+
+        return ResponseEntity.ok(viewEmployeeResponseDTO);
     }
 }

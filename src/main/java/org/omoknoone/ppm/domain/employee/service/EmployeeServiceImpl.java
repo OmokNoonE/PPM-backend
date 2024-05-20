@@ -84,4 +84,14 @@ public class EmployeeServiceImpl implements EmployeeService{
 
         return employee.getEmployeeId();
     }
+
+    /* employeeName을 통한 사원검색 */
+    @Override
+    @Transactional(readOnly = true)
+    public ViewEmployeeResponseDTO searchEmployeeByName(String employeeName) {
+
+        Employee employee = employeeRepository.searchEmployeeByEmployeeName(employeeName);
+        return new ViewEmployeeResponseDTO(employee);
+    }
+
 }
