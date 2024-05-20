@@ -55,4 +55,22 @@ public class ProjectController {
                 .headers(headers)
                 .body(new ResponseMessage(200, "프로젝트 수정 성공", responseMap));
     }
+
+    // 프로젝트 복사(프로젝트, 일정)
+    @PostMapping("/copy/{copyProjectId}")
+    public ResponseEntity<ResponseMessage> copyProject(@PathVariable int copyProjectId) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+        int newProjectId = projectService.copyProject(copyProjectId);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("newProjectId", newProjectId);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "프로젝트 복사 성공", responseMap));
+    }
 }
