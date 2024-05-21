@@ -68,7 +68,7 @@ public class ProjectController {
     ) {
         List<LocalDate> dividedDates = projectService.divideWorkingDaysIntoTen(startDate, endDate);
         return ResponseEntity.ok(dividedDates);
-
+    }
     // 프로젝트 복사(프로젝트, 일정)
     @PostMapping("/copy/{copyProjectId}")
     public ResponseEntity<ResponseMessage> copyProject(@PathVariable int copyProjectId) {

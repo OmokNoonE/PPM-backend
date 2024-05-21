@@ -79,12 +79,13 @@ public class EmployeeController {
   
     /* employeeName을 통한 사원검색 */
     @GetMapping("/search/{employeeName}")
-    public ResponseEntity<ViewEmployeeResponseDTO> searchEmployeeByName(@PathVariable String employeeName){
+    public ResponseEntity<ViewEmployeeResponseDTO> searchEmployeeByName(@PathVariable String employeeName) {
 
         ViewEmployeeResponseDTO viewEmployeeResponseDTO = employeeService.searchEmployeeByName(employeeName);
 
         return ResponseEntity.ok(viewEmployeeResponseDTO);
-  
+    }
+    
     @PutMapping("/password/{employeeId}")
     public ResponseEntity<ResponseMessage> modifyPassword(
                     @PathVariable String employeeId, @RequestBody ModifyPasswordRequestDTO modifyPasswordRequestDTO) {
