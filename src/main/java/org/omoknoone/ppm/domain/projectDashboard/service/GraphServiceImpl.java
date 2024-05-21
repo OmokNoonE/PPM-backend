@@ -99,17 +99,24 @@ public class GraphServiceImpl implements GraphService {
         );
 
         // 프로젝트 시작일, 종료일 저장
-        List<String> lineCategories = new ArrayList<>(10);
-        for (int i = 0; i < 10; i++) {
-            lineCategories.add("");
-        }
         String pattern = "dd/MM/yyyy";
 
         LocalDate startDate = projectService.viewStartDate(Integer.valueOf(projectId));
         LocalDate endDate = projectService.viewEndDate(Integer.valueOf(projectId));
 
-        lineCategories.set(0, startDate.format(DateTimeFormatter.ofPattern(pattern)));
-        lineCategories.set(9, endDate.format(DateTimeFormatter.ofPattern(pattern)));
+        List<LocalDate> dateCategories = projectService.divideWorkingDaysIntoTen(startDate, endDate);
+
+        System.out.println("dateCategories = " + dateCategories);
+
+        List<String> lineCategories = new ArrayList<>(10);
+        for (int i = 0; i < 10; i++) {
+            lineCategories.add("");
+        }
+
+        for (int i = 0; i < lineCategories.size(); i++) {
+            lineCategories.set(i, String.valueOf(dateCategories.get(i)));
+        }
+
 
         // 컬럼
         List<Map<String, Object>> columnSeries = List.of(
