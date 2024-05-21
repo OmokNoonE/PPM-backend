@@ -4,8 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.schedule.aggregate.ScheduleHistory;
-import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleHistoryDTO;
-import org.omoknoone.ppm.domain.schedule.dto.RequestCreateScheduleHistoryDTO;
+import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleHistoryDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +27,17 @@ public class ScheduleHistoryServiceImpl implements ScheduleHistoryService {
 
     @Override
     @Transactional
-    public ScheduleHistory createScheduleHistory(CreateScheduleHistoryDTO createScheduleHistoryDTO) {
+    public void createScheduleHistory(RequestModifyScheduleDTO scheduleHistoryDTO) {
 
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        ScheduleHistory scheduleHistory = modelMapper.map(createScheduleHistoryDTO, ScheduleHistory.class);
+        ScheduleHistory scheduleHistory = ScheduleHistory
+                .builder()
+                .scheduleHistoryReason(scheduleHistoryDTO.getScheduleHistoryReason())
+                .scheduleHistoryScheduleId(scheduleHistoryDTO.getScheduleId())
+                .scheduleHistoryProjectMemberId(scheduleHistoryDTO.getScheduleHistoryProjectMemberId())
+                .scheduleHistoryIsDeleted(false)
+                .build();
 
-        return scheduleHistoryRepository.save(scheduleHistory);
+        scheduleHistoryRepository.save(scheduleHistory);
     }
 
     @Override

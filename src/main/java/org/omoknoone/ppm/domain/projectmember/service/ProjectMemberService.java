@@ -11,9 +11,9 @@ public interface ProjectMemberService {
 
     Integer createProjectMember(CreateProjectMemberRequestDTO createProjectMemberRequestDTO);
 
-    void removeProjectMember(Integer projectMemberId);
+    void removeProjectMember(ModifyProjectMemberRequestDTO projectMemberId);
 
-    void reactivateProjectMember(Integer projectMemberId);
+    void reactivateProjectMember(ModifyProjectMemberRequestDTO projectMemberId);
 
     Integer modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO);
 

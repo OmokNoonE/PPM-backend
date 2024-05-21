@@ -122,16 +122,20 @@ public class ScheduleController {
     }
 
     /* 일정 수정 */
-    @PutMapping("/modify")
-    public ResponseEntity<ResponseMessage> modifySchedule(@RequestBody RequestModifyScheduleDTO requestModifyScheduleDTO) {
+    @PutMapping("/modify/{scheduleId}")
+    public ResponseEntity<ResponseMessage> modifySchedule(
+            @PathVariable Long scheduleId,
+            @RequestBody RequestModifyScheduleDTO requestModifyScheduleDTO) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
-        Long scheduleId = scheduleService.modifySchedule(requestModifyScheduleDTO);
+        requestModifyScheduleDTO.setScheduleId(scheduleId);
+
+        Long modifiedScheduleId = scheduleService.modifySchedule(requestModifyScheduleDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("result", scheduleId);
+        responseMap.put("scheduleId", modifiedScheduleId);
 
         return ResponseEntity.status(HttpStatus.OK)
             .headers(headers)
@@ -140,12 +144,16 @@ public class ScheduleController {
 
     /* 일정 제거(soft delete) */
     @DeleteMapping("/remove/{scheduleId}")
-    public ResponseEntity<ResponseMessage> removeSchedule(@PathVariable("scheduleId") Long scheduleId){
+    public ResponseEntity<ResponseMessage> removeSchedule(
+            @PathVariable Long scheduleId,
+            @RequestBody RequestModifyScheduleDTO requestModifyScheduleDTO){
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 
-        scheduleService.removeSchedule(scheduleId);
+        requestModifyScheduleDTO.setScheduleId(scheduleId);
+
+        scheduleService.removeSchedule(requestModifyScheduleDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("result", scheduleId);

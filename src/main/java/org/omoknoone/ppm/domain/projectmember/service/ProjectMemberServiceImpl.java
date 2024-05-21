@@ -1,30 +1,28 @@
 package org.omoknoone.ppm.domain.projectmember.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.viewProjectMembersByProjectResponseDTO;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     private final ProjectMemberRepository projectMemberRepository;
+    private final ProjectMemberHistoryService projectMemberHistoryService;
     private final ModelMapper modelMapper;
-
-    @Autowired
-    public ProjectMemberServiceImpl(ProjectMemberRepository projectMemberRepository, ModelMapper modelMapper) {
-        this.projectMemberRepository = projectMemberRepository;
-        this.modelMapper = modelMapper;
-    }
+    private final Environment environment;
 
     @Transactional(readOnly = true)
     @Override
@@ -49,32 +47,39 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Transactional
     @Override
-    public void removeProjectMember(Integer projectMemberId) {
-        ProjectMember excludedMember = projectMemberRepository.findById(projectMemberId)
-                .orElseThrow(() -> new EntityNotFoundException("exception.data.entityNotFound"));
+    public void removeProjectMember(ModifyProjectMemberRequestDTO projectMemberRequestDTO) {
+        ProjectMember excludedMember = projectMemberRepository.findById(projectMemberRequestDTO.getProjectMemberId())
+                .orElseThrow(() -> new EntityNotFoundException(environment.getProperty("exception.data.entityNotFound")));
         excludedMember.remove();
 
         projectMemberRepository.save(excludedMember);
-    }
 
-    @Override
-    public void reactivateProjectMember(Integer projectMemberId) {
-        ProjectMember reactivatedMember = projectMemberRepository.findById(projectMemberId)
-                .orElseThrow(() -> new EntityNotFoundException("exception.data.entityNotFound"));
-        reactivatedMember.reactivate();
-
-        projectMemberRepository.save(reactivatedMember);
+        projectMemberHistoryService.createProjectMemberHistory(projectMemberRequestDTO);
     }
 
     @Transactional
     @Override
-    public Integer modifyProjectMember(ModifyProjectMemberRequestDTO dto) {
+    public void reactivateProjectMember(ModifyProjectMemberRequestDTO projectMemberRequestDTO) {
+        ProjectMember reactivatedMember = projectMemberRepository.findById(projectMemberRequestDTO.getProjectMemberId())
+                .orElseThrow(() -> new EntityNotFoundException(environment.getProperty("exception.data.entityNotFound")));
+        reactivatedMember.reactivate();
 
-        ProjectMember existingMember = projectMemberRepository.findById(dto.getProjectMemberId())
-                .orElseThrow(() -> new EntityNotFoundException("exception.data.entityNotFound"));
-        existingMember.modify(dto);
+        projectMemberRepository.save(reactivatedMember);
+
+        projectMemberHistoryService.createProjectMemberHistory(projectMemberRequestDTO);
+    }
+
+    @Transactional
+    @Override
+    public Integer modifyProjectMember(ModifyProjectMemberRequestDTO projectMemberRequestDTO) {
+
+        ProjectMember existingMember = projectMemberRepository.findById(projectMemberRequestDTO.getProjectMemberId())
+                .orElseThrow(() -> new EntityNotFoundException(environment.getProperty("exception.data.entityNotFound")));
+        existingMember.modify(projectMemberRequestDTO);
 
         projectMemberRepository.save(existingMember);
+
+        projectMemberHistoryService.createProjectMemberHistory(projectMemberRequestDTO);
 
         return existingMember.getProjectMemberId();
     }

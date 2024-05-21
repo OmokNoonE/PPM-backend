@@ -40,7 +40,7 @@ public interface ScheduleService {
 
     /* 삭제 */
     /* TODO. 매개변수를 DeleteScheduleDTO로 변경, 반환형을 Long(PK)로 변경하여 삭제되었음을 명확히 확인할 수 있도록 수정해야함. */
-    void removeSchedule(Long scheduleId);
+    void removeSchedule(RequestModifyScheduleDTO scheduleId);
 
     /* 도구 */
     /* 업무 일정인지 확인 */

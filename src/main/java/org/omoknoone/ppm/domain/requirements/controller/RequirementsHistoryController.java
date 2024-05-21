@@ -32,7 +32,7 @@ public class RequirementsHistoryController {
 	}
 
 	/* 요구사항 수정 내역 등록 */
-	@PostMapping("/create")
+/*	@PostMapping("/create")
 	public ResponseEntity<ResponseRequirementHistory> createRequirementHistory(@RequestBody RequestCreateRequirementsHistory requestCreateRequirementsHistory) {
 
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -43,7 +43,7 @@ public class RequirementsHistoryController {
 		ResponseRequirementHistory responseRequirementHistory = modelMapper.map(newRequirementHistory, ResponseRequirementHistory.class);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseRequirementHistory);
-	}
+	}*/
 
 	/* 요구사항Id를 통한 요구사항 수정내역 조회 */
 	@GetMapping("view/{requirementsId}")

@@ -5,6 +5,7 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.requirements.aggregate.Requirements;
+import org.omoknoone.ppm.domain.requirements.dto.ModifyRequirementRequestDTO;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsDTO;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsListByProjectDTO;
 import org.omoknoone.ppm.domain.requirements.service.RequirementsService;
@@ -67,9 +68,11 @@ public class RequirementsController {
 	/* requirements 수정 */
 	@PutMapping("/modify/{requirementsId}")
 	public ResponseEntity<ResponseRequirement> modifyRequirement(@PathVariable Long requirementsId,
-		@RequestBody RequestModifyRequirement requestModifyRequirement){
+		@RequestBody ModifyRequirementRequestDTO modifyRequirementRequestDTO){
 
-		ResponseRequirement updatedRequirement = requirementsService.modifyRequirement(requirementsId, requestModifyRequirement);
+		modifyRequirementRequestDTO.setRequirementsId(requirementsId);
+
+		ResponseRequirement updatedRequirement = requirementsService.modifyRequirement(modifyRequirementRequestDTO);
 		if (updatedRequirement == null){
 			return ResponseEntity.notFound().build();
 		}
@@ -78,9 +81,13 @@ public class RequirementsController {
 
 	// requirements 삭제(soft delete)
 	@DeleteMapping("/remove/{requirementsId}")
-	public ResponseEntity<ResponseRequirement> removeRequirement(@PathVariable("requirementsId") Long requirementsId){
+	public ResponseEntity<ResponseRequirement> removeRequirement(
+			@PathVariable("requirementsId") Long requirementsId,
+			@RequestBody ModifyRequirementRequestDTO modifyRequirementRequestDTO){
 
-		ResponseRequirement removedRequirement = requirementsService.removeRequirement(requirementsId);
+		modifyRequirementRequestDTO.setRequirementsId(requirementsId);
+
+		ResponseRequirement removedRequirement = requirementsService.removeRequirement(modifyRequirementRequestDTO);
 
 		if (removedRequirement != null) {
 			return ResponseEntity.notFound().build();

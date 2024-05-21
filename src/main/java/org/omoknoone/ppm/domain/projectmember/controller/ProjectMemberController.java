@@ -29,7 +29,7 @@ public class ProjectMemberController {
     private final ProjectMemberService projectMemberService;
 
     @GetMapping("/list/{projectId}")
-    public ResponseEntity<ResponseMessage> viewProjectMebersByProject(@PathVariable("projectId") Integer projectId) {
+    public ResponseEntity<ResponseMessage> viewProjectMembersByProject(@PathVariable("projectId") Integer projectId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 
@@ -62,12 +62,16 @@ public class ProjectMemberController {
     }
 
     @DeleteMapping("/remove/{projectMemberId}")
-    public ResponseEntity<ResponseMessage> removeProjectMember(@PathVariable Integer projectMemberId) {
+    public ResponseEntity<ResponseMessage> removeProjectMember(
+            @PathVariable Integer projectMemberId,
+            @RequestBody ModifyProjectMemberRequestDTO requestDTO) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 
+        requestDTO.setProjectMemberId(projectMemberId);
+
         try {
-            projectMemberService.removeProjectMember(projectMemberId);
+            projectMemberService.removeProjectMember(requestDTO);
             Map<String, Object> responseMap = new HashMap<>();
             responseMap.put("제외된 프로젝트 멤버 ID", projectMemberId);
 
@@ -83,12 +87,16 @@ public class ProjectMemberController {
     }
 
     @PutMapping("/reactivate/{projectMemberId}")
-    public ResponseEntity<ResponseMessage> reactivateProjectMember(@PathVariable Integer projectMemberId) {
+    public ResponseEntity<ResponseMessage> reactivateProjectMember(
+            @PathVariable Integer projectMemberId,
+            @RequestBody ModifyProjectMemberRequestDTO requestDTO) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 
+        requestDTO.setProjectMemberId(projectMemberId);
+
         try {
-            projectMemberService.reactivateProjectMember(projectMemberId);
+            projectMemberService.reactivateProjectMember(requestDTO);
             Map<String, Object> responseMap = new HashMap<>();
             responseMap.put("재활성화된 프로젝트 멤버 ID", projectMemberId);
 
@@ -107,7 +115,7 @@ public class ProjectMemberController {
         }
     }
 
-    @PutMapping("/modify")
+    @PutMapping("/modify/{projectMemberId}")
     public ResponseEntity<ResponseMessage> modifyProjectMember(@RequestBody ModifyProjectMemberRequestDTO requestDTO) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
