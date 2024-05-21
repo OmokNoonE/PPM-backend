@@ -173,11 +173,11 @@ public class GraphServiceImpl implements GraphService {
 
     // 프로젝트 Id를 통해 대시보드(그래프) 조회
     @Transactional(readOnly = true)
-    public List<GraphDTO> viewProjectDashboardByProjectId(String projectId) {
+    public GraphDTO viewProjectDashboardByProjectId(String projectId, String type) {
 
-        List<Graph> graphs = graphRepository.findAllByProjectId(projectId);
-        return modelMapper.map(graphs, new TypeToken<List<Graph>>() {
-        }.getType());
+        Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
+
+        return modelMapper.map(graph, GraphDTO.class);
     }
 
 

@@ -27,35 +27,14 @@ public class GraphController {
 	}
 
 	// projectId로 graph에 들어갈 JSON 데이터 조회
-	@GetMapping("/{projectId}")
-	public List<GraphDTO> viewProjectDashboardByProjectId(@PathVariable String projectId) {
+	@GetMapping("/{projectId}/{type}")
+	public GraphDTO viewProjectDashboardByProjectId(@PathVariable String projectId, @PathVariable String type) {
 
-		List<GraphDTO> projectDashboard = graphService.viewProjectDashboardByProjectId(projectId);
+		GraphDTO projectDashboard = graphService.viewProjectDashboardByProjectId(projectId, type);
 
 		return ResponseEntity.ok(projectDashboard).getBody();
 	}
 
-
-	// 게이지 업데이트 테스트용 (추후 삭제)
-	@GetMapping("/test/{projectId}")
-	public void testMethod(@PathVariable String projectId) {
-
-		graphService.updateGauge(projectId);
-
-	}
-
-	@GetMapping("/test2/{projectId}/{type}")
-	public void testMethod2(@PathVariable String projectId, @PathVariable String type) {
-
-		graphService.updateLine(projectId,type);
-
-	}
-
-	@PostMapping("/test3")
-	public void testMethod3(@RequestBody GraphDTO graph) {
-		System.out.println("graph = " + graph);
-		graphService.initGraph(graph.getProjectId(), graph.getProjectMemberId(), graph.getExpectedProgress());
-	}
 
 
 }
