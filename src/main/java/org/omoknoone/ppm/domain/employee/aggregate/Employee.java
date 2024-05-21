@@ -5,9 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.omoknoone.ppm.domain.employee.dto.ModifyEmployeeRequestDTO;
-import org.omoknoone.ppm.domain.employee.dto.SignUpEmployeeRequestDTO;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

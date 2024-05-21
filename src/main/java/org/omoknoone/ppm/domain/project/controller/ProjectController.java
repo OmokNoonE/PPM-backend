@@ -63,8 +63,8 @@ public class ProjectController {
     /* 프로젝트 일정 10등분 */
     @GetMapping("/workingDaysDivideTen")
     public ResponseEntity<List<LocalDate>> divideWorkingDays(
-        @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-        @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+        @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+        @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
     ) {
         List<LocalDate> dividedDates = projectService.divideWorkingDaysIntoTen(startDate, endDate);
         return ResponseEntity.ok(dividedDates);
