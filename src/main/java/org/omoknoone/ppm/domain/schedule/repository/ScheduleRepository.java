@@ -100,4 +100,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         + "AND s.scheduleEndDate >= :startDate AND s.scheduleIsDeleted = false")
     List<Schedule> findSchedulesByDateRange(@Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
+
+    /* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
+    @Query("SELECT s FROM Schedule s WHERE s.scheduleEndDate >= :thisMonday AND s.scheduleEndDate <= :thisSunday")
+    List<Schedule> getSchedulesForThisWeek(@Param("thisMonday") LocalDate thisMonday, @Param("thisSunday") LocalDate thisSunday);
 }

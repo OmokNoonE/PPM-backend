@@ -7,6 +7,7 @@ import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,7 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -55,6 +59,15 @@ public class ProjectController {
                 .headers(headers)
                 .body(new ResponseMessage(200, "프로젝트 수정 성공", responseMap));
     }
+
+    /* 프로젝트 일정 10등분 */
+    @GetMapping("/workingDaysDivideTen")
+    public ResponseEntity<List<LocalDate>> divideWorkingDays(
+        @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+        @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate
+    ) {
+        List<LocalDate> dividedDates = projectService.divideWorkingDaysIntoTen(startDate, endDate);
+        return ResponseEntity.ok(dividedDates);
 
     // 프로젝트 복사(프로젝트, 일정)
     @PostMapping("/copy/{copyProjectId}")
