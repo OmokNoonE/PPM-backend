@@ -5,19 +5,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor
 @ToString
 public class CreateProjectRequestDTO {
     private String projectTitle;
-    private LocalDateTime projectStartDate;
-    private LocalDateTime projectEndDate;
+    private LocalDate projectStartDate;
+    private LocalDate projectEndDate;
     private int projectStatus;
 
     @Builder
-    public CreateProjectRequestDTO(String projectTitle, LocalDateTime projectStartDate, LocalDateTime projectEndDate, int projectStatus) {
+    public CreateProjectRequestDTO(String projectTitle, LocalDate projectStartDate, LocalDate projectEndDate, int projectStatus) {
         this.projectTitle = projectTitle;
         this.projectStartDate = projectStartDate;
         this.projectEndDate = projectEndDate;

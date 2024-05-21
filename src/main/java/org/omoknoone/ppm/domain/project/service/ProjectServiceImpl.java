@@ -82,9 +82,9 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<LocalDate> divideWorkingDaysIntoTen(LocalDateTime projectStartDate, LocalDateTime projectEndDate) {
+    public List<LocalDate> divideWorkingDaysIntoTen(LocalDate projectStartDate, LocalDate projectEndDate) {
         // WorkingDays 총 일수를 가져옴
-        int totalWorkingDays = calculateWorkingDays(projectStartDate.toLocalDate(), projectEndDate.toLocalDate());
+        int totalWorkingDays = calculateWorkingDays(projectStartDate, projectEndDate);
 
         // WorkingDays가 0일 경우 빈 문자열 반환
         if (totalWorkingDays == 0) {
@@ -92,7 +92,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         // WorkingDays의 Date -> List
-        List<LocalDate> workingDays = getWorkingDaysList(projectStartDate.toLocalDate(), projectEndDate.toLocalDate());
+        List<LocalDate> workingDays = getWorkingDaysList(projectStartDate, projectEndDate);
 
         // WorkingDays를 10등분
         List<LocalDate> dividedDates = new ArrayList<>();
@@ -163,5 +163,19 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         return workingDays;
+    }
+
+    public LocalDate viewStartDate(Integer projectId) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new);
+
+        return project.getProjectStartDate();
+    }
+
+    public LocalDate viewEndDate(Integer projectId) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new);
+
+        return project.getProjectEndDate();
     }
 }

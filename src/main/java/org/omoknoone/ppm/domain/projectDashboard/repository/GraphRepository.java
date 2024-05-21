@@ -25,6 +25,5 @@ public interface GraphRepository extends MongoRepository<Graph, String> {
 
 	Graph findAllByProjectIdAndType(String projectId, String type);
 
-
-
+	Graph findByProjectId(String projectId);
 }

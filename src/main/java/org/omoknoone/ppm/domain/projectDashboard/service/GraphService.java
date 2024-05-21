@@ -5,7 +5,9 @@ import java.util.List;
 import org.omoknoone.ppm.domain.projectDashboard.dto.GraphDTO;
 
 public interface GraphService {
-	List<GraphDTO> viewProjectDashboardByProjectId(String projectId);
+	GraphDTO viewProjectDashboardByProjectId(String projectId, String type);
+
+	void initGraph(String projectId, String projectMemberId, int[] expectedProgress);
 	void updateGauge(String projectId);
 	void updatePie(String projectId, String type);
 	void updateTable(String projectId, String type);

@@ -12,7 +12,10 @@ public interface ProjectService {
 
     int modifyProject(ModifyProjectHistoryDTO modifyProjectRequestDTO);
 
-  	List<LocalDate> divideWorkingDaysIntoTen(LocalDateTime startDate, LocalDateTime endDate);
+  	List<LocalDate> divideWorkingDaysIntoTen(LocalDate startDate, LocalDate endDate);
   
     int copyProject(int copyProjectId);
+	LocalDate viewStartDate(Integer projectId);
+
+	LocalDate viewEndDate(Integer projectId);
 }

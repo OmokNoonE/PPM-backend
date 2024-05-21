@@ -106,4 +106,12 @@ public class EmployeeServiceImpl implements EmployeeService{
         return new ViewEmployeeResponseDTO(employee);
     }
 
+    @Override
+    public String getEmployeeNameByProjectMemberId(String projectMemberEmployeeId) {
+
+        Employee employee = employeeRepository.findByEmployeeId(projectMemberEmployeeId);
+
+        return employee.getEmployeeName();
+    }
+
 }

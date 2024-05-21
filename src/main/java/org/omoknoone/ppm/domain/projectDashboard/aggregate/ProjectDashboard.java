@@ -2,8 +2,6 @@ package org.omoknoone.ppm.domain.projectDashboard.aggregate;
 
 import java.time.LocalDateTime;
 
-import org.omoknoone.ppm.domain.projectDashboard.dto.ModifyProjectDashboardDTO;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

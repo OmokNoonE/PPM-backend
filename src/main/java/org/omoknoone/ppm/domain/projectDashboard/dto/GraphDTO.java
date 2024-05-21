@@ -17,14 +17,23 @@ public class GraphDTO {
 
     private List<Map<String, Object>> series;
 
+    private List<String> categories;
+
+    private int[] expectedProgress;
+    private String projectMemberId;
+
     private String projectId;
 
     private String type;
 
     @Builder
-    public GraphDTO(String id, List<Map<String, Object>> series, String projectId, String type) {
+    public GraphDTO(String id, List<Map<String, Object>> series, List<String> categories, int[] expectedProgress,
+        String projectMemberId, String projectId, String type) {
         this.id = id;
         this.series = series;
+        this.categories = categories;
+        this.expectedProgress = expectedProgress;
+        this.projectMemberId = projectMemberId;
         this.projectId = projectId;
         this.type = type;
     }
