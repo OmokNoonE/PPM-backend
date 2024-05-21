@@ -357,8 +357,8 @@ public class GraphServiceImpl implements GraphService {
 
         System.out.println("index = " + index);
 
-        // update할 section별 진행상황
-        int newdata = 3333; // test용 리터럴 값 (일정 스케쥴에서 전체진행률을 받아와야함)
+        // update할 section별 진행상황 (현재 진행률)
+        int newdata = scheduleService.updateGauge(Long.valueOf(projectId));
 
         if (graph != null) {
             for (Map<String, Object> seriesEntry : series) {
