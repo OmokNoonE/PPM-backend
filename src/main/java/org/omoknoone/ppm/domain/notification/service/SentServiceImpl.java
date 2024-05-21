@@ -20,7 +20,9 @@ public class SentServiceImpl implements SentService {
 
     @Transactional
     @Override
-    public SentResponseDTO SentLog(SentRequestDTO requestDTO) {
+    public SentResponseDTO logSentNotification(SentRequestDTO requestDTO) {
+        log.info("알림 로그 저장 시작: {}", requestDTO);
+
         Sent sent = Sent.builder()
                 .notificationType(requestDTO.getNotificationType())
                 .sentDate(requestDTO.getSentDate())
@@ -29,7 +31,10 @@ public class SentServiceImpl implements SentService {
                 .employeeId(requestDTO.getEmployeeId())
                 .build();
 
+        log.info("SentLog 저장 전: {}", sent);
         Sent savedSent = sentRepository.save(sent);
+        log.info("SentLog 저장 완료: {}", savedSent);
+
         return modelMapper.map(savedSent, SentResponseDTO.class);
     }
 }

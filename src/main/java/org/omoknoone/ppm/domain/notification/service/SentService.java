@@ -5,5 +5,5 @@ import org.omoknoone.ppm.domain.notification.dto.SentResponseDTO;
 
 public interface SentService {
 
-    SentResponseDTO SentLog(SentRequestDTO requestDTO);
+    SentResponseDTO logSentNotification(SentRequestDTO requestDTO);
 }

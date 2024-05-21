@@ -31,13 +31,14 @@ public class SentAspect {
 
     @AfterReturning(pointcut = "sendNotificationPointcut()", returning = "result")
     public void logAfterSendingNotification(JoinPoint joinPoint, Object result) {
-
+        log.info("알림 전송 메서드 성공적으로 호출됨");
         log.info("알림 전송 메서드 결과: {}", result);
         handleLog(joinPoint, NotificationSentStatus.SUCCESS, null);
     }
 
     @AfterThrowing(pointcut = "sendNotificationPointcut()", throwing = "ex")
     public void logAfterSendingNotificationFailure(JoinPoint joinPoint, Throwable ex) {
+        log.info("알림 전송 메서드 실패");
         handleLog(joinPoint, NotificationSentStatus.FAILURE, ex);
     }
 
@@ -54,7 +55,7 @@ public class SentAspect {
      * 설명.
      *   NotificationType notificationType = (NotificationType) args[2]: 세 번째 인자를 NotificationType으로 캐스팅합니다.
      *   Notification notification = (Notification) args[1]: 두 번째 인자를 Notification으로 캐스팅합니다.
-    * */
+     * */
     private void handleLog(JoinPoint joinPoint, NotificationSentStatus status, Throwable ex) {
         Object[] args = joinPoint.getArgs();
         if (args.length > 2 && args[2] instanceof NotificationType) {
@@ -69,7 +70,9 @@ public class SentAspect {
                     notification.getNotificationId(),
                     employeeId
             );
-            sentService.SentLog(sentRequestDTO);
+            log.info("SentLog 호출 전: {}", sentRequestDTO);
+            sentService.logSentNotification(sentRequestDTO);
+            log.info("SentLog 호출 완료");
 
             if (status == NotificationSentStatus.FAILURE) {
                 log.error("알림 전송 실패 - 직원 ID: {}, 알림 ID: {}, 오류: {}", employeeId, notification.getNotificationId(), ex.getMessage());

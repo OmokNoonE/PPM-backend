@@ -52,6 +52,20 @@ dependencies {
     // mongoDB
     implementation ('org.springframework.boot:spring-boot-starter-data-mongodb')
 
+    // slack api
+    implementation("com.slack.api:bolt:1.18.0")
+    implementation("com.slack.api:bolt-servlet:1.18.0")
+    implementation("com.slack.api:bolt-jetty:1.18.0")
+
+    // JSONObject
+    // 데이터를 json화 시키거나 json화된 데이터를 String으로 변경하여 추출하기 편한 라이브러리
+    implementation 'org.json:json:20190722'
+
+
+
+
+
+
 }
 
 tasks.named('test') {
