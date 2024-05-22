@@ -3,6 +3,7 @@ package org.omoknoone.ppm.domain.task.controller;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
+import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.task.aggregate.Task;
 import org.omoknoone.ppm.domain.task.dto.*;
@@ -35,7 +36,9 @@ public class TaskController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseTask> createTask(@RequestBody RequestCreateTaskDTO requestCreateTaskDTO) {
+    public ResponseEntity<ResponseMessage> createTask(@RequestBody RequestCreateTaskDTO requestCreateTaskDTO) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         CreateTaskDTO createTaskDTO = modelMapper.map(requestCreateTaskDTO, CreateTaskDTO.class);
@@ -44,35 +47,56 @@ public class TaskController {
 
         ResponseTask responseTask = modelMapper.map(newTask, ResponseTask.class);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseTask);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("createTask", responseTask);
+        
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(201, "업무 등록 성공", responseMap));
     }
 
     @GetMapping("/view/{taskId}")
-    public ResponseEntity<ResponseTask> viewTask(@PathVariable("taskId") Long taskId) {
+    public ResponseEntity<ResponseMessage> viewTask(@PathVariable("taskId") Long taskId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         TaskDTO taskDTO = taskService.viewTask(taskId);
 
         ResponseTask responseTask = modelMapper.map(taskDTO, ResponseTask.class);
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseTask);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewTask", responseTask);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "업무 조회 성공", responseMap));
     }
 
     @GetMapping("/list/{scheduleId}")
-    public ResponseEntity<List<ResponseTask>> viewScheduleTask(@PathVariable("scheduleId") Long scheduleId) {
+    public ResponseEntity<ResponseMessage> viewScheduleTask(@PathVariable("scheduleId") Long scheduleId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<TaskDTO> taskDTOList = taskService.viewScheduleTask(scheduleId);
         List<ResponseTask> responseTaskList = modelMapper.map(taskDTOList, new TypeToken<List<TaskDTO>>() {
         }.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseTaskList);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewScheduleTask", responseTaskList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정에 따른 업무 조회 성공", responseMap));
     }
 
 
     @PutMapping("/modify")
     public ResponseEntity<ResponseMessage> modifyTask(@RequestBody RequestModifyTaskDTO requestModifyTaskDTO) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         ModifyTaskDTO modifyTaskDTO = modelMapper.map(requestModifyTaskDTO, ModifyTaskDTO.class);
@@ -80,9 +104,10 @@ public class TaskController {
         Long taskId = taskService.modifyTask(modifyTaskDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("result", taskId);
+        responseMap.put("modifyTask", taskId);
 
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity
+                .ok()
                 .headers(headers)
                 .body(new ResponseMessage(200, "업무 수정 성공", responseMap));
     }
@@ -90,15 +115,15 @@ public class TaskController {
     @DeleteMapping("/remove/{taskId}")
     public ResponseEntity<ResponseMessage> removeTask(@PathVariable("taskId") Long taskId) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         Long removedTaskId = taskService.removeTask(taskId);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("result", removedTaskId);
+        responseMap.put("removeTask", removedTaskId);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+        return ResponseEntity
+                .ok()
                 .headers(headers)
                 .body(new ResponseMessage(204, "업무 삭제 성공", responseMap));
     }
