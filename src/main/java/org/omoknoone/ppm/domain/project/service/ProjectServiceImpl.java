@@ -15,6 +15,7 @@ import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
 import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
+import org.omoknoone.ppm.domain.project.vo.ResponseProject;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
@@ -177,5 +178,11 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new);
 
         return project.getProjectEndDate();
+    }
+
+    // 현재 상태가 착수(10202)인 프로젝트 모두 조회
+    public List<Project> viewInProgressProject() {
+
+        return projectRepository.findAllByProjectStatusIs10202();
     }
 }
