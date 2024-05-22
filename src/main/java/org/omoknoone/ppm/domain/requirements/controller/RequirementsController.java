@@ -1,9 +1,13 @@
 package org.omoknoone.ppm.domain.requirements.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.omoknoone.ppm.common.HttpHeadersCreator;
+import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.requirements.aggregate.Requirements;
 import org.omoknoone.ppm.domain.requirements.dto.ModifyRequirementRequestDTO;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsDTO;
@@ -14,6 +18,7 @@ import org.omoknoone.ppm.domain.requirements.vo.RequestRequirement;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirement;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirementsListByProject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +36,9 @@ public class RequirementsController {
 
 	/* ProjectId를 통한 requirements 조회 */
 	@GetMapping("/list/{projectId}")
-	public ResponseEntity<ResponseRequirementsListByProject>viewRequirementsList(@PathVariable Long projectId){
+	public ResponseEntity<ResponseMessage>viewRequirementsList(@PathVariable Long projectId){
+
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
 		List<RequirementsListByProjectDTO> projectRequirements =
 			requirementsService.viewRequirementsByProjectId(projectId);
@@ -39,22 +46,39 @@ public class RequirementsController {
 		ResponseRequirementsListByProject projectRequirementsList =
 			new ResponseRequirementsListByProject(projectRequirements);
 
-		return ResponseEntity.ok(projectRequirementsList);
+		Map<String, Object> responseMap = new HashMap<>();
+		responseMap.put("viewRequirementsList", projectRequirementsList);
+
+		return ResponseEntity
+				.ok()
+				.headers(headers)
+				.body(new ResponseMessage(200, "요구사항 조회 성공", responseMap));
 	}
 
 	/* requirementsId를 통한 requirement 조회 */
 	@GetMapping("/{projectId}/{requirementsId}")
-	public ResponseEntity<RequirementsDTO>viewRequirement(@PathVariable Long projectId, @PathVariable Long requirementsId){
+	public ResponseEntity<ResponseMessage>viewRequirement(@PathVariable Long projectId, @PathVariable Long requirementsId){
+
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
 		RequirementsDTO projectRequirement = requirementsService.viewRequirement(projectId, requirementsId);
 
 		RequirementsDTO projectAndRequirementsIdRequirement = new RequirementsDTO(projectRequirement);
 
-		return ResponseEntity.ok(projectAndRequirementsIdRequirement);
+		Map<String, Object> responseMap = new HashMap<>();
+		responseMap.put("viewRequirement", projectAndRequirementsIdRequirement);
+
+		return ResponseEntity
+				.ok()
+				.headers(headers)
+				.body(new ResponseMessage(200, "요구사항 조회 성공", responseMap));
 	}
 
 	/* requirements 등록 */
 	@PostMapping("/create")
-	public ResponseEntity<ResponseRequirement> createRequirement(@RequestBody RequestRequirement requestRequirement){
+	public ResponseEntity<ResponseMessage> createRequirement(@RequestBody RequestRequirement requestRequirement){
+
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		RequirementsDTO requirementsDTO = modelMapper.map(requestRequirement, RequirementsDTO.class);
@@ -62,13 +86,21 @@ public class RequirementsController {
 		Requirements newRequirement = requirementsService.createRequirement(requirementsDTO);
 		ResponseRequirement responseRequirement = modelMapper.map(newRequirement, ResponseRequirement.class);  // requirementsService에서 요구사항 생성
 
-		return new ResponseEntity<>(responseRequirement, HttpStatus.CREATED);
+		Map<String, Object> responseMap = new HashMap<>();
+		responseMap.put("createRequirement", responseRequirement);
+
+		return ResponseEntity
+				.ok()
+				.headers(headers)
+				.body(new ResponseMessage(200, "요구사항 등록 성공", responseMap));
 	}
 
 	/* requirements 수정 */
 	@PutMapping("/modify/{requirementsId}")
-	public ResponseEntity<ResponseRequirement> modifyRequirement(@PathVariable Long requirementsId,
+	public ResponseEntity<ResponseMessage> modifyRequirement(@PathVariable Long requirementsId,
 		@RequestBody ModifyRequirementRequestDTO modifyRequirementRequestDTO){
+
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
 		modifyRequirementRequestDTO.setRequirementsId(requirementsId);
 
@@ -76,23 +108,34 @@ public class RequirementsController {
 		if (updatedRequirement == null){
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok(updatedRequirement);
+
+		Map<String, Object> responseMap = new HashMap<>();
+		responseMap.put("modifyRequirement", updatedRequirement);
+
+		return ResponseEntity
+				.ok()
+				.headers(headers)
+				.body(new ResponseMessage(200, "요구사항 수정 성공", responseMap));
 	}
 
 	// requirements 삭제(soft delete)
 	@DeleteMapping("/remove/{requirementsId}")
-	public ResponseEntity<ResponseRequirement> removeRequirement(
+	public ResponseEntity<ResponseMessage> removeRequirement(
 			@PathVariable("requirementsId") Long requirementsId,
 			@RequestBody ModifyRequirementRequestDTO modifyRequirementRequestDTO){
+
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
 		modifyRequirementRequestDTO.setRequirementsId(requirementsId);
 
 		ResponseRequirement removedRequirement = requirementsService.removeRequirement(modifyRequirementRequestDTO);
 
-		if (removedRequirement != null) {
-			return ResponseEntity.notFound().build();
-		}
+		Map<String, Object> responseMap = new HashMap<>();
+		responseMap.put("removeRequirement", removedRequirement.getRequirementsId());
 
-		return ResponseEntity.ok(removedRequirement);
+		return ResponseEntity
+				.status(HttpStatus.NO_CONTENT)
+				.headers(headers)
+				.body(new ResponseMessage(204, "요구사항 삭제 성공", responseMap));
 	}
 }

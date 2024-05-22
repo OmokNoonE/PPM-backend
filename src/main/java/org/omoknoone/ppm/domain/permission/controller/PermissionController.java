@@ -8,6 +8,7 @@ import java.util.Map;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
+import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.permission.aggregate.Permission;
 import org.omoknoone.ppm.domain.permission.dto.CreatePermissionDTO;
@@ -43,8 +44,10 @@ public class PermissionController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ResponsePermission> createPermission(
+    public ResponseEntity<ResponseMessage> createPermission(
         @RequestBody RequestCreatePermissionDTO requestCreatePermissionDTO) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         CreatePermissionDTO createPermissionDTO = modelMapper.map(requestCreatePermissionDTO,
@@ -54,42 +57,64 @@ public class PermissionController {
 
         ResponsePermission responsePermission = modelMapper.map(permission, ResponsePermission.class);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responsePermission);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("createPermission", responsePermission);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(201, "권한 생성 성공", responseMap));
     }
 
     @GetMapping("/member/{projectMemberId}")
-    public ResponseEntity<List<ResponsePermission>> viewMemberPermission(
+    public ResponseEntity<ResponseMessage> viewMemberPermission(
         @PathVariable("projectMemberId") Long projectMemberId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<PermissionDTO> permissionDTOList = permissionService.viewMemberPermission(projectMemberId);
         List<ResponsePermission> responsePermissionList = modelMapper.map(permissionDTOList,
             new TypeToken<List<Permission>>() {
             }.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responsePermissionList);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewMemberPermission", responsePermissionList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "권한 조회 성공", responseMap));
     }
 
     @GetMapping("/schedule/{scheduleId}")
-    public ResponseEntity<List<ResponsePermission>> viewSchedulePermission(
+    public ResponseEntity<ResponseMessage> viewSchedulePermission(
         @PathVariable("scheduleId") Long scheduleId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
         List<PermissionDTO> permissionDTOList = permissionService.viewSchedulePermission(scheduleId);
         List<ResponsePermission> responsePermissionList = modelMapper.map(permissionDTOList,
             new TypeToken<List<Permission>>() {
             }.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responsePermissionList);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewSchedulePermission", responsePermissionList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정 권한 조회 성공", responseMap));
     }
 
     @DeleteMapping("/remove/{permissionId}")
     public ResponseEntity<ResponseMessage> removePermission(@PathVariable("permissionId") Long permissionId) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         Long removedPermissionId = permissionService.removePermission(permissionId);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("result", removedPermissionId);
+        responseMap.put("removePermission", removedPermissionId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .headers(headers)

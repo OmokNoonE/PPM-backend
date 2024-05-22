@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.modelmapper.ModelMapper;
+import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.projectDashboard.dto.ProjectDashboardDTO;
 import org.omoknoone.ppm.domain.projectDashboard.service.ProjectDashboardService;
@@ -34,13 +35,12 @@ public class ProjectDashboardController {
 	@PutMapping("/set")
 	public ResponseEntity<ResponseMessage> setDashboard(@RequestBody ProjectDashboardDTO requestDTO) {
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
 		Integer projectDashboardId = projectDashboardService.setDashboardLayout(requestDTO);
 
 		Map<String, Object> responseMap = new HashMap<>();
-		responseMap.put("result", projectDashboardId);
+		responseMap.put("setDashboard", projectDashboardId);
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.headers(headers)
@@ -50,13 +50,19 @@ public class ProjectDashboardController {
 
 	// 대시보드 위치 조회
 	@GetMapping("/view/{projectId}")
-	public ResponseEntity<ResponseProjectDashboard> viewDashboard(@PathVariable Integer projectId) {
+	public ResponseEntity<ResponseMessage> viewDashboard(@PathVariable Integer projectId) {
+
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
 		ProjectDashboardDTO projectDashboardDTO = projectDashboardService.viewProjectDashboardLayout(projectId);
 
 		ResponseProjectDashboard responseProjectDashboard = modelMapper.map(projectDashboardDTO, ResponseProjectDashboard.class);
 
-		return ResponseEntity.status(HttpStatus.OK).body(responseProjectDashboard);
+		Map<String, Object> responseMap = new HashMap<>();
+		responseMap.put("viewDashboard", responseProjectDashboard);
 
+		return ResponseEntity.status(HttpStatus.OK)
+				.headers(headers)
+				.body(new ResponseMessage(200, "대시보드 위치 조회 성공", responseMap));
 	}
 }

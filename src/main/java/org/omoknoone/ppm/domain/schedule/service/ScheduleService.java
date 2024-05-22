@@ -72,5 +72,5 @@ public interface ScheduleService {
     List<ScheduleDTO> viewSchedulesByDateRange(LocalDate startDate, LocalDate endDate);
 
     /* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
-	List<Schedule> getSchedulesForThisWeek();
+    List<Schedule> getSchedulesForThisWeek();
 }
