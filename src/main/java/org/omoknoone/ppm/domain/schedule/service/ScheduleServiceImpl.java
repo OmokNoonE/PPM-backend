@@ -240,22 +240,34 @@ public class ScheduleServiceImpl implements ScheduleService {
 	}
 
 	@Override
-	public Map<String, Map<String, Integer>> updateTable(Long projectId) {
+	public Map<String, Object> updateColumn(Long projectId) {
 		List<UpdateTableDataDTO> updateTableDataDTO = scheduleRepository.UpdateTableData(projectId);
 
-		Map<String, Map<String, Integer>> updates = new HashMap<>();
+		List<String> categories = new ArrayList<>();
+		List<Integer> todoCounts = new ArrayList<>();
+		List<Integer> inProgressCounts = new ArrayList<>();
+		List<Integer> doneCounts = new ArrayList<>();
 
 		for (UpdateTableDataDTO dto : updateTableDataDTO) {
-			Map<String, Integer> innerMap = new HashMap<>();
-			innerMap.put("준비", dto.getTodoCount().intValue());
-			innerMap.put("진행", dto.getInProgressCount().intValue());
-			innerMap.put("완료", dto.getDoneCount().intValue());
-
-			updates.put(dto.getEmployeeName(), innerMap);
+			categories.add(dto.getEmployeeName());
+			todoCounts.add(dto.getTodoCount().intValue());
+			inProgressCounts.add(dto.getInProgressCount().intValue());
+			doneCounts.add(dto.getDoneCount().intValue());
 		}
+
+		Map<String, Object> updates = new HashMap<>();
+		updates.put("categories", categories);
+		updates.put("series", List.of(
+			Map.of("name", "준비", "data", todoCounts),
+			Map.of("name", "진행", "data", inProgressCounts),
+			Map.of("name", "완료", "data", doneCounts)
+		));
 
 		return updates;
 	}
+
+
+
 
 	/* 일정 상태값에 따른 일정 목록 확인 */
 	@Override

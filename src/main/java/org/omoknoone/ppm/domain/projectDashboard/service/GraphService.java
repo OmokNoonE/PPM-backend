@@ -10,7 +10,6 @@ public interface GraphService {
 	void initGraph(String projectId, String projectMemberId, int[] expectedProgress);
 	void updateGauge(String projectId);
 	void updatePie(String projectId, String type);
-	void updateTable(String projectId, String type);
 
 	void updateColumn(String projectId, String type);
 	void updateLine(String projectId, String type);

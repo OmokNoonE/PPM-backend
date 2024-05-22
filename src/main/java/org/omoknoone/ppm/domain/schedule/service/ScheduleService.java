@@ -56,7 +56,7 @@ public interface ScheduleService {
     int[] updatePie(Long projectId);
 
     /* 설명. 대시보드 테이블 제공 데이터 추출 */
-    Map<String, Map<String, Integer>> updateTable(Long projectId);
+    Map<String, Object> updateColumn(Long projectId);
 
     /* 설명. 대시보드 컬럼 제공 데이터 추출 */
 
