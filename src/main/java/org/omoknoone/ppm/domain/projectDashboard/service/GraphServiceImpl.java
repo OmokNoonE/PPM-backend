@@ -51,23 +51,23 @@ public class GraphServiceImpl implements GraphService {
         List<Map<String, Object>> gaugeSeries = List.of(
             Map.of(
                 "name", "전체진행률",
-                "data", 0
+                "data", new int[] {0}
             )
         );
 
         // 테이블
-        List<Map<String, Object>> tableSeries = new ArrayList<>();
-        List<viewProjectMembersByProjectResponseDTO> members = projectMemberService.viewProjectMembersByProject(Integer.valueOf(projectId));
-
-        for (viewProjectMembersByProjectResponseDTO member : members) {
-            String employeeName = employeeService.getEmployeeNameByProjectMemberId(member.getProjectMemberEmployeeId());
-            Map<String, Object> row = new HashMap<>();
-            row.put("구성원명", employeeName);
-            row.put("준비", 0);
-            row.put("진행", 0);
-            row.put("완료", 0);
-            tableSeries.add(row);
-        }
+        // List<Map<String, Object>> tableSeries = new ArrayList<>();
+        // List<viewProjectMembersByProjectResponseDTO> members = projectMemberService.viewProjectMembersByProject(Integer.valueOf(projectId));
+        //
+        // for (viewProjectMembersByProjectResponseDTO member : members) {
+        //     String employeeName = employeeService.getEmployeeNameByProjectMemberId(member.getProjectMemberEmployeeId());
+        //     Map<String, Object> row = new HashMap<>();
+        //     row.put("구성원명", employeeName);
+        //     row.put("준비", 0);
+        //     row.put("진행", 0);
+        //     row.put("완료", 0);
+        //     tableSeries.add(row);
+        // }
 
 
         // 파이
@@ -119,18 +119,57 @@ public class GraphServiceImpl implements GraphService {
 
 
         // 컬럼
+        // List<Map<String, Object>> columnSeries = List.of(
+        //     Map.of(
+        //         "name", "준비",
+        //         "data", new int[3]
+        //     ),
+        //     Map.of(
+        //         "name", "진행",
+        //         "data", new int[3]
+        //     ),
+        //     Map.of(
+        //         "name", "완료",
+        //         "data", new int[3]
+        //     )
+        // );
+
+
+        // 컬럼 (섹션별 -> 구성원별)
+
+        int count = 0; // 총 구성원 수를 담을 변수
+
+        // 구성원 목록 (이름)
+
+
+        List<viewProjectMembersByProjectResponseDTO> dtoList =
+            projectMemberService.viewProjectMembersByProject(Integer.valueOf(projectId));
+
+        // categories에 구성원 이름 담기
+        for (viewProjectMembersByProjectResponseDTO dto : dtoList) {
+            // String name = employeeService.getEmployeeNameByProjectMemberId(String.valueOf(dto.getProjectMemberId()));
+            // columnCategories.add(name);
+            count += 1;
+        }
+
+        List<String> columnCategories = new ArrayList<>(count);
+        for (int i = 0; i < count; i++) {
+            columnCategories.add("");
+        }
+
+        // 구성원들의 준비, 진행, 완료 상태 갯수
         List<Map<String, Object>> columnSeries = List.of(
             Map.of(
                 "name", "준비",
-                "data", new int[3]
+                "data", new int [count]
             ),
             Map.of(
                 "name", "진행",
-                "data", new int[3]
+                "data", new int[count]
             ),
             Map.of(
                 "name", "완료",
-                "data", new int[3]
+                "data", new int[count]
             )
         );
 
@@ -142,12 +181,12 @@ public class GraphServiceImpl implements GraphService {
             .series(gaugeSeries)
             .build();
 
-        Graph tableGraph = Graph.builder()
-            .projectId(projectId)
-            .projectMemberId(projectMemberId)
-            .type("table")
-            .series(tableSeries)
-            .build();
+        // Graph tableGraph = Graph.builder()
+        //     .projectId(projectId)
+        //     .projectMemberId(projectMemberId)
+        //     .type("table")
+        //     .series(tableSeries)
+        //     .build();
 
         Graph pieGraph = Graph.builder()
             .projectId(projectId)
@@ -164,16 +203,16 @@ public class GraphServiceImpl implements GraphService {
             .categories(lineCategories)
             .build();
 
-        // 추후 추가
-        // Graph columnGraph = Graph.builder()
-        //     .projectId(projectId)
-        //     .projectMemberId(projectMemberId)
-        //     .type("column")
-        //     .series(columnSeries)
-        //     .build();
+        Graph columnGraph = Graph.builder()
+            .projectId(projectId)
+            .projectMemberId(projectMemberId)
+            .type("column")
+            .series(columnSeries)
+            .categories(columnCategories)
+            .build();
 
         // 저장
-        graphRepository.saveAll(List.of(gaugeGraph, tableGraph, pieGraph, lineGraph/*, columnGraph*/));
+        graphRepository.saveAll(List.of(gaugeGraph, /*tableGraph,*/ pieGraph, lineGraph, columnGraph));
     }
 
 
@@ -189,6 +228,7 @@ public class GraphServiceImpl implements GraphService {
 
 
     // 전체진행률 (게이지) 업데이트
+    /* 메모. 전체진행률이 [10] <- 이런 식으로 한 칸짜리 배열 안에 있어야 front에서 오류 안 남 */
     @Transactional
     public void updateGauge(String projectId) {
 
@@ -231,75 +271,61 @@ public class GraphServiceImpl implements GraphService {
     }
 
     // table (구성원별 진행상태)
-    public void updateTable(String projectId, String type) {
-
-        // example data
-        // projectId = 1, type = table
-        Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
-        List<Map<String, Object>> series = graph.getSeries();
-
-        // update 할 data를 담고 있는 Map
-        // Map<String, Map<String, Integer>> updates = Map.of(
-        //         "조예린", Map.of("준비", 55, "진행", 55, "완료", 55),
-        //         "오목이", Map.of("준비", 3, "진행", 2, "완료", 1)
-        // );
-
-        Map<String, Map<String, Integer>> updates = scheduleService.updateTable(Long.parseLong(projectId));
-
-        System.out.println("updates = " + updates);
-
-        // 새로운 값으로 update
-        for (Map<String, Object> data : series) {
-            String memberName = (String) data.get("구성원명");
-            if (updates.containsKey(memberName)) {
-                Map<String, Integer> memberUpdates = updates.get(memberName);
-                for (Map.Entry<String, Integer> entry : memberUpdates.entrySet()) {
-                    data.put(entry.getKey(), entry.getValue());
-                }
-            }
-        }
-
-        graphRepository.save(graph);
-
-    }
+    // public void updateTable(String projectId, String type) {
+    //
+    //     // example data
+    //     // projectId = 1, type = table
+    //     Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
+    //     List<Map<String, Object>> series = graph.getSeries();
+    //
+    //     // update 할 data를 담고 있는 Map
+    //     // Map<String, Map<String, Integer>> updates = Map.of(
+    //     //         "조예린", Map.of("준비", 55, "진행", 55, "완료", 55),
+    //     //         "오목이", Map.of("준비", 3, "진행", 2, "완료", 1)
+    //     // );
+    //
+    //     Map<String, Object> updates = scheduleService.updateTable(Long.parseLong(projectId));
+    //
+    //     System.out.println("updates = " + updates);
+    //
+    //     // 새로운 값으로 update
+    //     for (Map<String, Object> data : series) {
+    //         String memberName = (String) data.get("구성원명");
+    //         if (updates.containsKey(memberName)) {
+    //             Map<String, Integer> memberUpdates = updates.get(memberName);
+    //             for (Map.Entry<String, Integer> entry : memberUpdates.entrySet()) {
+    //                 data.put(entry.getKey(), entry.getValue());
+    //             }
+    //         }
+    //     }
+    //
+    //     graphRepository.save(graph);
+    //
+    // }
 
     // column
+    @Transactional
     public void updateColumn(String projectId, String type) {
 
         Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
-        List<String> categories = graph.getCategories();
-        List<Map<String, Object>> series = graph.getSeries();
 
-        // update할 categoreis (section명들)
-        List<String> updateCategories = Arrays.asList("섹션명1", "섹션명2", "섹션명3");
+        Map<String, Object> updates = scheduleService.updateColumn(Long.parseLong(projectId));
 
-        // update할 section별 진행상황
-        Map<String, List<Integer>> updates = Map.of(
-                "준비", List.of(1, 1, 1),
-                "진행", List.of(2, 2, 2),
-                "완료", List.of(3, 3, 3)
-        );
+        List<String> updateCategories = (List<String>) updates.get("categories");
+        List<Map<String, Object>> updateSeries = (List<Map<String, Object>>) updates.get("series");
 
-        // categories를 업데이트
-        graph.getCategories().clear(); // 기존 카테고리를 모두 지우고
-        graph.getCategories().addAll(updateCategories); // 새로운 카테고리로 대체
+        System.out.println("updateCategories = " + updateCategories);
+        System.out.println("updateSeries = " + updateSeries);
 
-        // 각 상태(준비, 진행, 완료)에 대한 값을 업데이트
-        for (Map.Entry<String, List<Integer>> entry : updates.entrySet()) {
-            String status = entry.getKey();
-            List<Integer> values = entry.getValue();
+        if (graph != null && updateCategories != null) {
+            graph.getCategories().clear();
+            graph.getCategories().addAll(updateCategories);
 
-            // 현재 상태에 대한 값을 업데이트
-            for (Map<String, Object> seriesItem : series) {
-                if (seriesItem.get("name").equals(status)) {
-                    seriesItem.put("data", values);
-                    break; // 해당 상태에 대한 값 업데이트 후 루프 종료
-                }
-            }
+            graph.getSeries().clear();
+            graph.getSeries().addAll(updateSeries);
+
+            graphRepository.save(graph);
         }
-
-        // 업데이트된 데이터를 저장
-        graphRepository.save(graph);
 
     }
 
@@ -310,22 +336,6 @@ public class GraphServiceImpl implements GraphService {
         List<String> categories = graph.getCategories();
         List<Map<String, Object>> series = graph.getSeries();
 
-        // List<LocalDate> dateCategories = new ArrayList<>();
-        //
-        // // update할 categories (날짜)
-        // List<String> updateCategories = Arrays.asList(
-        //     "01/01/2024",
-        //     "02/02/2024",
-        //     "03/03/2024",
-        //     "04/04/2024",
-        //     "05/05/2024",
-        //     "06/06/2024",
-        //     "07/07/2024",
-        //     "08/08/2024",
-        //     "09/09/2024",
-        //     "10/10/2024"
-        // );
-        //
         String pattern = "dd/MM/yyyy";
 
         LocalDate startDate = LocalDate.parse(categories.get(0), DateTimeFormatter.ofPattern(pattern));
