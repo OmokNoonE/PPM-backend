@@ -3,7 +3,6 @@ package org.omoknoone.ppm.domain.project.repository;
 import java.util.List;
 
 import org.omoknoone.ppm.domain.project.aggregate.Project;
-import org.omoknoone.ppm.domain.project.vo.ResponseProject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
