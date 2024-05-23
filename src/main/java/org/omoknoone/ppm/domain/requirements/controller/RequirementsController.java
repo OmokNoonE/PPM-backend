@@ -132,6 +132,9 @@ public class RequirementsController {
 
 		Map<String, Object> responseMap = new HashMap<>();
 		responseMap.put("removeRequirement", removedRequirement.getRequirementsId());
+		if (removedRequirement == null) {
+			return ResponseEntity.notFound().build();
+		}
 
 		return ResponseEntity
 				.status(HttpStatus.NO_CONTENT)

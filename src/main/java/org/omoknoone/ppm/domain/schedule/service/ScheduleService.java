@@ -73,4 +73,7 @@ public interface ScheduleService {
 
     /* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
     List<Schedule> getSchedulesForThisWeek();
+
+    /* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
+	List<Schedule> getSchedulesForNextWeek();
 }

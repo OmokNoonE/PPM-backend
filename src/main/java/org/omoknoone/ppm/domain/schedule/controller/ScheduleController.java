@@ -285,4 +285,21 @@ public class ScheduleController {
                 .headers(headers)
                 .body(new ResponseMessage(200, "끝나야할 일정 목록 조회 성공", responseMap));
     }
+
+    /* 해당 날짜 기준으로 차주에 끝나야 할 일정 목록 조회 */
+    @GetMapping("/nextweek")
+    public ResponseEntity<ResponseMessage> findSchedulesForNextWeek(){
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        List<Schedule> schedules = scheduleService.getSchedulesForNextWeek();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("findSchedulesForNextWeek", schedules);
+
+        return ResponseEntity
+            .ok()
+            .headers(headers)
+            .body(new ResponseMessage(200, "끝나야할 일정 목록 조회 성공", responseMap));
+    }
 }
