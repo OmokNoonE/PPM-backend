@@ -8,7 +8,7 @@ public interface GraphService {
 	GraphDTO viewProjectDashboardByProjectId(String projectId, String type);
 
 	void initGraph(String projectId);
-	void updateGauge(String projectId);
+	void updateGauge(String projectId, String type);
 	void updatePie(String projectId, String type);
 
 	void updateColumn(String projectId, String type);
