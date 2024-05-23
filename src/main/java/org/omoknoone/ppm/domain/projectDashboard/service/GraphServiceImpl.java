@@ -12,7 +12,9 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
+import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
+import org.omoknoone.ppm.domain.project.vo.ResponseProject;
 import org.omoknoone.ppm.domain.projectDashboard.aggregate.Graph;
 import org.omoknoone.ppm.domain.projectDashboard.dto.GraphDTO;
 import org.omoknoone.ppm.domain.projectDashboard.repository.GraphRepository;
@@ -251,6 +253,21 @@ public class GraphServiceImpl implements GraphService {
 
     }
 
+    @Transactional
+    public void updateGaugeAll(){
+
+        List<Project> inProgressProject = projectService.viewInProgressProject();
+
+        List<Integer> inProgressProjectIds = inProgressProject.stream()
+            .map(Project::getProjectId)
+            .toList();
+
+        for (Integer projectId : inProgressProjectIds) {
+            updateGauge(String.valueOf(projectId));
+        }
+
+    }
+
     // pie (준비, 진행, 완료)
     @Transactional
     public void updatePie(String projectId, String type) {
@@ -259,7 +276,7 @@ public class GraphServiceImpl implements GraphService {
 
         Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
 
-        for (int i = 0; i < datas.length; i++) {
+        for (int i = 0; i < datas.length - 1; i++) {
             Map<String, Object> data = new HashMap<>();
             data.put("name", graph.getSeries().get(i).get("name"));
             data.put("data", datas[i]);
@@ -267,6 +284,21 @@ public class GraphServiceImpl implements GraphService {
         }
 
         graphRepository.save(graph);
+
+    }
+
+    @Transactional
+    public void updatePieAll(){
+
+        List<Project> inProgressProject = projectService.viewInProgressProject();
+
+        List<Integer> inProgressProjectIds = inProgressProject.stream()
+            .map(Project::getProjectId)
+            .toList();
+
+        for (Integer projectId : inProgressProjectIds) {
+            updatePie(String.valueOf(projectId), "pie");
+        }
 
     }
 
@@ -326,8 +358,24 @@ public class GraphServiceImpl implements GraphService {
 
             graphRepository.save(graph);
         }
+    }
+    @Transactional
+    public void updateColumnAll(){
+
+        List<Project> inProgressProject = projectService.viewInProgressProject();
+
+        List<Integer> inProgressProjectIds = inProgressProject.stream()
+            .map(Project::getProjectId)
+            .toList();
+
+        for (Integer projectId : inProgressProjectIds) {
+            updateColumn(String.valueOf(projectId), "column");
+        }
 
     }
+
+
+
 
     // line
     public void updateLine(String projectId, String type) {
@@ -336,7 +384,7 @@ public class GraphServiceImpl implements GraphService {
         List<String> categories = graph.getCategories();
         List<Map<String, Object>> series = graph.getSeries();
 
-        String pattern = "dd/MM/yyyy";
+        String pattern = "yyyy-MM-dd";
 
         LocalDate startDate = LocalDate.parse(categories.get(0), DateTimeFormatter.ofPattern(pattern));
         LocalDate endDate = LocalDate.parse(categories.get(categories.size() - 1), DateTimeFormatter.ofPattern(pattern));
@@ -395,4 +443,21 @@ public class GraphServiceImpl implements GraphService {
 
         graphRepository.save(graph);
     }
+
+    @Transactional
+    public void updateLineAll(){
+
+        List<Project> inProgressProject = projectService.viewInProgressProject();
+
+        List<Integer> inProgressProjectIds = inProgressProject.stream()
+            .map(Project::getProjectId)
+            .toList();
+
+        for (Integer projectId : inProgressProjectIds) {
+            updateLine(String.valueOf(projectId), "line");
+        }
+
+    }
+
+
 }

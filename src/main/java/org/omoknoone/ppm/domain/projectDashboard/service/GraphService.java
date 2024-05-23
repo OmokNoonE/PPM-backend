@@ -13,4 +13,9 @@ public interface GraphService {
 
 	void updateColumn(String projectId, String type);
 	void updateLine(String projectId, String type);
+
+	void updateGaugeAll();
+	void updatePieAll();
+	void updateColumnAll();
+	void updateLineAll();
 }
