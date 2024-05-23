@@ -47,7 +47,7 @@ public class GraphServiceImpl implements GraphService {
 
     // init
     // 프로젝트가 생성될 때 대시보드가 초기값으로 생성 되어야함
-    public void initGraph(String projectId, String projectMemberId, int[] expectedProgress) {
+    public void initGraph(String projectId) {
 
         // 게이지
         List<Map<String, Object>> gaugeSeries = List.of(
@@ -92,7 +92,7 @@ public class GraphServiceImpl implements GraphService {
         List<Map<String, Object>> lineSeries = List.of(
             Map.of(
                 "name", "예상진행률",
-                "data", expectedProgress
+                "data", new int[10]
             ),
             Map.of(
                 "name", "실제진행률",
@@ -178,7 +178,7 @@ public class GraphServiceImpl implements GraphService {
         // 그래프 생성
         Graph gaugeGraph = Graph.builder()
             .projectId(projectId)
-            .projectMemberId(projectMemberId)
+            // .projectMemberId(projectMemberId)
             .type("gauge")
             .series(gaugeSeries)
             .build();
@@ -192,14 +192,14 @@ public class GraphServiceImpl implements GraphService {
 
         Graph pieGraph = Graph.builder()
             .projectId(projectId)
-            .projectMemberId(projectMemberId)
+            // .projectMemberId(projectMemberId)
             .type("pie")
             .series(pieSeries)
             .build();
 
         Graph lineGraph = Graph.builder()
             .projectId(projectId)
-            .projectMemberId(projectMemberId)
+            // .projectMemberId(projectMemberId)
             .type("line")
             .series(lineSeries)
             .categories(lineCategories)
@@ -207,7 +207,7 @@ public class GraphServiceImpl implements GraphService {
 
         Graph columnGraph = Graph.builder()
             .projectId(projectId)
-            .projectMemberId(projectMemberId)
+            // .projectMemberId(projectMemberId)
             .type("column")
             .series(columnSeries)
             .categories(columnCategories)

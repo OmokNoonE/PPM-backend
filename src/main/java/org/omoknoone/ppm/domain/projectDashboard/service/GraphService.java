@@ -7,7 +7,7 @@ import org.omoknoone.ppm.domain.projectDashboard.dto.GraphDTO;
 public interface GraphService {
 	GraphDTO viewProjectDashboardByProjectId(String projectId, String type);
 
-	void initGraph(String projectId, String projectMemberId, int[] expectedProgress);
+	void initGraph(String projectId);
 	void updateGauge(String projectId);
 	void updatePie(String projectId, String type);
 
@@ -18,4 +18,5 @@ public interface GraphService {
 	void updatePieAll();
 	void updateColumnAll();
 	void updateLineAll();
+
 }
