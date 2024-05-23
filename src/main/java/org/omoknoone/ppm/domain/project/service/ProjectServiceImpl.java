@@ -16,6 +16,7 @@ import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
 import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
 import org.omoknoone.ppm.domain.project.vo.ResponseProject;
+import org.omoknoone.ppm.domain.projectDashboard.service.GraphService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
@@ -32,12 +33,22 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final HolidayRepository holidayRepository;
     private final ScheduleRepository scheduleRepository;
+    // private final GraphService graphService;
     private final ModelMapper modelMapper;
 
     @Transactional
     @Override
     public int createProject(CreateProjectRequestDTO createProjectRequestDTO) {
-        return projectRepository.save(modelMapper.map(createProjectRequestDTO, Project.class)).getProjectId();
+        Project project = modelMapper.map(createProjectRequestDTO, Project.class);
+
+        projectRepository.save(project);
+
+        int projectId = project.getProjectId();
+
+        /* 프로젝트가 생성될 때 해당 프로젝트id에 해당하는 graph들을 생성함 */
+        // graphService.initGraph(projectId,);
+        
+        return projectId;
     }
 
     @Transactional
@@ -47,8 +58,10 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findById(modifyProjectHistoryDTO.getProjectId())
                                                 .orElseThrow(IllegalArgumentException::new);
 
-        /* 메모. 사용자가 수정할 값의 형태에 따라 조건별로 처리하기 위해 JPA Specification 이용 고려 */
+        System.out.println("project = " + project);
         project.modify(modifyProjectHistoryDTO);
+        projectRepository.save(project);
+        System.out.println("project = " + project);
 
         /* 수정 로그 작성 */
         projectHistoryService.createProjectHistory(modifyProjectHistoryDTO);
