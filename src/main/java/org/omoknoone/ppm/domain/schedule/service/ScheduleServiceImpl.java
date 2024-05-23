@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.TreeMap;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +17,7 @@ import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
+import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
@@ -38,6 +40,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	private final HolidayRepository holidayRepository;
 	private final ScheduleRepository scheduleRepository;
 	private final ScheduleHistoryService scheduleHistoryService;
+	private final ProjectService projectService;
 
 	@Override
 	@Transactional
@@ -332,7 +335,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	/* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
 	@Override
-	public List<Schedule> getSchedulesForThisWeek() {
+	public List<ScheduleDTO> getSchedulesForThisWeek() {
 		LocalDate today = LocalDate.now();
 		LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate thisSunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
@@ -341,7 +344,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	/* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
 	@Override
-	public List<Schedule> getSchedulesForNextWeek() {
+	public List<ScheduleDTO> getSchedulesForNextWeek() {
 		LocalDate today = LocalDate.now();
 		LocalDate NextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
 		LocalDate NextSunday = NextMonday.plusDays(6);
@@ -350,13 +353,50 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	/* 이번주 일정 진행률 계산 */
 	public int calculateRatioThisWeek() {
-		List<Schedule> schedulesThisWeek = getSchedulesForThisWeek();
+		List<ScheduleDTO> schedulesThisWeek = getSchedulesForThisWeek();
 		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesThisWeek);
 	}
 
 	/* 차주 일정 진행률 계산 */
 	public int calculateRatioNextWeek() {
-		List<Schedule> schedulesNextWeek = getSchedulesForNextWeek();
+		List<ScheduleDTO> schedulesNextWeek = getSchedulesForNextWeek();
 		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesNextWeek);
 	}
+
+	/* 구간별 일정 예상 누적 진행률 */
+	public int[] calculateScheduleRatios(LocalDate projectStartDate, LocalDate projectEndDate) {
+		// WorkingDays 10등분
+		List<LocalDate> dividedDates = projectService.divideWorkingDaysIntoTen(projectStartDate, projectEndDate);
+
+		// 모든 스케줄을 가져옴
+		List<Schedule> schedules = scheduleRepository.findAll();
+
+		// 날짜 구간별로 스케줄을 분류
+		int[] scheduleRatios = new int[dividedDates.size() - 1];
+		int totalSchedules = schedules.size();
+		int sumratio = 0;
+
+		for (int i = 0; i < dividedDates.size() - 1; i++) {
+			LocalDate startDate = dividedDates.get(i);
+			LocalDate endDate = dividedDates.get(i + 1);
+
+			// 해당 날짜 구간에 포함된 스케줄 개수 계산
+			long count = schedules.stream()
+				.filter(schedule -> !schedule.getScheduleEndDate().isBefore(startDate) && schedule.getScheduleEndDate().isBefore(endDate))
+				.count();
+
+			// 해당 날짜 구간에 포함된 스케줄 비율 계산
+			int ratio = (int) Math.round(((double) count / totalSchedules) * 100);
+			sumratio += ratio;
+			scheduleRatios[i] = sumratio;
+		}
+
+		// 마지막 구간이 100이 아닌 경우 100으로 설정
+		if (scheduleRatios[9] != 100){
+			scheduleRatios[9] = 100;
+		}
+
+		return scheduleRatios;
+	}
+
 }

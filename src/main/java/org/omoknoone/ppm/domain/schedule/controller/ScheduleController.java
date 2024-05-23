@@ -11,6 +11,7 @@ import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
+import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
@@ -21,6 +22,7 @@ import org.omoknoone.ppm.domain.schedule.vo.RequestSchedule;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseSchedule;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseSearchScheduleList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,7 +45,7 @@ public class ScheduleController {
     private final ModelMapper modelMapper;
 
     @Autowired
-    public ScheduleController(ScheduleService scheduleService, ModelMapper modelMapper) {
+    public ScheduleController(ScheduleService scheduleService, ModelMapper modelMapper, ProjectService projectService) {
         this.scheduleService = scheduleService;
         this.modelMapper = modelMapper;
     }
@@ -275,7 +277,7 @@ public class ScheduleController {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        List<Schedule> schedules = scheduleService.getSchedulesForThisWeek();
+        List<ScheduleDTO> schedules = scheduleService.getSchedulesForThisWeek();
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("findSchedulesForThisWeek", schedules);
@@ -292,7 +294,7 @@ public class ScheduleController {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        List<Schedule> schedules = scheduleService.getSchedulesForNextWeek();
+        List<ScheduleDTO> schedules = scheduleService.getSchedulesForNextWeek();
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("findSchedulesForNextWeek", schedules);
@@ -301,5 +303,25 @@ public class ScheduleController {
             .ok()
             .headers(headers)
             .body(new ResponseMessage(200, "끝나야할 일정 목록 조회 성공", responseMap));
+    }
+
+    /* 구간별 일정 예상 누적 진행률 */
+    @GetMapping("/predictionProgress")
+    public ResponseEntity<ResponseMessage> predictionProgress(
+        @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+        @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+    ) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        int[] predictionProgressRatio = scheduleService.calculateScheduleRatios(startDate, endDate);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("predictionProgressRatio", predictionProgressRatio);
+
+        return ResponseEntity
+            .ok()
+            .headers(headers)
+            .body(new ResponseMessage(200, "일정을 10등분 후 각각의 예상 비율 계산", responseMap));
     }
 }
