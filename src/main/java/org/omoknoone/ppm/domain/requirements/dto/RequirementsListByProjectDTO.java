@@ -1,5 +1,7 @@
 package org.omoknoone.ppm.domain.requirements.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,13 +22,17 @@ public class RequirementsListByProjectDTO {
 
 	private boolean requirementsIsDeleted;
 
+	private LocalDateTime requirementsModifiedDate;
+
+
 	@Builder
 	public RequirementsListByProjectDTO(Long requirementsId, Long requirementsProjectId, String requirementsName,
-		String requirementsContent, boolean requirementsIsDeleted) {
+		String requirementsContent, boolean requirementsIsDeleted, LocalDateTime requirementsModifiedDate){
 		this.requirementsId = requirementsId;
 		this.requirementsProjectId = requirementsProjectId;
 		this.requirementsName = requirementsName;
 		this.requirementsContent = requirementsContent;
 		this.requirementsIsDeleted = requirementsIsDeleted;
+		this.requirementsModifiedDate = requirementsModifiedDate;
 	}
 }

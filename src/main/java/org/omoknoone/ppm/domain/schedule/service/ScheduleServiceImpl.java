@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import lombok.RequiredArgsConstructor;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
@@ -73,7 +74,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	public List<ScheduleDTO> viewScheduleByProject(Long projectId) {
 
 		List<Schedule> scheduleList = scheduleRepository
-				.findSchedulesByScheduleProjectIdAndScheduleIsDeleted(projectId, false);
+			.findSchedulesByScheduleProjectIdAndScheduleIsDeleted(projectId, false);
 		if (scheduleList == null || scheduleList.isEmpty()) {
 			throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
 		}
@@ -164,7 +165,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 	public ModifyScheduleDateDTO modifyScheduleDate(RequestModifyScheduleDTO requestModifyScheduleDTO) {
 		ModifyScheduleDateDTO modifyScheduleDateDTO = modelMapper.map(requestModifyScheduleDTO,
 			ModifyScheduleDateDTO.class);
-    
+
 		/* 공수 계산 후 DTO에 저장 */
 		int workingDays = calculateWorkingDays(modifyScheduleDateDTO.getScheduleStartDate(),
 			modifyScheduleDateDTO.getScheduleEndDate());
@@ -178,7 +179,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 		/* modifyScheduleDTO를 ModifyScheduleProgressDTO 담기 */
 		ModifyScheduleProgressDTO modifyScheduleProgressDTO = modelMapper.map(requestModifyScheduleDTO,
 			ModifyScheduleProgressDTO.class);
-    
+
 		/* 업무를 가지지 않은 비업무 일정인 경우, 일정 상태에 따른 진행률 설정 */
 		if (!isTaskSchedule(requestModifyScheduleDTO.getScheduleId())) {
 			modifyScheduleProgressDTO.calculateScheduleProgress();
@@ -266,9 +267,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 		return updates;
 	}
 
-
-
-
 	/* 일정 상태값에 따른 일정 목록 확인 */
 	@Override
 	public List<Schedule> getSchedulesByStatusCodes(List<Long> codeIds) {
@@ -279,7 +277,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 	@Override
 	public List<ScheduleDTO> viewSchedulesByDateRange(LocalDate startDate, LocalDate endDate) {
 		List<Schedule> schedules = scheduleRepository.findSchedulesByDateRange(startDate, endDate);
-		return modelMapper.map(schedules, new TypeToken<List<ScheduleDTO>>(){}.getType());
+		return modelMapper.map(schedules, new TypeToken<List<ScheduleDTO>>() {
+		}.getType());
 	}
 
 	/* workingDays 계산 */
@@ -311,25 +310,25 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 		return workingDays;
 	}
-  
-  @Transactional(readOnly = true)
-    @Override
-    public List<ScheduleDTO> viewSubSchedules(Long scheduleId) {
-        List<ScheduleDTO> subSchedules = new ArrayList<>();
-        Stack<Long> stack = new Stack<>();
-        stack.push(scheduleId);
 
-        while (!stack.isEmpty()) {
-            Long currentId = stack.pop();
-            List<Schedule> childSchedules = scheduleRepository.findByScheduleParentScheduleId(currentId);
-            for (Schedule childSchedule : childSchedules) {
-                subSchedules.add(modelMapper.map(childSchedule, ScheduleDTO.class));
-                stack.push(childSchedule.getScheduleId());
-            }
-        }
+	@Transactional(readOnly = true)
+	@Override
+	public List<ScheduleDTO> viewSubSchedules(Long scheduleId) {
+		List<ScheduleDTO> subSchedules = new ArrayList<>();
+		Stack<Long> stack = new Stack<>();
+		stack.push(scheduleId);
 
-        return subSchedules;
-    }
+		while (!stack.isEmpty()) {
+			Long currentId = stack.pop();
+			List<Schedule> childSchedules = scheduleRepository.findByScheduleParentScheduleId(currentId);
+			for (Schedule childSchedule : childSchedules) {
+				subSchedules.add(modelMapper.map(childSchedule, ScheduleDTO.class));
+				stack.push(childSchedule.getScheduleId());
+			}
+		}
+
+		return subSchedules;
+	}
 
 	/* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
 	@Override
@@ -338,5 +337,26 @@ public class ScheduleServiceImpl implements ScheduleService {
 		LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate thisSunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 		return scheduleRepository.getSchedulesForThisWeek(thisMonday, thisSunday);
+	}
+
+	/* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
+	@Override
+	public List<Schedule> getSchedulesForNextWeek() {
+		LocalDate today = LocalDate.now();
+		LocalDate NextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+		LocalDate NextSunday = NextMonday.plusDays(6);
+		return scheduleRepository.getSchedulesForNextWeek(NextMonday, NextSunday);
+	}
+
+	/* 이번주 일정 진행률 계산 */
+	public int calculateRatioThisWeek() {
+		List<Schedule> schedulesThisWeek = getSchedulesForThisWeek();
+		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesThisWeek);
+	}
+
+	/* 차주 일정 진행률 계산 */
+	public int calculateRatioNextWeek() {
+		List<Schedule> schedulesNextWeek = getSchedulesForNextWeek();
+		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesNextWeek);
 	}
 }
