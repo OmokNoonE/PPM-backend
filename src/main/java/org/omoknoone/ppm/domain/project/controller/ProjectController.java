@@ -55,7 +55,7 @@ public class ProjectController {
         ProjectModificationResult result = projectService.modifyProject(modifyProjectHistoryDTO);
       
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("projectId", result.getProjectId());
+        responseMap.put("modifyProject", result.getProjectId());
 
         return ResponseEntity
                 .ok()
