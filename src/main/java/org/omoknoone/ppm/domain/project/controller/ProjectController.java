@@ -8,6 +8,7 @@ import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
+import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -49,11 +50,12 @@ public class ProjectController {
     @PutMapping("/modify")
     public ResponseEntity<ResponseMessage> modifyProject(@RequestBody ModifyProjectHistoryDTO modifyProjectHistoryDTO) {
 
-        HttpHeaders headers = HttpHeadersCreator.createHeaders();
-        
-        int projectId = projectService.modifyProject(modifyProjectHistoryDTO);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+        ProjectModificationResult result = projectService.modifyProject(modifyProjectHistoryDTO);
+      
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("modifyProject", projectId);
+        responseMap.put("modifyProject", result.getProjectId());
 
         return ResponseEntity
                 .ok()

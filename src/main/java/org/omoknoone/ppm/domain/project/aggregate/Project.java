@@ -70,9 +70,21 @@ public class Project {
     }
 
     public void modify(ModifyProjectHistoryDTO modifyProjectRequestDTO) {
-        this.projectTitle = modifyProjectRequestDTO.getProjectTitle();
-        this.projectStartDate = modifyProjectRequestDTO.getProjectStartDate();
-        this.projectEndDate = modifyProjectRequestDTO.getProjectEndDate();
-        this.projectStatus = modifyProjectRequestDTO.getProjectStatus();
+
+        if(modifyProjectRequestDTO.getProjectTitle() != null) {
+            this.projectTitle = modifyProjectRequestDTO.getProjectTitle();
+        }
+
+        if(modifyProjectRequestDTO.getProjectStartDate() != null) {
+            this.projectStartDate = modifyProjectRequestDTO.getProjectStartDate();
+        }
+
+        if(modifyProjectRequestDTO.getProjectEndDate() != null){
+            this.projectEndDate = modifyProjectRequestDTO.getProjectEndDate();
+        }
+
+        if (modifyProjectRequestDTO.getProjectStatus() != 0) {
+            this.projectStatus = modifyProjectRequestDTO.getProjectStatus();
+        }
     }
 }

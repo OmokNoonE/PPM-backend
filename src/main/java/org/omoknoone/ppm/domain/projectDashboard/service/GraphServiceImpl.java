@@ -14,7 +14,6 @@ import org.modelmapper.TypeToken;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
-import org.omoknoone.ppm.domain.project.vo.ResponseProject;
 import org.omoknoone.ppm.domain.projectDashboard.aggregate.Graph;
 import org.omoknoone.ppm.domain.projectDashboard.dto.GraphDTO;
 import org.omoknoone.ppm.domain.projectDashboard.repository.GraphRepository;
@@ -47,7 +46,7 @@ public class GraphServiceImpl implements GraphService {
 
     // init
     // 프로젝트가 생성될 때 대시보드가 초기값으로 생성 되어야함
-    public void initGraph(String projectId, String projectMemberId, int[] expectedProgress) {
+    public void initGraph(String projectId) {
 
         // 게이지
         List<Map<String, Object>> gaugeSeries = List.of(
@@ -92,7 +91,7 @@ public class GraphServiceImpl implements GraphService {
         List<Map<String, Object>> lineSeries = List.of(
             Map.of(
                 "name", "예상진행률",
-                "data", expectedProgress
+                "data", new int[10]
             ),
             Map.of(
                 "name", "실제진행률",
@@ -101,7 +100,6 @@ public class GraphServiceImpl implements GraphService {
         );
 
         // 프로젝트 시작일, 종료일 저장
-        String pattern = "dd/MM/yyyy";
 
         LocalDate startDate = projectService.viewStartDate(Integer.valueOf(projectId));
         LocalDate endDate = projectService.viewEndDate(Integer.valueOf(projectId));
@@ -178,7 +176,7 @@ public class GraphServiceImpl implements GraphService {
         // 그래프 생성
         Graph gaugeGraph = Graph.builder()
             .projectId(projectId)
-            .projectMemberId(projectMemberId)
+            // .projectMemberId(projectMemberId)
             .type("gauge")
             .series(gaugeSeries)
             .build();
@@ -192,14 +190,14 @@ public class GraphServiceImpl implements GraphService {
 
         Graph pieGraph = Graph.builder()
             .projectId(projectId)
-            .projectMemberId(projectMemberId)
+            // .projectMemberId(projectMemberId)
             .type("pie")
             .series(pieSeries)
             .build();
 
         Graph lineGraph = Graph.builder()
             .projectId(projectId)
-            .projectMemberId(projectMemberId)
+            // .projectMemberId(projectMemberId)
             .type("line")
             .series(lineSeries)
             .categories(lineCategories)
@@ -207,7 +205,7 @@ public class GraphServiceImpl implements GraphService {
 
         Graph columnGraph = Graph.builder()
             .projectId(projectId)
-            .projectMemberId(projectMemberId)
+            // .projectMemberId(projectMemberId)
             .type("column")
             .series(columnSeries)
             .categories(columnCategories)
@@ -384,21 +382,49 @@ public class GraphServiceImpl implements GraphService {
         List<String> categories = graph.getCategories();
         List<Map<String, Object>> series = graph.getSeries();
 
+        /* 날짜 (시작 ~ 끝 10등분 한 것) 업데이트 */
         String pattern = "yyyy-MM-dd";
 
-        LocalDate startDate = LocalDate.parse(categories.get(0), DateTimeFormatter.ofPattern(pattern));
-        LocalDate endDate = LocalDate.parse(categories.get(categories.size() - 1), DateTimeFormatter.ofPattern(pattern));
+        LocalDate startDate = projectService.viewStartDate(Integer.valueOf(projectId));
+        LocalDate endDate = projectService.viewEndDate(Integer.valueOf(projectId));
 
         List<LocalDate> dateCategories = projectService.divideWorkingDaysIntoTen(startDate, endDate);
 
+        // LocalDate -> String
+        List<String> stringCategories = dateCategories.stream()
+            .map(date -> date.format(DateTimeFormatter.ofPattern(pattern)))
+            .toList();
 
-        // string -> LocalDate
+        // categories update
+        graph.getCategories().clear(); // 기존 카테고리를 모두 지우고
+        graph.getCategories().addAll(stringCategories); // 새로운 카테고리로 대체
 
-        for(String dateString : categories) {
-            LocalDate date = LocalDate.parse(dateString, DateTimeFormatter.ofPattern(pattern));
-            dateCategories.add(date);
+
+        /* 예상 진행률 업데이트 */
+        int[] expectProgress = new int[10];
+        for (int i = 0; i < expectProgress.length; i++) {
+            expectProgress[i] = i;
         }
 
+        System.out.println("expectProgress = " + expectProgress);
+
+        if (graph != null) {
+            List<Map<String, Object>> seriesList = graph.getSeries();
+            for (int i = 0; i < seriesList.size(); i++) {
+                Map<String, Object> seriesEntry = seriesList.get(i);
+                if ("예상진행률".equals(seriesEntry.get("name"))) {
+                    List<Integer> data = (List<Integer>) seriesEntry.get("data");
+                    for (int j = 0; j < expectProgress.length; j++) {
+                        data.set(j, expectProgress[j]);
+                    }
+                    graphRepository.save(graph);
+                    break;
+                }
+            }
+        }
+
+
+        /* 실제 진행률 업데이트 */
         int index = 0;
 
         // 현재 날짜가 각 날짜의 범위 내에 있는 지 확인하여 index 구하기
@@ -430,16 +456,6 @@ public class GraphServiceImpl implements GraphService {
                 }
             }
         }
-
-        // LocalDate -> String
-        List<String> stringCategories = dateCategories.stream()
-            .map(date -> date.format(DateTimeFormatter.ofPattern(pattern)))
-                .collect(Collectors.toList());
-
-
-        // categories update
-        graph.getCategories().clear(); // 기존 카테고리를 모두 지우고
-        graph.getCategories().addAll(stringCategories); // 새로운 카테고리로 대체
 
         graphRepository.save(graph);
     }
