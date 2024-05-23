@@ -5,19 +5,20 @@ import java.math.RoundingMode;
 import java.util.List;
 
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 
 public class ScheduleServiceCalculator {
 
 	private static final long schedule_ready = 10301L;
 	private static final long schedule_in_progress = 10302L;
 
-	public static int calculateReadyOrInProgressRatio(List<Schedule> schedules) {
+	public static int calculateReadyOrInProgressRatio(List<ScheduleDTO> schedules) {
 		if (schedules == null || schedules.isEmpty()) {
 			return 0;
 		}
 
 		int countReadyOrInProgress = 0;
-		for (Schedule schedule : schedules) {
+		for (ScheduleDTO schedule : schedules) {
 			if (isReadyOrInProgress(schedule)) {
 				countReadyOrInProgress++;
 			}
@@ -28,7 +29,7 @@ public class ScheduleServiceCalculator {
 		return (int) Math.round(ratio);
 	}
 
-	private static boolean isReadyOrInProgress(Schedule schedule) {
+	private static boolean isReadyOrInProgress(ScheduleDTO schedule) {
 		long status = schedule.getScheduleStatus();
 		return status == schedule_ready || status == schedule_in_progress;
 	}

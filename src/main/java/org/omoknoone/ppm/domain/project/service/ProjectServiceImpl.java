@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -104,6 +105,7 @@ public class ProjectServiceImpl implements ProjectService {
         return newProjectId;
     }
 
+    /* WorkingDays를 10등분 */
     @Override
     public List<LocalDate> divideWorkingDaysIntoTen(LocalDate projectStartDate, LocalDate projectEndDate) {
         // WorkingDays 총 일수를 가져옴
@@ -129,9 +131,13 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
 
+        // 프로젝트 마지막 날짜 추가
+        dividedDates.add(projectEndDate);
+
         return dividedDates;
     }
 
+    /* WorkingDaysList 조회 */
     private List<LocalDate> getWorkingDaysList(LocalDate startDate, LocalDate endDate) {
         List<LocalDate> workingDays = new ArrayList<>();
         List<Holiday> holidays = holidayRepository.findHolidaysBetween(
@@ -156,9 +162,10 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
 
+        Collections.sort(workingDays);
         return workingDays;
     }
-
+    /* WorkingDays 계산 */
     private int calculateWorkingDays(LocalDate startDate, LocalDate endDate) {
         int workingDays = 0;
 
