@@ -9,6 +9,7 @@ import java.util.Map;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
+import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
@@ -49,7 +50,9 @@ public class ScheduleController {
 
     /* 일정 등록 */
     @PostMapping("/create")
-    public ResponseEntity<ResponseSchedule> createSchedule(@RequestBody RequestSchedule requestSchedule) {
+    public ResponseEntity<ResponseMessage> createSchedule(@RequestBody RequestSchedule requestSchedule) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         CreateScheduleDTO createScheduleDTO = modelMapper.map(requestSchedule, CreateScheduleDTO.class);
@@ -58,67 +61,113 @@ public class ScheduleController {
 
         ResponseSchedule responseSchedule = modelMapper.map(newSchedule, ResponseSchedule.class);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseSchedule);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("createSchedule", responseSchedule);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정 등록 성공", responseMap));
     }
 
     /* 일정 상세 조회 */
     @GetMapping("/view/{scheduleId}")
-    public ResponseEntity<ResponseSchedule> viewSchedule(@PathVariable("scheduleId") Long scheduleId) {
+    public ResponseEntity<ResponseMessage> viewSchedule(@PathVariable("scheduleId") Long scheduleId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         ScheduleDTO scheduleDTO = scheduleService.viewSchedule(scheduleId);
 
         ResponseSchedule responseSchedule = modelMapper.map(scheduleDTO, ResponseSchedule.class);
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseSchedule);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewSchedule", responseSchedule);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정 상세 조회 성공", responseMap));
     }
 
     /* 프로젝트별 일정 목록 조회 */
     @GetMapping("/list/{projectId}")
-    public ResponseEntity<List<ResponseSchedule>> viewScheduleByProject(@PathVariable("projectId") Long projectId) {
+    public ResponseEntity<ResponseMessage> viewScheduleByProject(@PathVariable("projectId") Long projectId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<ScheduleDTO> scheduleDTOList = scheduleService.viewScheduleByProject(projectId);
         List<ResponseSchedule> responseScheduleList = modelMapper.map(scheduleDTOList,
             new TypeToken<List<ScheduleDTO>>() {
             }.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewScheduleByProject", responseScheduleList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "프로젝트별 일정 목록 조회 성공", responseMap));
     }
 
     /* 일정 오름차순, 내림차순 목록 조회 (시작일 기준) */
     @GetMapping("/list/{projectId}/{sort}")
-    public ResponseEntity<List<ResponseSchedule>> viewScheduleOrderBy(@PathVariable("projectId") Long projectId,
+    public ResponseEntity<ResponseMessage> viewScheduleOrderBy(@PathVariable("projectId") Long projectId,
         @PathVariable("sort") String sort) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<ScheduleDTO> scheduleDTOList = scheduleService.viewScheduleOrderBy(projectId, sort);
         List<ResponseSchedule> responseScheduleList = modelMapper.map(scheduleDTOList,
             new TypeToken<List<ScheduleDTO>>() {
             }.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewScheduleOrderBy", responseScheduleList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정 조회 성공", responseMap));
     }
 
     /* 일정 임박일순 목록 조회 */
     @GetMapping("/nearstart/{projectId}")
-    public ResponseEntity<List<ResponseSchedule>> viewScheduleNearByStart(@PathVariable("projectId") Long projectId) {
+    public ResponseEntity<ResponseMessage> viewScheduleNearByStart(@PathVariable("projectId") Long projectId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<ScheduleDTO> scheduleDTOList = scheduleService.viewScheduleNearByStart(projectId);
         List<ResponseSchedule> responseScheduleList = modelMapper.map(scheduleDTOList,
             new TypeToken<List<ScheduleDTO>>() {
             }.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewScheduleNearByStart", responseScheduleList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정 임박일순 조회 성공", responseMap));
     }
 
     /* 일정 마감일순 목록 조회 */
     @GetMapping("/nearend/{projectId}")
-    public ResponseEntity<List<ResponseSchedule>> viewScheduleNearByEnd(@PathVariable("projectId") Long projectId) {
+    public ResponseEntity<ResponseMessage> viewScheduleNearByEnd(@PathVariable("projectId") Long projectId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<ScheduleDTO> scheduleDTOList = scheduleService.viewScheduleNearByEnd(projectId);
         List<ResponseSchedule> responseScheduleList = modelMapper.map(scheduleDTOList,
             new TypeToken<List<ScheduleDTO>>() {
             }.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewScheduleNearByEnd", responseScheduleList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정 마감일순 목록 조회 성공", responseMap));
     }
 
     /* 일정 수정 */
@@ -127,19 +176,19 @@ public class ScheduleController {
             @PathVariable Long scheduleId,
             @RequestBody RequestModifyScheduleDTO requestModifyScheduleDTO) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         requestModifyScheduleDTO.setScheduleId(scheduleId);
 
         Long modifiedScheduleId = scheduleService.modifySchedule(requestModifyScheduleDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("scheduleId", modifiedScheduleId);
+        responseMap.put("modifySchedule", modifiedScheduleId);
 
-        return ResponseEntity.status(HttpStatus.OK)
-            .headers(headers)
-            .body(new ResponseMessage(200, "일정 수정 성공", responseMap));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정 수정 성공", responseMap));
     }
 
     /* 일정 제거(soft delete) */
@@ -148,52 +197,92 @@ public class ScheduleController {
             @PathVariable Long scheduleId,
             @RequestBody RequestModifyScheduleDTO requestModifyScheduleDTO){
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         requestModifyScheduleDTO.setScheduleId(scheduleId);
 
         scheduleService.removeSchedule(requestModifyScheduleDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("result", scheduleId);
+        responseMap.put("removeSchedule", scheduleId);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-            .headers(headers)
-            .body(new ResponseMessage(204, "일정 삭제 성공", responseMap));
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .headers(headers)
+                .body(new ResponseMessage(204, "일정 삭제 성공", responseMap));
     }
 
     /* Title을 통한 일정 검색 */
     @GetMapping("/search/{scheduleTitle}")
-    public ResponseEntity<ResponseSearchScheduleList> searchScheduleByTitle(@PathVariable String scheduleTitle){
+    public ResponseEntity<ResponseMessage> searchScheduleByTitle(@PathVariable String scheduleTitle){
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
         List<SearchScheduleListDTO> searchScheduleListDTO = scheduleService.searchSchedulesByTitle(scheduleTitle);
         ResponseSearchScheduleList searchResult = new ResponseSearchScheduleList(searchScheduleListDTO);
-        return ResponseEntity.ok(searchResult);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("searchScheduleByTitle", searchResult);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정 검색 성공", responseMap));
     }
 
     /* 일정 상태값에 따른 일정 목록 확인 */
     @GetMapping("/status")
-    public List<Schedule> getSchedulesByStatusCodes(@RequestParam List<Long> codeIds) {
-        return scheduleService.getSchedulesByStatusCodes(codeIds);
+    public ResponseEntity<ResponseMessage> getSchedulesByStatusCodes(@RequestParam List<Long> codeIds) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        // TODO. DTO로 변경
+        List<Schedule> schedules = scheduleService.getSchedulesByStatusCodes(codeIds);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("getSchedulesByStatusCodes", schedules);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정 목록 조회 성공", responseMap));
     }
 
     /* 날짜 설정 범위에 따른 일정 확인 */
     @GetMapping("/range")
-    public ResponseEntity<List<ResponseSchedule>> viewSchedulesByDateRange(
+    public ResponseEntity<ResponseMessage> viewSchedulesByDateRange(
         @RequestParam("startDate") LocalDate startDate,
         @RequestParam("endDate") LocalDate endDate) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<ScheduleDTO> scheduleDTOList = scheduleService.viewSchedulesByDateRange(startDate, endDate);
         List<ResponseSchedule> responseScheduleList =
             modelMapper.map(scheduleDTOList, new TypeToken<List<ResponseSchedule>>() {}.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseScheduleList);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("searchEmployeeByName", responseScheduleList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "날짜에 따른 일정 조회 성공", responseMap));
     }
 
     /* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
     @GetMapping("/thisweek")
-    public ResponseEntity<List<Schedule>> findSchedulesForThisWeek(){
+    public ResponseEntity<ResponseMessage> findSchedulesForThisWeek(){
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
         List<Schedule> schedules = scheduleService.getSchedulesForThisWeek();
-        return ResponseEntity.ok(schedules);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("findSchedulesForThisWeek", schedules);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "끝나야할 일정 목록 조회 성공", responseMap));
     }
 }

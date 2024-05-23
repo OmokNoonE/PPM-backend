@@ -8,6 +8,7 @@ import java.util.Map;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
+import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.schedule.aggregate.ScheduleRequirementMap;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleRequirementMapDTO;
@@ -44,8 +45,10 @@ public class ScheduleRequirementMapController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseScheduleRequirementMap> createScheduleRequirementsMap(@RequestBody
+    public ResponseEntity<ResponseMessage> createScheduleRequirementsMap(@RequestBody
     RequestCreateScheduleRequirementMapDTO requestCreateScheduleRequirementMapDTO) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         CreateScheduleRequirementMapDTO createScheduleRequirementMapDTO = modelMapper.map(
@@ -57,12 +60,20 @@ public class ScheduleRequirementMapController {
         ResponseScheduleRequirementMap responseScheduleRequirementMap = modelMapper.map(newScheduleRequirementMap,
             ResponseScheduleRequirementMap.class);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseScheduleRequirementMap);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("createScheduleRequirementsMap", responseScheduleRequirementMap);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정요구사항맵 등록 성공", responseMap));
     }
 
     @GetMapping("/view/{scheduleId}")
-    public ResponseEntity<List<ResponseScheduleRequirementMap>> viewScheduleRequirementsMap(
+    public ResponseEntity<ResponseMessage> viewScheduleRequirementsMap(
         @PathVariable("scheduleId") Long scheduleId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<ScheduleRequirementMapDTO> scheduleRequirementMapDTOList = scheduleRequirementMapService.viewScheduleRequirementsMap(
             scheduleId);
@@ -72,19 +83,24 @@ public class ScheduleRequirementMapController {
             new TypeToken<List<ScheduleRequirementMap>>() {
             }.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseScheduleRequirementMapList);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewScheduleRequirementsMap", responseScheduleRequirementMapList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "일정요구사항맵 조회 성공", responseMap));
     }
 
     @DeleteMapping("/remove/{requirementsMapId}")
     public ResponseEntity<ResponseMessage> removeStakeholder(@PathVariable("requirementsMapId") Long requirementsMapId){
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
-
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+        
         Long removedRequirementsMapId = scheduleRequirementMapService.removeScheduleRequirementsMap(requirementsMapId);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("result", removedRequirementsMapId);
+        responseMap.put("removeStakeholder", removedRequirementsMapId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .headers(headers)

@@ -2,6 +2,7 @@ package org.omoknoone.ppm.domain.project.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
@@ -32,12 +33,12 @@ public class ProjectController {
 
     @PostMapping("/create")
     public ResponseEntity<ResponseMessage> createProject(@RequestBody CreateProjectRequestDTO createProjectRequestDTO) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+        
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         int projectId = projectService.createProject(createProjectRequestDTO);
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("projectId", projectId);
+        responseMap.put("createProject", projectId);
 
         return ResponseEntity
                 .ok()
@@ -52,8 +53,9 @@ public class ProjectController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
         ProjectModificationResult result = projectService.modifyProject(modifyProjectHistoryDTO);
+      
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("projectId", result.getProjectId());
+        responseMap.put("modifyProject", result.getProjectId());
 
         return ResponseEntity
                 .ok()
@@ -63,24 +65,34 @@ public class ProjectController {
 
     /* 프로젝트 일정 10등분 */
     @GetMapping("/workingDaysDivideTen")
-    public ResponseEntity<List<LocalDate>> divideWorkingDays(
+    public ResponseEntity<ResponseMessage> divideWorkingDays(
         @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
         @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
     ) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+        
         List<LocalDate> dividedDates = projectService.divideWorkingDaysIntoTen(startDate, endDate);
-        return ResponseEntity.ok(dividedDates);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("workingDaysDivideTen", dividedDates);
+        
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "프로젝트 일정 10등분 성공", responseMap));
     }
+
     // 프로젝트 복사(프로젝트, 일정)
     @PostMapping("/copy/{copyProjectId}")
     public ResponseEntity<ResponseMessage> copyProject(@PathVariable int copyProjectId) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         int newProjectId = projectService.copyProject(copyProjectId);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("newProjectId", newProjectId);
+        responseMap.put("copyProject", newProjectId);
 
         return ResponseEntity
                 .ok()
