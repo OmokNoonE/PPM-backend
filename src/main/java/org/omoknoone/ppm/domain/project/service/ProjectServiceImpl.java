@@ -15,14 +15,14 @@ import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
 import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
-import org.omoknoone.ppm.domain.project.vo.ResponseProject;
-import org.omoknoone.ppm.domain.projectDashboard.service.GraphService;
+import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -45,29 +45,38 @@ public class ProjectServiceImpl implements ProjectService {
 
         int projectId = project.getProjectId();
 
-        /* 프로젝트가 생성될 때 해당 프로젝트id에 해당하는 graph들을 생성함 */
-        // graphService.initGraph(projectId,);
-        
         return projectId;
     }
 
     @Transactional
     @Override
-    public int modifyProject(ModifyProjectHistoryDTO modifyProjectHistoryDTO) {
-
+    public ProjectModificationResult modifyProject(ModifyProjectHistoryDTO modifyProjectHistoryDTO) {
         Project project = projectRepository.findById(modifyProjectHistoryDTO.getProjectId())
-                                                .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(IllegalArgumentException::new);
 
-        System.out.println("project = " + project);
+        LocalDate oldStartDate = project.getProjectStartDate();
+        LocalDate oldEndDate = project.getProjectEndDate();
+
+        // DTO로 프로젝트 수정
         project.modify(modifyProjectHistoryDTO);
         projectRepository.save(project);
-        System.out.println("project = " + project);
 
-        /* 수정 로그 작성 */
+        // 저장 후 다시 읽어서 새로운 값 가져오기 (실제로 프로젝트가 수정되었을 때만 업데이트 하기위함)
+        Project updatedProject = projectRepository.findById(modifyProjectHistoryDTO.getProjectId())
+            .orElseThrow(IllegalArgumentException::new);
+
+        LocalDate newStartDate = updatedProject.getProjectStartDate();
+        LocalDate newEndDate = updatedProject.getProjectEndDate();
+
+        // 날짜가 변경되었다면 변경 사실을 AOP에 전달하여 LineGraph Update
+        boolean datesModified = !Objects.equals(oldStartDate, newStartDate) || !Objects.equals(oldEndDate, newEndDate);
+
+        // 수정 로그 작성
         projectHistoryService.createProjectHistory(modifyProjectHistoryDTO);
 
-        return projectRepository.findById(modifyProjectHistoryDTO.getProjectId()).get().getProjectId();
+        return new ProjectModificationResult(updatedProject.getProjectId(), datesModified);
     }
+
 
     @Transactional
     @Override

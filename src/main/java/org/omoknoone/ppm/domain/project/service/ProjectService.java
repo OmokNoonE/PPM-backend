@@ -7,12 +7,12 @@ import java.util.List;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
-import org.omoknoone.ppm.domain.project.vo.ResponseProject;
+import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
 
 public interface ProjectService {
     int createProject(CreateProjectRequestDTO createProjectRequestDTO);
 
-    int modifyProject(ModifyProjectHistoryDTO modifyProjectRequestDTO);
+	ProjectModificationResult modifyProject(ModifyProjectHistoryDTO modifyProjectRequestDTO);
 	List<LocalDate> divideWorkingDaysIntoTen(LocalDate startDate, LocalDate endDate);
   
     int copyProject(int copyProjectId);
