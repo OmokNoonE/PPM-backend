@@ -3,14 +3,11 @@ package org.omoknoone.ppm.domain.projectDashboard.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
@@ -21,9 +18,6 @@ import org.omoknoone.ppm.domain.projectmember.dto.viewProjectMembersByProjectRes
 import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +46,7 @@ public class GraphServiceImpl implements GraphService {
         List<Map<String, Object>> gaugeSeries = List.of(
             Map.of(
                 "name", "전체진행률",
-                "data", new int[] {0}
+                "data", new int[1]
             )
         );
 
@@ -229,27 +223,24 @@ public class GraphServiceImpl implements GraphService {
 
     // 전체진행률 (게이지) 업데이트
     /* 메모. 전체진행률이 [10] <- 이런 식으로 한 칸짜리 배열 안에 있어야 front에서 오류 안 남 */
-    @Transactional
-    public void updateGauge(String projectId) {
+@Transactional
+public void updateGauge(String projectId, String type) {
+    Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
 
-        Criteria criteria = new Criteria().andOperator(
-                Criteria.where("projectId").is(projectId),
-                Criteria.where("type").is("gauge"),
-                Criteria.where("series.name").is("전체진행률")
-        );
+    if(graph != null) {
+    int[] newdata = new int[1];
+    newdata[0] = scheduleService.updateGauge(Long.valueOf(projectId));
 
-        Query query = new Query(criteria);
+    Map<String, Object> data = new HashMap<>();
+    data.put("name", graph.getSeries().get(0).get("name"));
+    data.put("data", newdata);
+    graph.getSeries().set(0, data);
 
-        Update update = new Update();
-        update.set("series.$.data", scheduleService.updateGauge(Long.parseLong(projectId)));
-
-        mongoTemplate.updateMulti(
-                query,
-                update,
-                Graph.class
-        );
+    graphRepository.save(graph);
 
     }
+}
+
 
     @Transactional
     public void updateGaugeAll(){
@@ -261,7 +252,7 @@ public class GraphServiceImpl implements GraphService {
             .toList();
 
         for (Integer projectId : inProgressProjectIds) {
-            updateGauge(String.valueOf(projectId));
+            updateGauge(String.valueOf(projectId), "gauge");
         }
 
     }
@@ -274,6 +265,7 @@ public class GraphServiceImpl implements GraphService {
 
         Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
 
+        if(graph != null) {
         for (int i = 0; i < datas.length - 1; i++) {
             Map<String, Object> data = new HashMap<>();
             data.put("name", graph.getSeries().get(i).get("name"));
@@ -283,6 +275,7 @@ public class GraphServiceImpl implements GraphService {
 
         graphRepository.save(graph);
 
+        }
     }
 
     @Transactional
@@ -339,6 +332,8 @@ public class GraphServiceImpl implements GraphService {
 
         Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
 
+        if(graph != null) {
+
         Map<String, Object> updates = scheduleService.updateColumn(Long.parseLong(projectId));
 
         List<String> updateCategories = (List<String>) updates.get("categories");
@@ -356,6 +351,8 @@ public class GraphServiceImpl implements GraphService {
 
             graphRepository.save(graph);
         }
+    }
+
     }
     @Transactional
     public void updateColumnAll(){
@@ -379,6 +376,9 @@ public class GraphServiceImpl implements GraphService {
     public void updateLine(String projectId, String type) {
 
         Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
+
+        if(graph != null) {
+
         List<String> categories = graph.getCategories();
         List<Map<String, Object>> series = graph.getSeries();
 
@@ -458,6 +458,9 @@ public class GraphServiceImpl implements GraphService {
         }
 
         graphRepository.save(graph);
+    }
+
+
     }
 
     @Transactional
