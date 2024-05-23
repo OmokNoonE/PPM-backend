@@ -4,6 +4,7 @@ package org.omoknoone.ppm.domain.stakeholders.controller;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
+import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
 import org.omoknoone.ppm.domain.stakeholders.dto.*;
@@ -36,7 +37,9 @@ public class StakeholdersController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseStakeholders> createStakeholder(@RequestBody RequestCreateStakeholdersDTO requestCreateStakeholdersDTO) {
+    public ResponseEntity<ResponseMessage> createStakeholder(@RequestBody RequestCreateStakeholdersDTO requestCreateStakeholdersDTO) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         CreateStakeholdersDTO createStakeholdersDTO = modelMapper.map(requestCreateStakeholdersDTO, CreateStakeholdersDTO.class);
@@ -45,24 +48,37 @@ public class StakeholdersController {
 
         ResponseStakeholders responseStakeholders = modelMapper.map(newStakeholders, ResponseStakeholders.class);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseStakeholders);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("createStakeholder", responseStakeholders);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "이해관계자 등록 성공", responseMap));
     }
 
     @GetMapping("/view/{scheduleId}")
-    public ResponseEntity<List<ResponseStakeholders>> viewStakeholders(@PathVariable("scheduleId") Long scheduleId){
+    public ResponseEntity<ResponseMessage> viewStakeholders(@PathVariable("scheduleId") Long scheduleId){
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<StakeholdersDTO> stakeholdersDTOList = stakeholdersService.viewStakeholders(scheduleId);
         List<ResponseStakeholders> responseStakeholdersList = modelMapper.map(stakeholdersDTOList,
                 new TypeToken<List<Stakeholders>>(){}.getType());
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseStakeholdersList);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewStakeholders", responseStakeholdersList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "이해관계자 조회 성공", responseMap));
     }
 
     @PutMapping("/modify")
     public ResponseEntity<ResponseMessage> modifyStakeholder(@RequestBody RequestModifyStakeholdersDTO requestModifyStakeholdersDTO) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         ModifyStakeholdersDTO modifyStakeholdersDTO = modelMapper.map(requestModifyStakeholdersDTO, ModifyStakeholdersDTO.class);
@@ -70,9 +86,10 @@ public class StakeholdersController {
         Long stakeholdersId = stakeholdersService.modifyStakeholder(modifyStakeholdersDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("result", stakeholdersId);
+        responseMap.put("modifyStakeholder", stakeholdersId);
 
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity
+                .ok()
                 .headers(headers)
                 .body(new ResponseMessage(200, "이해관계자 수정 성공", responseMap));
     }
@@ -80,15 +97,15 @@ public class StakeholdersController {
     @DeleteMapping("/remove/{stakeholdersId}")
     public ResponseEntity<ResponseMessage> removeStakeholder(@PathVariable("stakeholdersId") Long stakeholdersId) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         Long removedStakeholdersId = stakeholdersService.removeStakeholder(stakeholdersId);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("result", removedStakeholdersId);
+        responseMap.put("removeStakeholder", removedStakeholdersId);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+        return ResponseEntity
+                .ok()
                 .headers(headers)
                 .body(new ResponseMessage(204, "이해관계자 삭제 성공", responseMap));
     }

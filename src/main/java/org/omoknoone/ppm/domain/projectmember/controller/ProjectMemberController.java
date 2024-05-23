@@ -3,6 +3,7 @@ package org.omoknoone.ppm.domain.projectmember.controller;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.common.annotation.Permission;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
@@ -30,14 +31,14 @@ public class ProjectMemberController {
 
     @GetMapping("/list/{projectId}")
     public ResponseEntity<ResponseMessage> viewProjectMembersByProject(@PathVariable("projectId") Integer projectId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<viewProjectMembersByProjectResponseDTO> responseDTOs
                 = projectMemberService.viewProjectMembersByProject(projectId);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("프로젝트 구성원 목록", responseDTOs);
+        responseMap.put("viewProjectMembersByProject", responseDTOs);
 
         return ResponseEntity
                 .ok()
@@ -47,13 +48,13 @@ public class ProjectMemberController {
 
     @PostMapping("/create")
     public ResponseEntity<ResponseMessage> createProjectMember(@RequestBody CreateProjectMemberRequestDTO requestDTO) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         Integer projectMemberId = projectMemberService.createProjectMember(requestDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("생성된 프로젝트 멤버 ID", projectMemberId);
+        responseMap.put("createProjectMember", projectMemberId);
 
         return ResponseEntity
                 .ok()
@@ -65,20 +66,20 @@ public class ProjectMemberController {
     public ResponseEntity<ResponseMessage> removeProjectMember(
             @PathVariable Integer projectMemberId,
             @RequestBody ModifyProjectMemberRequestDTO requestDTO) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         requestDTO.setProjectMemberId(projectMemberId);
 
         try {
             projectMemberService.removeProjectMember(requestDTO);
             Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("제외된 프로젝트 멤버 ID", projectMemberId);
+            responseMap.put("removeProjectMember", projectMemberId);
 
             return ResponseEntity
                     .ok()
                     .headers(headers)
-                    .body(new ResponseMessage(200, "구성원 제외가 완료.", responseMap));
+                    .body(new ResponseMessage(200, "구성원 제외 성공", responseMap));
         } catch (EntityNotFoundException ex) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -90,15 +91,15 @@ public class ProjectMemberController {
     public ResponseEntity<ResponseMessage> reactivateProjectMember(
             @PathVariable Integer projectMemberId,
             @RequestBody ModifyProjectMemberRequestDTO requestDTO) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         requestDTO.setProjectMemberId(projectMemberId);
 
         try {
             projectMemberService.reactivateProjectMember(requestDTO);
             Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("재활성화된 프로젝트 멤버 ID", projectMemberId);
+            responseMap.put("reactivateProjectMember", projectMemberId);
 
             return ResponseEntity
                     .ok()
@@ -117,14 +118,14 @@ public class ProjectMemberController {
 
     @PutMapping("/modify/{projectMemberId}")
     public ResponseEntity<ResponseMessage> modifyProjectMember(@RequestBody ModifyProjectMemberRequestDTO requestDTO) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         try {
             Integer projectMemberId = projectMemberService.modifyProjectMember(requestDTO);
 
             Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("수정된 프로젝트 멤버 ID", projectMemberId);
+            responseMap.put("modifyProjectMember", projectMemberId);
 
             return ResponseEntity
                     .ok()
