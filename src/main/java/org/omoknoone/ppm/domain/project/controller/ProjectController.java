@@ -6,19 +6,17 @@ import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
-import org.omoknoone.ppm.domain.project.dto.ModifyProjectRequestDTO;
+import org.omoknoone.ppm.domain.project.dto.ViewProjectResponseDTO;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.Charset;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,5 +96,39 @@ public class ProjectController {
                 .ok()
                 .headers(headers)
                 .body(new ResponseMessage(200, "프로젝트 복사 성공", responseMap));
+    }
+
+    // 프로젝트 목록 조회
+    @GetMapping("/list/{employeeId}")
+    public ResponseEntity<ResponseMessage> viewProjectList(@PathVariable String employeeId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        List<ViewProjectResponseDTO> projectList = projectService.viewProjectList(employeeId);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewProjectList", projectList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "프로젝트 목록 조회 성공", responseMap));
+    }
+
+    // 프로젝트 상세 조회
+    @GetMapping("view/{projectId}")
+    public ResponseEntity<ResponseMessage> viewProject(@PathVariable int projectId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        ViewProjectResponseDTO project = projectService.viewProject(projectId);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewProject", project);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "프로젝트 상세 조회 성공", responseMap));
     }
 }

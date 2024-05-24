@@ -11,4 +11,6 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	/* 현재 상태가 "착수"인 프로젝트들 조회 */
 	@Query("SELECT p FROM Project p WHERE p.projectStatus = 10202")
 	List<Project> findAllByProjectStatusIs10202();
+
+	List<Project> findAllByProjectIdIn(List<Integer> projectIds);
 }

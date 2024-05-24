@@ -15,8 +15,11 @@ import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
+import org.omoknoone.ppm.domain.project.dto.ViewProjectResponseDTO;
 import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
 import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
+import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
+import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final HolidayRepository holidayRepository;
     private final ScheduleRepository scheduleRepository;
+    private final ProjectMemberService projectMemberService;
     // private final GraphService graphService;
     private final ModelMapper modelMapper;
 
@@ -213,5 +217,35 @@ public class ProjectServiceImpl implements ProjectService {
     public List<Project> viewInProgressProject() {
 
         return projectRepository.findAllByProjectStatusIs10202();
+    }
+
+    @Override
+    public List<ViewProjectResponseDTO> viewProjectList(String employeeId) {
+
+        List<ProjectMember> projectMemberList = projectMemberService.viewProjectMemberListByEmployeeId(employeeId);
+
+        log.info("projectMemberList: {}", projectMemberList);
+
+        List<Project> projectList = projectRepository.findAllByProjectIdIn(
+            projectMemberList.stream()
+                .map(ProjectMember::getProjectMemberProjectId)
+                .toList()
+        );
+
+        log.info("projectList: {}", projectList);
+
+        return projectList.stream()
+            .map(project -> modelMapper.map(project, ViewProjectResponseDTO.class))
+            .toList();
+    }
+
+    @Override
+    public ViewProjectResponseDTO viewProject(int projectId) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new);
+
+        log.info("project: {}", project);
+
+        return modelMapper.map(project, ViewProjectResponseDTO.class);
     }
 }

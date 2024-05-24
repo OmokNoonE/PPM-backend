@@ -91,4 +91,10 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         return projectMember.getProjectMemberId();
     }
 
+    @Override
+    public List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId) {
+
+        return projectMemberRepository.findByProjectMemberEmployeeId(employeeId);
+    }
+
 }
