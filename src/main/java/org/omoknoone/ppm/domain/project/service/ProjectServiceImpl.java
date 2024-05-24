@@ -1,27 +1,28 @@
 package org.omoknoone.ppm.domain.project.service;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
+import org.omoknoone.ppm.domain.project.dto.ViewProjectResponseDTO;
 import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
 import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
+import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
+import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,6 +35,8 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final HolidayRepository holidayRepository;
     private final ScheduleRepository scheduleRepository;
+    private final ProjectMemberService projectMemberService;
+    private final CommonCodeService commonCodeService;
     // private final GraphService graphService;
     private final ModelMapper modelMapper;
 
@@ -213,5 +216,43 @@ public class ProjectServiceImpl implements ProjectService {
     public List<Project> viewInProgressProject() {
 
         return projectRepository.findAllByProjectStatusIs10202();
+    }
+
+    @Override
+    public List<ViewProjectResponseDTO> viewProjectList(String employeeId) {
+
+        List<ProjectMember> projectMemberList = projectMemberService.viewProjectMemberListByEmployeeId(employeeId);
+
+        List<Project> projectList = projectRepository.findAllByProjectIdIn(
+            projectMemberList.stream()
+                .map(ProjectMember::getProjectMemberProjectId)
+                .toList()
+        );
+
+        return projectList.stream()
+                .map(project -> {
+                    String projectStatusName = String.valueOf(commonCodeService.viewCommonCodeById(
+                            (long) project.getProjectStatus()).getCodeName());
+                    return ViewProjectResponseDTO.fromProject(project, projectStatusName);
+                })
+                .toList();
+    }
+
+    @Override
+    public ViewProjectResponseDTO viewProject(int projectId) {
+
+        Project project = projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new);
+
+        String projectStatusName = String.valueOf(commonCodeService.viewCommonCodeById(
+                                                                    (long) project.getProjectStatus()).getCodeName());
+
+        return ViewProjectResponseDTO.builder()
+                .projectId(project.getProjectId())
+                .projectTitle(project.getProjectTitle())
+                .projectStartDate(String.valueOf(project.getProjectStartDate()))
+                .projectEndDate(String.valueOf(project.getProjectEndDate()))
+                .projectStatus(projectStatusName) // Set the code_name as projectStatus
+                .projectModifiedDate(project.getProjectModifiedDate())
+                .build();
     }
 }

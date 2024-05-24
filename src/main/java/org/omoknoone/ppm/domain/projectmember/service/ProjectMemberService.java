@@ -1,5 +1,6 @@
 package org.omoknoone.ppm.domain.projectmember.service;
 
+import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.viewProjectMembersByProjectResponseDTO;
@@ -18,4 +19,6 @@ public interface ProjectMemberService {
     Integer modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO);
 
     Integer viewProjectMemberId(String employeeId, Integer projectId);
+
+    List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId);
 }

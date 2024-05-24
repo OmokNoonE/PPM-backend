@@ -1,0 +1,9 @@
+### 프로젝트 목록 조회
+@employeeId = EP001
+GET http://localhost:8888/projects/list/{{employeeId}}
+Accept: application/json
+
+### 프로젝트 상세 조회
+@projectId = 6
+GET http://localhost:8888/projects/view/{{projectId}}
+Accept: application/json
