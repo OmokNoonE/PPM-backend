@@ -41,7 +41,7 @@ public class RequirementsController {
 		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
 		List<RequirementsListByProjectDTO> projectRequirements =
-			requirementsService.viewRequirementsByProjectId(projectId);
+			requirementsService.viewRequirementsByProjectId(projectId, false);
 
 		ResponseRequirementsListByProject projectRequirementsList =
 			new ResponseRequirementsListByProject(projectRequirements);
@@ -131,7 +131,7 @@ public class RequirementsController {
 		ResponseRequirement removedRequirement = requirementsService.removeRequirement(modifyRequirementRequestDTO);
 
 		Map<String, Object> responseMap = new HashMap<>();
-		responseMap.put("removeRequirement", removedRequirement.getRequirementsId());
+		responseMap.put("removeRequirement", removedRequirement);
 		if (removedRequirement == null) {
 			return ResponseEntity.notFound().build();
 		}
