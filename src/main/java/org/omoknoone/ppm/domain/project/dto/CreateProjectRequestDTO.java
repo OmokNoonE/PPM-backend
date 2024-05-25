@@ -14,10 +14,10 @@ public class CreateProjectRequestDTO {
     private String projectTitle;
     private LocalDate projectStartDate;
     private LocalDate projectEndDate;
-    private int projectStatus;
+    private String projectStatus;
 
     @Builder
-    public CreateProjectRequestDTO(String projectTitle, LocalDate projectStartDate, LocalDate projectEndDate, int projectStatus) {
+    public CreateProjectRequestDTO(String projectTitle, LocalDate projectStartDate, LocalDate projectEndDate, String projectStatus) {
         this.projectTitle = projectTitle;
         this.projectStartDate = projectStartDate;
         this.projectEndDate = projectEndDate;

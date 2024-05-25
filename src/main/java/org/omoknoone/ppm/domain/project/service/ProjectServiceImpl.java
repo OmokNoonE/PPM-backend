@@ -3,6 +3,8 @@ package org.omoknoone.ppm.domain.project.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeGroupResponseDTO;
+import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
@@ -43,7 +45,19 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     @Override
     public int createProject(CreateProjectRequestDTO createProjectRequestDTO) {
-        Project project = modelMapper.map(createProjectRequestDTO, Project.class);
+
+        CommonCodeResponseDTO commonCodeResponseDTO = commonCodeService.
+                                                viewCommonCodeByCodeName(createProjectRequestDTO.getProjectStatus());
+        int projectStatus = Integer.parseInt(commonCodeResponseDTO.getCodeId().toString());
+
+        Project project = Project
+                .builder()
+                .projectTitle(createProjectRequestDTO.getProjectTitle())
+                .projectStartDate(createProjectRequestDTO.getProjectStartDate())
+                .projectEndDate(createProjectRequestDTO.getProjectEndDate())
+                .projectIsDeleted(false)
+                .build();
+        project.saveProjectStatus(projectStatus);
 
         projectRepository.save(project);
 
