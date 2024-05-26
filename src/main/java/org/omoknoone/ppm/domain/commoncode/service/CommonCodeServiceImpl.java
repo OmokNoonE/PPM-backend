@@ -1,6 +1,7 @@
 package org.omoknoone.ppm.domain.commoncode.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCode;
 import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCodeGroup;
 import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
@@ -20,12 +21,14 @@ public class CommonCodeServiceImpl implements CommonCodeService {
 
     private final CommonCodeRepository commonCodeRepository;
     private final CommonCodeGroupRepository commonCodeGroupRepository;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public CommonCodeServiceImpl(CommonCodeRepository commonCodeRepository,
-                                 CommonCodeGroupRepository commonCodeGroupRepository) {
+                                 CommonCodeGroupRepository commonCodeGroupRepository, ModelMapper modelMapper) {
         this.commonCodeRepository = commonCodeRepository;
         this.commonCodeGroupRepository = commonCodeGroupRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -108,5 +111,14 @@ public class CommonCodeServiceImpl implements CommonCodeService {
                         code.getCodeName(),
                         code.getCodeDescription()))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CommonCodeResponseDTO viewCommonCodeByCodeName(String codeName) {
+
+        CommonCode code = commonCodeRepository.findByCodeName(codeName);
+
+        return modelMapper.map(code, CommonCodeResponseDTO.class);
     }
 }

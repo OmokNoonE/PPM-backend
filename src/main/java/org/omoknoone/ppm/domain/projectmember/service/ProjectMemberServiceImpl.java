@@ -2,7 +2,10 @@ package org.omoknoone.ppm.domain.projectmember.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.omoknoone.ppm.domain.permission.dto.CreatePermissionDTO;
+import org.omoknoone.ppm.domain.permission.service.PermissionService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
@@ -15,12 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     private final ProjectMemberRepository projectMemberRepository;
     private final ProjectMemberHistoryService projectMemberHistoryService;
+    private final PermissionService permissionService;
     private final ModelMapper modelMapper;
     private final Environment environment;
 
@@ -38,9 +43,25 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Transactional
     @Override
     public Integer createProjectMember(CreateProjectMemberRequestDTO dto) {
-        ProjectMember newMember = modelMapper.map(dto, ProjectMember.class);
 
-//        projectMemberRepository.save(newMember);
+        // 구성원 생성
+        ProjectMember newMember = ProjectMember
+                .builder()
+                .projectMemberEmployeeId(dto.getProjectMemberEmployeeId())
+                .projectMemberProjectId(dto.getProjectMemberProjectId())
+                .projectMemberIsExcluded(false)
+                .build();
+
+        projectMemberRepository.save(newMember);
+
+        // 권한 생성
+        CreatePermissionDTO permissionDTO = CreatePermissionDTO.builder()
+                .permissionProjectMemberId(Long.valueOf(newMember.getProjectMemberId()))
+                .permissionRoleName(Long.valueOf(dto.getProjectMemberRoleId()))
+                .permissionScheduleId(dto.getPermissionScheduleId())
+                .build();
+
+        permissionService.createPermission(permissionDTO);
 
         return newMember.getProjectMemberId();
     }

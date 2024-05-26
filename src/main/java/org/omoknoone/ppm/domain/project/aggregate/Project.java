@@ -87,4 +87,8 @@ public class Project {
             this.projectStatus = modifyProjectRequestDTO.getProjectStatus();
         }
     }
+
+    public void saveProjectStatus(int projectStatus) {
+        this.projectStatus = projectStatus;
+    }
 }
