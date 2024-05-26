@@ -4,21 +4,25 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
 import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
+@ToString
 @NoArgsConstructor
 @Getter
 @Entity
 @Table(name = "project_member")
 public class ProjectMember {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_member_id", nullable = false)
     private Integer projectMemberId;
 
-    @CreatedDate
+    @CreationTimestamp
     @Column(name = "project_member_created_date", nullable = false, length = 30)
     private String projectMemberCreatedDate;
 
