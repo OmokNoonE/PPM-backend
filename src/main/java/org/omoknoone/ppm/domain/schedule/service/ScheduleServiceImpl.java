@@ -29,10 +29,11 @@ import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
@@ -41,6 +42,15 @@ public class ScheduleServiceImpl implements ScheduleService {
 	private final ScheduleRepository scheduleRepository;
 	private final ScheduleHistoryService scheduleHistoryService;
 	private final ProjectService projectService;
+
+	// TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
+	public ScheduleServiceImpl(@Lazy ProjectService projectService, ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository, HolidayRepository holidayRepository, ModelMapper modelMapper) {
+		this.projectService = projectService;
+		this.scheduleHistoryService = scheduleHistoryService;
+		this.scheduleRepository = scheduleRepository;
+		this.holidayRepository = holidayRepository;
+		this.modelMapper = modelMapper;
+	}
 
 	@Override
 	@Transactional
