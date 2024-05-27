@@ -51,6 +51,9 @@ dependencies {
     // mongoDB
     implementation ('org.springframework.boot:spring-boot-starter-data-mongodb')
 
+    // Jasypt
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+
 }
 
 tasks.named('test') {
