@@ -2,13 +2,10 @@ package org.omoknoone.ppm.domain.employee.dto;
 
 import java.time.LocalDate;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @NoArgsConstructor
-@Getter
+@Getter @Setter
 @ToString
 public class SignUpEmployeeRequestDTO {
 

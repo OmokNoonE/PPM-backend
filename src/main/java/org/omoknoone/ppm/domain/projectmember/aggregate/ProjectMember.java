@@ -22,7 +22,6 @@ public class ProjectMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_member_id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer projectMemberId;
 
     @CreationTimestamp
