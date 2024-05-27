@@ -270,7 +270,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<ProjectMember> projectMemberList = projectMemberService.viewProjectMemberListByEmployeeId(employeeId);
 
-        List<Project> projectList = projectRepository.findAllByProjectIdIn(
+        List<Project> projectList = projectRepository.findAllByProjectIdInOrderByProjectIdDesc(
             projectMemberList.stream()
                 .map(ProjectMember::getProjectMemberProjectId)
                 .toList()
