@@ -19,4 +19,7 @@ public interface GraphService {
 	void updateColumnAll();
 	void updateLineAll();
 
+	void deleteGraphByProjectId(String projectId);
+
+	void deleteAllGraph();
 }
