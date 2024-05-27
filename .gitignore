@@ -5,6 +5,15 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# build 디렉토리 내 모든 것을 무시
+build/classes/
+build/generated/
+build/reports/
+build/resources/
+build/test-results/
+build/tmp/
+build/resolvedMainClassName
+
 ### STS ###
 .apt_generated
 .classpath
@@ -35,3 +44,4 @@ out/
 
 ### VS Code ###
 .vscode/
+
