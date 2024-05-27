@@ -329,7 +329,7 @@ public class ScheduleController {
 
     /* 일정 시트에 사용될 데이터 수집 */
     @GetMapping("/sheet/{projectId}")
-    public ResponseEntity<ResponseMessage> getSheetData(@PathVariable Long projectId, @RequestBody String employeeId){
+    public ResponseEntity<ResponseMessage> getSheetData(@PathVariable Long projectId, @RequestHeader String employeeId){
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
