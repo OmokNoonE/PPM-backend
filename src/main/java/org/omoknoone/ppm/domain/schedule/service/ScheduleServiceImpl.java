@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
@@ -436,12 +437,24 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRatios;
     }
 
-    /* 일정 시트에 사용될 데이터 수집 */
+    private void addChildren(ScheduleSheetDataDTO parent, List<ScheduleSheetDataDTO> allSchedules) {
+        for (ScheduleSheetDataDTO schedule : allSchedules) {
+            if (schedule.getScheduleParentScheduleId() != null && schedule.getScheduleParentScheduleId().equals(parent.getScheduleId())) {
+                if (parent.get__children() == null) {
+                    parent.set__children(new ArrayList<>());
+                }
+                if (!parent.get__children().contains(schedule)) {
+                    parent.get__children().add(schedule);
+                    addChildren(schedule, allSchedules);
+                }
+            }
+        }
+    }
+
     @Override
     public List<ResponseScheduleSheetData> getSheetData(Long projectId, String employeeId) {
-
-        List<Schedule> scheduleList =
-            scheduleRepository.findSchedulesByScheduleProjectIdAndScheduleIsDeleted(projectId, false);
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesByScheduleProjectIdAndScheduleIsDeleted(projectId,
+            false);
         if (scheduleList == null || scheduleList.isEmpty()) {
             throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
         }
@@ -449,10 +462,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             new TypeToken<List<ScheduleSheetDataDTO>>() {
             }.getType());
 
-        Long[] scheduleIdList = scheduleList.stream()
-            .map(Schedule::getScheduleId)
-            .toArray(Long[]::new);
-
+        Long[] scheduleIdList = scheduleList.stream().map(Schedule::getScheduleId).toArray(Long[]::new);
         List<StakeholdersEmployeeInfoDTO> stakeholdersEmployeeInfoDTOList = stakeholdersService.viewStakeholdersEmployeeInfo(
             scheduleIdList);
 
@@ -468,25 +478,15 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
         }
 
-        Iterator<ScheduleSheetDataDTO> iterator = scheduleSheetDataDTOList.iterator();
-        while (iterator.hasNext()) {
-            ScheduleSheetDataDTO dto = iterator.next();
-            if (dto.getScheduleParentScheduleId() != null) {
-                for (ScheduleSheetDataDTO parentDto : scheduleSheetDataDTOList) {
-                    if (parentDto.getScheduleId().equals(dto.getScheduleParentScheduleId())) {
-                        if (parentDto.get__children() == null) {
-                            parentDto.set__children(new ArrayList<>());
-                        }
-                        parentDto.get__children().add(dto);
-                        iterator.remove();
-                        break;
-                    }
-                }
-            }
+        for (ScheduleSheetDataDTO scheduleSheetDataDTO : scheduleSheetDataDTOList) {
+            addChildren(scheduleSheetDataDTO, scheduleSheetDataDTOList);
         }
 
-        // scheduleSheetDataDTOList를 형태에 맞추어 반환
-        List<ResponseScheduleSheetData> responseScheduleSheetDataList = modelMapper.map(scheduleSheetDataDTOList,
+        List<ScheduleSheetDataDTO> rootSchedules = scheduleSheetDataDTOList.stream()
+            .filter(schedule -> schedule.getScheduleParentScheduleId() == null)
+            .collect(Collectors.toList());
+
+        List<ResponseScheduleSheetData> responseScheduleSheetDataList = modelMapper.map(rootSchedules,
             new TypeToken<List<ResponseScheduleSheetData>>() {
             }.getType());
 
