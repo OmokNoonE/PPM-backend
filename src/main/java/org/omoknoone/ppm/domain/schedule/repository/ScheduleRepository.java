@@ -106,7 +106,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("SELECT new org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO" +
         "(s.scheduleId, s.scheduleTitle, s.scheduleContent, s.scheduleStartDate" +
         ", s.scheduleEndDate, s.scheduleDepth, s.schedulePriority, s.scheduleProgress" +
-        ", s.scheduleStatus, s.scheduleManHours, s.scheduleParentScheduleId, s.schedulePrecedingScheduleId" +
+        ", CAST(s.scheduleStatus AS string), s.scheduleManHours, s.scheduleParentScheduleId, s.schedulePrecedingScheduleId" +
         ", s.scheduleCreatedDate, s.scheduleModifiedDate, s.scheduleIsDeleted" +
         ", s.scheduleDeletedDate, s.scheduleProjectId) " +
         "FROM Schedule s " +
@@ -117,7 +117,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("SELECT new org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO" +
         "(s.scheduleId, s.scheduleTitle, s.scheduleContent, s.scheduleStartDate" +
         ", s.scheduleEndDate, s.scheduleDepth, s.schedulePriority, s.scheduleProgress" +
-        ", s.scheduleStatus, s.scheduleManHours, s.scheduleParentScheduleId, s.schedulePrecedingScheduleId" +
+        ", CAST(s.scheduleStatus AS string), s.scheduleManHours, s.scheduleParentScheduleId, s.schedulePrecedingScheduleId" +
         ", s.scheduleCreatedDate, s.scheduleModifiedDate, s.scheduleIsDeleted" +
         ", s.scheduleDeletedDate, s.scheduleProjectId) " +
         "FROM Schedule s " +
