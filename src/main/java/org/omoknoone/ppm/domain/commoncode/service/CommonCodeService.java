@@ -16,4 +16,6 @@ public interface CommonCodeService {
      CommonCodeGroupResponseDTO viewCommonCodeGroupById(Long groupId);
 
      List<CommonCodeResponseDTO> viewCommonCodesByGroupName(String codeGroupName);
+
+     CommonCodeResponseDTO viewCommonCodeByCodeName(String codeName);
 }

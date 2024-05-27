@@ -26,15 +26,13 @@ public class RequirementsServiceImpl implements RequirementsService {
 	/* ProjectId를 통한 RequirementsList 조회 */
 	@Transactional(readOnly = true)
 	@Override
-	public List<RequirementsListByProjectDTO> viewRequirementsByProjectId(Long projectId) {
+	public List<RequirementsListByProjectDTO> viewRequirementsByProjectId(Long projectId, Boolean isDeleted) {
 
-			List<Requirements> requirements = requirementsRepository.findByRequirementsProjectId(projectId);
+		List<Requirements> requirements = requirementsRepository.findByRequirementsProjectIdAndRequirementsIsDeleted(projectId, Boolean.valueOf(isDeleted));
 
-			List<RequirementsListByProjectDTO> projectRequirementsList = requirements.stream()
+		return requirements.stream()
 				.map(requirement -> modelMapper.map(requirement, RequirementsListByProjectDTO.class))
 				.toList();
-
-			return projectRequirementsList;
 	}
 
 	/* ProjectId, RequirementsId를 통한 Requirement 조회 */
@@ -91,5 +89,4 @@ public class RequirementsServiceImpl implements RequirementsService {
 
 		return modelMapper.map(requirements, ResponseRequirement.class);
 	}
-
 }

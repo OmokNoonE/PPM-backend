@@ -29,10 +29,11 @@ import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
@@ -41,6 +42,15 @@ public class ScheduleServiceImpl implements ScheduleService {
 	private final ScheduleRepository scheduleRepository;
 	private final ScheduleHistoryService scheduleHistoryService;
 	private final ProjectService projectService;
+
+	// TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
+	public ScheduleServiceImpl(@Lazy ProjectService projectService, ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository, HolidayRepository holidayRepository, ModelMapper modelMapper) {
+		this.projectService = projectService;
+		this.scheduleHistoryService = scheduleHistoryService;
+		this.scheduleRepository = scheduleRepository;
+		this.holidayRepository = holidayRepository;
+		this.modelMapper = modelMapper;
+	}
 
 	@Override
 	@Transactional
@@ -372,31 +382,47 @@ public class ScheduleServiceImpl implements ScheduleService {
 		List<Schedule> schedules = scheduleRepository.findAll();
 
 		// 날짜 구간별로 스케줄을 분류
-		int[] scheduleRatios = new int[dividedDates.size() - 1];
+		int[] scheduleRatios = new int[dividedDates.size()];
 		int totalSchedules = schedules.size();
 		int sumratio = 0;
 
-		for (int i = 0; i < dividedDates.size() - 1; i++) {
-			LocalDate startDate = dividedDates.get(i);
-			LocalDate endDate = dividedDates.get(i + 1);
+		// 첫 번째 날짜에 대한 스케줄 비율 계산
+		LocalDate firstDate = dividedDates.get(0);
+		long firstCount = schedules.stream()
+			.filter(schedule -> !schedule.getScheduleEndDate().isAfter(firstDate))
+			.count();
+		int firstRatio = (int) Math.round(((double) firstCount / totalSchedules) * 100);
+		sumratio += firstRatio;
+		scheduleRatios[0] = sumratio;
 
-			// 해당 날짜 구간에 포함된 스케줄 개수 계산
+		// 중간 구간들에 대한 스케줄 비율 계산
+		for (int i = 1; i < dividedDates.size() - 1; i++) {
+			LocalDate startDate = dividedDates.get(i - 1).plusDays(1);
+			LocalDate endDate = dividedDates.get(i);
+
 			long count = schedules.stream()
-				.filter(schedule -> !schedule.getScheduleEndDate().isBefore(startDate) && schedule.getScheduleEndDate().isBefore(endDate))
+				.filter(schedule -> !schedule.getScheduleEndDate().isBefore(startDate) && !schedule.getScheduleEndDate().isAfter(endDate))
 				.count();
 
-			// 해당 날짜 구간에 포함된 스케줄 비율 계산
 			int ratio = (int) Math.round(((double) count / totalSchedules) * 100);
 			sumratio += ratio;
 			scheduleRatios[i] = sumratio;
 		}
 
+		// 마지막 날짜에 대한 스케줄 비율 계산
+		LocalDate lastDate = dividedDates.get(dividedDates.size() - 1);
+		long lastCount = schedules.stream()
+			.filter(schedule -> schedule.getScheduleEndDate().isAfter(dividedDates.get(dividedDates.size() - 2)))
+			.count();
+		int lastRatio = (int) Math.round(((double) lastCount / totalSchedules) * 100);
+		sumratio += lastRatio;
+		scheduleRatios[scheduleRatios.length - 1] = sumratio;
+
 		// 마지막 구간이 100이 아닌 경우 100으로 설정
-		if (scheduleRatios[9] != 100){
-			scheduleRatios[9] = 100;
+		if (scheduleRatios[scheduleRatios.length - 1] != 100) {
+			scheduleRatios[scheduleRatios.length - 1] = 100;
 		}
 
 		return scheduleRatios;
 	}
-
 }

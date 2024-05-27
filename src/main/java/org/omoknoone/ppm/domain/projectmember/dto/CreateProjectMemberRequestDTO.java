@@ -1,17 +1,22 @@
 package org.omoknoone.ppm.domain.projectmember.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@ToString
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter @Setter
 public class CreateProjectMemberRequestDTO {
 
     private Integer projectMemberProjectId;
     // private Integer projectMemberRoleId;
     private String projectMemberEmployeeId;
+    private Long permissionScheduleId;
 
+    @Builder
+    public CreateProjectMemberRequestDTO(Integer projectMemberProjectId, Integer projectMemberRoleId, String projectMemberEmployeeId, Long permissionScheduleId) {
+        this.projectMemberProjectId = projectMemberProjectId;
+        this.projectMemberRoleId = projectMemberRoleId;
+        this.projectMemberEmployeeId = projectMemberEmployeeId;
+        this.permissionScheduleId = permissionScheduleId;
+    }
 }
