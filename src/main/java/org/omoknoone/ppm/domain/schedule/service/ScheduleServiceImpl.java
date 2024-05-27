@@ -372,7 +372,16 @@ public class ScheduleServiceImpl implements ScheduleService {
 		LocalDate today = LocalDate.now();
 		LocalDate NextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
 		LocalDate NextSunday = NextMonday.plusDays(6);
-		return scheduleRepository.getSchedulesForNextWeek(NextMonday, NextSunday);
+		List<ScheduleDTO> schedules = scheduleRepository.getSchedulesForNextWeek(NextMonday, NextSunday);
+
+		for (ScheduleDTO schedule : schedules) {
+			CommonCode commonCode = commonCodeRepository.findById(Long.valueOf(schedule.getScheduleStatus())).orElse(null);
+			if (commonCode != null) {
+				schedule.setScheduleStatus(commonCode.getCodeName());
+			}
+		}
+
+		return schedules;
 	}
 
 	/* 이번주 일정 진행률 계산 */
