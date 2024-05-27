@@ -345,7 +345,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	/* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
 	@Override
-	public List<ScheduleDTO> getSchedulesForThisWeek() {
+	public List<ScheduleDTO> getSchedulesForThisWeek(Integer projectId) {
 		LocalDate today = LocalDate.now();
 		LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate thisSunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
@@ -354,7 +354,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	/* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
 	@Override
-	public List<ScheduleDTO> getSchedulesForNextWeek() {
+	public List<ScheduleDTO> getSchedulesForNextWeek(Integer projectId) {
 		LocalDate today = LocalDate.now();
 		LocalDate NextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
 		LocalDate NextSunday = NextMonday.plusDays(6);
@@ -362,16 +362,16 @@ public class ScheduleServiceImpl implements ScheduleService {
 	}
 
 	/* 이번주 일정 진행률 계산 */
-	public int calculateRatioThisWeek() {
-		List<ScheduleDTO> schedulesThisWeek = getSchedulesForThisWeek();
-		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesThisWeek);
-	}
+	// public int calculateRatioThisWeek() {
+	// 	List<ScheduleDTO> schedulesThisWeek = getSchedulesForThisWeek();
+	// 	return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesThisWeek);
+	// }
 
 	/* 차주 일정 진행률 계산 */
-	public int calculateRatioNextWeek() {
-		List<ScheduleDTO> schedulesNextWeek = getSchedulesForNextWeek();
-		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesNextWeek);
-	}
+	// public int calculateRatioNextWeek() {
+	// 	List<ScheduleDTO> schedulesNextWeek = getSchedulesForNextWeek();
+	// 	return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesNextWeek);
+	// }
 
 	/* 구간별 일정 예상 누적 진행률 */
 	public int[] calculateScheduleRatios(LocalDate projectStartDate, LocalDate projectEndDate) {
