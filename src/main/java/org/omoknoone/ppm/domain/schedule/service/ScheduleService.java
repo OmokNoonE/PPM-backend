@@ -72,10 +72,10 @@ public interface ScheduleService {
     List<ScheduleDTO> viewSchedulesByDateRange(LocalDate startDate, LocalDate endDate);
 
     /* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
-    List<ScheduleDTO> getSchedulesForThisWeek();
+    List<ScheduleDTO> getSchedulesForThisWeek(Integer projectId);
 
     /* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
-	List<ScheduleDTO> getSchedulesForNextWeek();
+	List<ScheduleDTO> getSchedulesForNextWeek(Integer projectId);
 
     /* 구간별 일정 예상 누적 진행률 */
     int[] calculateScheduleRatios(LocalDate startDate, LocalDate endDate);

@@ -3,14 +3,15 @@ package org.omoknoone.ppm.domain.schedule.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Objects;
 
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 
 public class ScheduleServiceCalculator {
 
-	private static final long schedule_ready = 10301L;
-	private static final long schedule_in_progress = 10302L;
+	private static final String schedule_ready = "준비";
+	private static final String schedule_in_progress = "진행";
 
 	public static int calculateReadyOrInProgressRatio(List<ScheduleDTO> schedules) {
 		if (schedules == null || schedules.isEmpty()) {
@@ -30,7 +31,7 @@ public class ScheduleServiceCalculator {
 	}
 
 	private static boolean isReadyOrInProgress(ScheduleDTO schedule) {
-		long status = schedule.getScheduleStatus();
-		return status == schedule_ready || status == schedule_in_progress;
+		String status = schedule.getScheduleStatus();
+		return Objects.equals(status, schedule_ready) || Objects.equals(status, schedule_in_progress);
 	}
 }

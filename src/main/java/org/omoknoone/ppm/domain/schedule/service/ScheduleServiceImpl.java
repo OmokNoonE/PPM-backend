@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
+import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCode;
+import org.omoknoone.ppm.domain.commoncode.repository.CommonCodeRepository;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
@@ -42,14 +44,17 @@ public class ScheduleServiceImpl implements ScheduleService {
 	private final ScheduleRepository scheduleRepository;
 	private final ScheduleHistoryService scheduleHistoryService;
 	private final ProjectService projectService;
+	private final CommonCodeRepository commonCodeRepository;
 
 	// TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
-	public ScheduleServiceImpl(@Lazy ProjectService projectService, ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository, HolidayRepository holidayRepository, ModelMapper modelMapper) {
+	public ScheduleServiceImpl(@Lazy ProjectService projectService, ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository, HolidayRepository holidayRepository, ModelMapper modelMapper,
+		CommonCodeRepository commonCodeRepository) {
 		this.projectService = projectService;
 		this.scheduleHistoryService = scheduleHistoryService;
 		this.scheduleRepository = scheduleRepository;
 		this.holidayRepository = holidayRepository;
 		this.modelMapper = modelMapper;
+		this.commonCodeRepository = commonCodeRepository;
 	}
 
 	@Override
@@ -345,33 +350,51 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	/* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
 	@Override
-	public List<ScheduleDTO> getSchedulesForThisWeek() {
+	public List<ScheduleDTO> getSchedulesForThisWeek(Integer projectId) {
 		LocalDate today = LocalDate.now();
 		LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate thisSunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-		return scheduleRepository.getSchedulesForThisWeek(thisMonday, thisSunday);
+		List<ScheduleDTO> schedules = scheduleRepository.getSchedulesForThisWeek(thisMonday, thisSunday);
+
+		for (ScheduleDTO schedule : schedules) {
+			CommonCode commonCode = commonCodeRepository.findById(Long.valueOf(schedule.getScheduleStatus())).orElse(null);
+			if (commonCode != null) {
+				schedule.setScheduleStatus(commonCode.getCodeName());
+			}
+		}
+
+		return schedules;
 	}
 
 	/* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
 	@Override
-	public List<ScheduleDTO> getSchedulesForNextWeek() {
+	public List<ScheduleDTO> getSchedulesForNextWeek(Integer projectId) {
 		LocalDate today = LocalDate.now();
 		LocalDate NextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
 		LocalDate NextSunday = NextMonday.plusDays(6);
-		return scheduleRepository.getSchedulesForNextWeek(NextMonday, NextSunday);
+		List<ScheduleDTO> schedules = scheduleRepository.getSchedulesForNextWeek(NextMonday, NextSunday);
+
+		for (ScheduleDTO schedule : schedules) {
+			CommonCode commonCode = commonCodeRepository.findById(Long.valueOf(schedule.getScheduleStatus())).orElse(null);
+			if (commonCode != null) {
+				schedule.setScheduleStatus(commonCode.getCodeName());
+			}
+		}
+
+		return schedules;
 	}
 
 	/* 이번주 일정 진행률 계산 */
-	public int calculateRatioThisWeek() {
-		List<ScheduleDTO> schedulesThisWeek = getSchedulesForThisWeek();
-		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesThisWeek);
-	}
+	// public int calculateRatioThisWeek() {
+	// 	List<ScheduleDTO> schedulesThisWeek = getSchedulesForThisWeek();
+	// 	return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesThisWeek);
+	// }
 
 	/* 차주 일정 진행률 계산 */
-	public int calculateRatioNextWeek() {
-		List<ScheduleDTO> schedulesNextWeek = getSchedulesForNextWeek();
-		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesNextWeek);
-	}
+	// public int calculateRatioNextWeek() {
+	// 	List<ScheduleDTO> schedulesNextWeek = getSchedulesForNextWeek();
+	// 	return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesNextWeek);
+	// }
 
 	/* 구간별 일정 예상 누적 진행률 */
 	public int[] calculateScheduleRatios(LocalDate projectStartDate, LocalDate projectEndDate) {
