@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @ToString
@@ -17,14 +18,16 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "project_member")
 public class ProjectMember {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_member_id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer projectMemberId;
 
     @CreationTimestamp
     @Column(name = "project_member_created_date", nullable = false, length = 30)
-    private String projectMemberCreatedDate;
+    private LocalDate projectMemberCreatedDate;
 
     @Column(name = "project_member_modified_date", length = 30)
     private LocalDateTime projectMemberModifiedDate;
@@ -44,7 +47,7 @@ public class ProjectMember {
     @Builder
     public ProjectMember(Integer projectMemberId, Integer projectMemberProjectId,
                          String projectMemberEmployeeId, Boolean projectMemberIsExcluded,
-                         LocalDateTime projectMemberExclusionDate, String projectMemberCreatedDate,
+                         LocalDateTime projectMemberExclusionDate, LocalDate projectMemberCreatedDate,
                          LocalDateTime projectMemberModifiedDate) {
         this.projectMemberId = projectMemberId;
         this.projectMemberProjectId = projectMemberProjectId;

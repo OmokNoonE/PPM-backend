@@ -1,0 +1,31 @@
+### View Project Members By Project
+GET http://localhost:8888/projectMembers/list/2
+
+### Create Project Member
+POST http://localhost:8888/projectMembers/create
+Content-Type: application/json
+
+{
+  "projectMemberProjectId" : 2,
+  "projectMemberEmployeeId" : "EP001"
+}
+
+# 여기부터 해야됨
+### Remove Project Member
+DELETE http://localhost:8888/projectMembers/remove/2
+Content-Type: application/json
+
+
+### Reactivate Project Member
+PUT http://localhost:8888/projectMembers/reactivate/{projectMemberId}
+Content-Type: application/json
+{
+  // Fill in the required fields
+}
+
+### Modify Project Member
+PUT http://localhost:8888/projectMembers/modify/{projectMemberId}
+Content-Type: application/json
+{
+  // Fill in the required fields
+}

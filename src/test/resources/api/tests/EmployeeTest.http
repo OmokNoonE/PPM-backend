@@ -1,0 +1,51 @@
+// 완료
+
+### 회원 가입
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP001",
+  "employeePassword": "TestPassword123",
+  "employeeName": "이철수",
+  "employeeEmail": "chulsoo@email.com",
+  "employeeJoinDate": "2023-03-01",
+  "employeeEmploymentStatus": 10501,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5678",
+  "employeeCompanyName": "테스트회사",
+  "employeeIsExternalPartner": false
+}
+
+### 회원 조회
+@employeeId = EP001
+GET http://localhost:8888/employees/view/{{employeeId}}
+Accept: application/json
+
+### 회원 정보 수정
+PUT http://localhost:8888/employees/modify
+Content-Type: application/json
+
+{
+  "employeeId": "EP001",
+  "employeeName": "김수정",
+  "employeeEmail": "kimsoojung@email.com",
+  "employeeContact": "010-5678-1234"
+}
+
+
+### 회원 검색
+@employeeName = 김수정
+GET http://localhost:8888/employees/search/{{employeeName}}
+Accept: application/json
+
+### 비밀번호 변경
+PUT http://localhost:8888/employees/password/{{employeeId}}
+Content-Type: application/json
+
+{
+  "employeeId": "EP001",
+  "currentPassword": "TestPassword123",
+  "newPassword": "NewPassword123",
+  "confirmPassword": "NewPassword123"
+}

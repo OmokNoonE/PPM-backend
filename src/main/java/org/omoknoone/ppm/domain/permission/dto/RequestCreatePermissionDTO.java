@@ -11,14 +11,13 @@ import lombok.ToString;
 public class RequestCreatePermissionDTO {
     Long permissionRoleName;
     Long permissionProjectMemberId;
-    Long PermissionScheduleId;
-
+    Long permissionScheduleId;
 
     @Builder
     public RequestCreatePermissionDTO(Long permissionRoleName, Long permissionProjectMemberId,
         Long permissionScheduleId) {
         this.permissionRoleName = permissionRoleName;
         this.permissionProjectMemberId = permissionProjectMemberId;
-        PermissionScheduleId = permissionScheduleId;
+        this.permissionScheduleId = permissionScheduleId;
     }
 }
