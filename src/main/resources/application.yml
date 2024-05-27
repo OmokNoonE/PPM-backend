@@ -5,12 +5,28 @@ spring:
     name: PPM-Backend
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/ppm
-    username: root
-    password: root
+    url: ENC(h3SQfSBcw2qduGjOeZWQYHJo3xy9/OJFgxPtpkuIzlG15uauPd5yEIiALKO3q86jJKvGGfeiGwycpXEglaE81vOOH03SncNDiMjBWj0bXg2m5vpInoR6PQ==)
+    username: ENC(y4pO3gmaIJRIC+35NstrKvCqmlYdTuyd)
+    password: ENC(CvjcCWcM/jtWMznsBfJw6sioFNZI9xYS)
   config:
     import:
       - classpath:/messages.yml
+
+  task:
+    scheduling:
+      pool:
+        size: 5
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ENC(9HLgk7HJkXN9kZvB9hQFZLAudBBl+knWwGaGV/FuAfE=)
+    password: ENC(+V3tyFfBKEgSXQR6NDlQyQBZhKcavvu2P8ChKhD70EE=)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
   jpa:
     generate-ddl: false
@@ -19,12 +35,22 @@ spring:
     properties:
       hibernate:
         '[format_sql]': true
+  data:
+    mongodb:
+      uri: ENC(HYMT9HAqDGff0/6c3hWVrk+VUXsyxgHYhfrUKbDXraBsedmS1PxmW7xYJDZJDtCM11OwYhz2CS1CwmJ5DUdn+w7He8U5L5Q1lwEQ5aYmi9vOo/QlLj8+1yzbe444lkfV)
+      database: ppm
 
 token:
   access-expiration-time: 43200000          # 12H
   refresh-expiration-time: 604800000        # 7D
-  secret: temp
+  secret: ENC(QtQ/Bmzp7L8WsU/Q1mdcaforC0tm5fT/1AAO9sH8FvSqdifx3NUm2I6yPLoRwKWh6MgfbE2plQ/2OOoa9607h7GD05loh5LGI9of8t5WKHavDJiYuNEu28NYOxd8Bjs+fGs+IuiuJHg=)
 
+slack:
+  token: ENC(qD6gTpI3zzAhbbazB3K12inddaM+i83/EB98tSR5BePmdmencmO4d+WFAJaRpRuWoJdA0QIbxjz+iivEGHRn4UU+yG5ncu31)
+
+holiday:
+  api:
+    key: ENC(af3DCCf1or9RMtdh3nGnb9u7DJmeWYaPIn2xKaEsk5hw4aXpta44dAkuezeYg1vI9LzzNoKXcHTEv2yHAos/EJE1bszFKQtbV8wKzkTBqQsiOLl9+lhrG/ZmwIe1c8fJONVozXxwSUk=)
 
 #logging:
 #  level:
