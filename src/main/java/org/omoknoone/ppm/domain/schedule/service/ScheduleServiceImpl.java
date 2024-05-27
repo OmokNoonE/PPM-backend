@@ -474,10 +474,10 @@ public class ScheduleServiceImpl implements ScheduleService {
             if (dto.getScheduleParentScheduleId() != null) {
                 for (ScheduleSheetDataDTO parentDto : scheduleSheetDataDTOList) {
                     if (parentDto.getScheduleId().equals(dto.getScheduleParentScheduleId())) {
-                        if (parentDto.getScheduleChildScheduleList() == null) {
-                            parentDto.setScheduleChildScheduleList(new ArrayList<>());
+                        if (parentDto.get__children() == null) {
+                            parentDto.set__children(new ArrayList<>());
                         }
-                        parentDto.getScheduleChildScheduleList().add(dto);
+                        parentDto.get__children().add(dto);
                         iterator.remove();
                         break;
                     }

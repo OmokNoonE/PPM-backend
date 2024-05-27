@@ -28,5 +28,5 @@ public class ResponseScheduleSheetData {
     private Long scheduleParentScheduleId;
     private Long schedulePrecedingScheduleId;
     private List<StakeholdersEmployeeInfoDTO> scheduleEmployeeInfoList;
-    private List<ResponseScheduleSheetData> scheduleChildScheduleList;
+    private List<ResponseScheduleSheetData> __children;
 }
