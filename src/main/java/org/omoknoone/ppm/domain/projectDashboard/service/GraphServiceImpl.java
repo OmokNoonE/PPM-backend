@@ -483,5 +483,17 @@ public class GraphServiceImpl implements GraphService {
 
     }
 
+    // 프로젝트 id에 해당하는 그래프 데이터 삭제
+    @Override
+    public void deleteGraphByProjectId(String projectId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("projectId").is(projectId));
+        mongoTemplate.remove(query, Graph.class);
+    }
 
+    // mongoDB 데이터 초기화용
+    @Override
+    public void deleteAllGraph(){
+        mongoTemplate.remove(new Query(), Graph.class);
+    }
 }
