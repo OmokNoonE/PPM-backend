@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -25,10 +26,14 @@ import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
 import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleSheetDataDTO;
 import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
+import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
+import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
+import org.omoknoone.ppm.domain.stakeholders.service.StakeholdersService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,392 +42,454 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
-	private final ModelMapper modelMapper;
-	private final HolidayRepository holidayRepository;
-	private final ScheduleRepository scheduleRepository;
-	private final ScheduleHistoryService scheduleHistoryService;
-	private final ProjectService projectService;
-
-	// TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
-	public ScheduleServiceImpl(@Lazy ProjectService projectService, ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository, HolidayRepository holidayRepository, ModelMapper modelMapper) {
-		this.projectService = projectService;
-		this.scheduleHistoryService = scheduleHistoryService;
-		this.scheduleRepository = scheduleRepository;
-		this.holidayRepository = holidayRepository;
-		this.modelMapper = modelMapper;
-	}
-
-	@Override
-	@Transactional
-	public Schedule createSchedule(CreateScheduleDTO createScheduleDTO) {
-		// 일정 상태와 삭제 여부 기본값 부여
-		createScheduleDTO.newScheduleDefaultValueSet();
+    private final ModelMapper modelMapper;
+    private final HolidayRepository holidayRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final ScheduleHistoryService scheduleHistoryService;
+    private final ProjectService projectService;
+    private final StakeholdersService stakeholdersService;
+
+    // TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
+    public ScheduleServiceImpl(@Lazy ProjectService projectService, @Lazy StakeholdersService stakeholdersService,
+        ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository,
+        HolidayRepository holidayRepository, ModelMapper modelMapper) {
+        this.stakeholdersService = stakeholdersService;
+        this.projectService = projectService;
+        this.scheduleHistoryService = scheduleHistoryService;
+        this.scheduleRepository = scheduleRepository;
+        this.holidayRepository = holidayRepository;
+        this.modelMapper = modelMapper;
+    }
+
+    @Override
+    @Transactional
+    public Schedule createSchedule(CreateScheduleDTO createScheduleDTO) {
+        // 일정 상태와 삭제 여부 기본값 부여
+        createScheduleDTO.newScheduleDefaultValueSet();
+
+        // 근무 일수 계산
+        int workingDays = calculateWorkingDays(createScheduleDTO.getScheduleStartDate(),
+            createScheduleDTO.getScheduleEndDate());
+        createScheduleDTO.setScheduleManHours(workingDays);
+
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        Schedule schedule = modelMapper.map(createScheduleDTO, Schedule.class);
 
-		// 근무 일수 계산
-		int workingDays = calculateWorkingDays(createScheduleDTO.getScheduleStartDate(),
-			createScheduleDTO.getScheduleEndDate());
-		createScheduleDTO.setScheduleManHours(workingDays);
+        return scheduleRepository.save(schedule);
+    }
 
-		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		Schedule schedule = modelMapper.map(createScheduleDTO, Schedule.class);
+    @Override
+    @Transactional(readOnly = true)
+    public ScheduleDTO viewSchedule(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        ScheduleDTO scheduleDTO = modelMapper.map(schedule, ScheduleDTO.class);
+
+        return scheduleDTO;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ScheduleDTO> viewScheduleByProject(Long projectId) {
+
+        List<Schedule> scheduleList = scheduleRepository
+            .findSchedulesByScheduleProjectIdAndScheduleIsDeleted(projectId, false);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
+
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
+
+        return scheduleDTOList;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ScheduleDTO> viewScheduleOrderBy(Long projectId, String sort) {
+
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectIdAndSort(projectId, sort);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
+
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
+
+        return scheduleDTOList;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ScheduleDTO> viewScheduleNearByStart(Long projectId) {
+
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectNearByStart(projectId);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
+
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
+
+        return scheduleDTOList;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ScheduleDTO> viewScheduleNearByEnd(Long projectId) {
+
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectNearByEnd(projectId);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
 
-		return scheduleRepository.save(schedule);
-	}
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
 
-	@Override
-	@Transactional(readOnly = true)
-	public ScheduleDTO viewSchedule(Long scheduleId) {
-		Schedule schedule = scheduleRepository.findById(scheduleId)
-			.orElseThrow(IllegalArgumentException::new);
+        return scheduleDTOList;
+    }
 
-		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    @Override
+    @Transactional
+    public Long modifySchedule(RequestModifyScheduleDTO requestModifyScheduleDTO) {
 
-		ScheduleDTO scheduleDTO = modelMapper.map(schedule, ScheduleDTO.class);
-
-		return scheduleDTO;
-	}
+        Schedule schedule = scheduleRepository.findById(requestModifyScheduleDTO.getScheduleId())
+            .orElseThrow(IllegalArgumentException::new);
 
-	@Override
-	@Transactional(readOnly = true)
-	public List<ScheduleDTO> viewScheduleByProject(Long projectId) {
+        /* 제목, 내용 수정 */
+        schedule.modifyTitleAndContent(modifyScheduleTitleAndContent(requestModifyScheduleDTO));
 
-		List<Schedule> scheduleList = scheduleRepository
-			.findSchedulesByScheduleProjectIdAndScheduleIsDeleted(projectId, false);
-		if (scheduleList == null || scheduleList.isEmpty()) {
-			throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
-		}
-
-		List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
-		}.getType());
-
-		return scheduleDTOList;
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<ScheduleDTO> viewScheduleOrderBy(Long projectId, String sort) {
-
-		List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectIdAndSort(projectId, sort);
-		if (scheduleList == null || scheduleList.isEmpty()) {
-			throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
-		}
-
-		List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
-		}.getType());
+        /* 시작일, 종료일 수정 (+공수) */
+        schedule.modifyDate(modifyScheduleDate(requestModifyScheduleDTO));
 
-		return scheduleDTOList;
-	}
+        /* 진행 상태 수정 (+진행률) */
+        schedule.modifyProgress(modifyScheduleProgress(requestModifyScheduleDTO));
 
-	@Override
-	@Transactional(readOnly = true)
-	public List<ScheduleDTO> viewScheduleNearByStart(Long projectId) {
+        scheduleRepository.save(schedule);
 
-		List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectNearByStart(projectId);
-		if (scheduleList == null || scheduleList.isEmpty()) {
-			throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
-		}
+        scheduleHistoryService.createScheduleHistory(requestModifyScheduleDTO);
 
-		List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
-		}.getType());
+        return schedule.getScheduleId();
+    }
 
-		return scheduleDTOList;
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public List<ScheduleDTO> viewScheduleNearByEnd(Long projectId) {
-
-		List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectNearByEnd(projectId);
-		if (scheduleList == null || scheduleList.isEmpty()) {
-			throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
-		}
-
-		List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
-		}.getType());
-
-		return scheduleDTOList;
-	}
-
-	@Override
-	@Transactional
-	public Long modifySchedule(RequestModifyScheduleDTO requestModifyScheduleDTO) {
-
-		Schedule schedule = scheduleRepository.findById(requestModifyScheduleDTO.getScheduleId())
-			.orElseThrow(IllegalArgumentException::new);
-
-		/* 제목, 내용 수정 */
-		schedule.modifyTitleAndContent(modifyScheduleTitleAndContent(requestModifyScheduleDTO));
-
-		/* 시작일, 종료일 수정 (+공수) */
-		schedule.modifyDate(modifyScheduleDate(requestModifyScheduleDTO));
-
-		/* 진행 상태 수정 (+진행률) */
-		schedule.modifyProgress(modifyScheduleProgress(requestModifyScheduleDTO));
-
-		scheduleRepository.save(schedule);
-
-		scheduleHistoryService.createScheduleHistory(requestModifyScheduleDTO);
-
-		return schedule.getScheduleId();
-	}
-
-	@Override
-	public ModifyScheduleTitleAndContentDTO modifyScheduleTitleAndContent(
-		RequestModifyScheduleDTO requestModifyScheduleDTO) {
-		/* modifyScheduleDTO를 ModifyScheduleTilteAndContentDTO에 담기 */
-		/* 별도로 빼놓은 이유는 혹여 다른 일정과 연계되었을 때 추가적인 작업을 작성하려고 */
-		return modelMapper.map(requestModifyScheduleDTO, ModifyScheduleTitleAndContentDTO.class);
-	}
-
-	@Override
-	public ModifyScheduleDateDTO modifyScheduleDate(RequestModifyScheduleDTO requestModifyScheduleDTO) {
-		ModifyScheduleDateDTO modifyScheduleDateDTO = modelMapper.map(requestModifyScheduleDTO,
-			ModifyScheduleDateDTO.class);
-
-		/* 공수 계산 후 DTO에 저장 */
-		int workingDays = calculateWorkingDays(modifyScheduleDateDTO.getScheduleStartDate(),
-			modifyScheduleDateDTO.getScheduleEndDate());
-		modifyScheduleDateDTO.setScheduleManHours(workingDays);
-
-		return modifyScheduleDateDTO;
-	}
-
-	@Override
-	public ModifyScheduleProgressDTO modifyScheduleProgress(RequestModifyScheduleDTO requestModifyScheduleDTO) {
-		/* modifyScheduleDTO를 ModifyScheduleProgressDTO 담기 */
-		ModifyScheduleProgressDTO modifyScheduleProgressDTO = modelMapper.map(requestModifyScheduleDTO,
-			ModifyScheduleProgressDTO.class);
-
-		/* 업무를 가지지 않은 비업무 일정인 경우, 일정 상태에 따른 진행률 설정 */
-		if (!isTaskSchedule(requestModifyScheduleDTO.getScheduleId())) {
-			modifyScheduleProgressDTO.calculateScheduleProgress();
-		}
-		return modifyScheduleProgressDTO;
-	}
-
-	@Override
-	@Transactional
-	public void removeSchedule(RequestModifyScheduleDTO requestScheduleDTO) {
-
-		Schedule schedule = scheduleRepository.findById(requestScheduleDTO.getScheduleId())
-			.orElseThrow(IllegalArgumentException::new);
-
-		schedule.remove();
-
-		scheduleRepository.save(schedule);
-
-		scheduleHistoryService.createScheduleHistory(requestScheduleDTO);
-	}
-
-	@Override
-	public boolean isTaskSchedule(Long scheduleId) {
-		return scheduleRepository.findSchedulesByScheduleParentScheduleId(scheduleId) != null;
-	}
-
-	/* Title을 통한 일정 검색 */
-	@Override
-	@Transactional(readOnly = true)
-	public List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle) {
-
-		return scheduleRepository.searchScheduleByScheduleTitle(scheduleTitle);
-	}
-
-	/* 전체 진행률 제공 메소드 (대시보드) */
-	@Override
-	public int updateGauge(Long projectId) {
-		UpdateDataDTO updateDataDTO = scheduleRepository.countScheduleStatusByProjectId(projectId);
-
-		double totalScheduleCount = updateDataDTO.getTotalScheduleCount().doubleValue();
-		double doneScheduleCount = updateDataDTO.getDoneScheduleCount().doubleValue();
-
-		// 결과 계산
-		double result = (doneScheduleCount / totalScheduleCount) * 100;
-
-		return (int)result;
-	}
-
-	@Override
-	public int[] updatePie(Long projectId) {
-		UpdateDataDTO updateDataDTO = scheduleRepository.countScheduleStatusByProjectId(projectId);
-
-		return new int[] {
-			updateDataDTO.getTotalScheduleCount().intValue(),
-			updateDataDTO.getTodoScheduleCount().intValue(),
-			updateDataDTO.getInProgressScheduleCount().intValue(),
-			updateDataDTO.getDoneScheduleCount().intValue()
-		};
-	}
-
-	@Override
-	public Map<String, Object> updateColumn(Long projectId) {
-		List<UpdateTableDataDTO> updateTableDataDTO = scheduleRepository.UpdateTableData(projectId);
-
-		List<String> categories = new ArrayList<>();
-		List<Integer> todoCounts = new ArrayList<>();
-		List<Integer> inProgressCounts = new ArrayList<>();
-		List<Integer> doneCounts = new ArrayList<>();
-
-		for (UpdateTableDataDTO dto : updateTableDataDTO) {
-			categories.add(dto.getEmployeeName());
-			todoCounts.add(dto.getTodoCount().intValue());
-			inProgressCounts.add(dto.getInProgressCount().intValue());
-			doneCounts.add(dto.getDoneCount().intValue());
-		}
-
-		Map<String, Object> updates = new HashMap<>();
-		updates.put("categories", categories);
-		updates.put("series", List.of(
-			Map.of("name", "준비", "data", todoCounts),
-			Map.of("name", "진행", "data", inProgressCounts),
-			Map.of("name", "완료", "data", doneCounts)
-		));
-
-		return updates;
-	}
-
-	/* 일정 상태값에 따른 일정 목록 확인 */
-	@Override
-	public List<Schedule> getSchedulesByStatusCodes(List<Long> codeIds) {
-		return scheduleRepository.findByScheduleStatusIn(codeIds);
-	}
-
-	/* 날짜 설정 범위에 따른 일정 확인 */
-	@Override
-	public List<ScheduleDTO> viewSchedulesByDateRange(LocalDate startDate, LocalDate endDate) {
-		List<Schedule> schedules = scheduleRepository.findSchedulesByDateRange(startDate, endDate);
-		return modelMapper.map(schedules, new TypeToken<List<ScheduleDTO>>() {
-		}.getType());
-	}
-
-	/* workingDays 계산 */
-	private int calculateWorkingDays(LocalDate scheduleStartDate, LocalDate scheduleEndDate) {
-		int workingDays = 0;
-
-		// 기간 내의 모든 공휴일을 조회합니다.
-		List<Holiday> holidays = holidayRepository.findHolidaysBetween(
-			scheduleStartDate.getYear(), scheduleStartDate.getMonthValue(), scheduleStartDate.getDayOfMonth(),
-			scheduleEndDate.getYear(), scheduleEndDate.getMonthValue(), scheduleEndDate.getDayOfMonth()
-		);
-
-		for (LocalDate date = scheduleStartDate; !date.isAfter(scheduleEndDate); date = date.plusDays(1)) {
-			final int currentYear = date.getYear();
-			final int currentMonth = date.getMonthValue();
-			final int currentDay = date.getDayOfMonth();
-
-			DayOfWeek dayOfWeek = date.getDayOfWeek();
-			boolean isWeekend = (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY);
-			boolean isHoliday = holidays.stream()
-				.anyMatch(holiday -> holiday.getHolidayYear() == currentYear
-					&& holiday.getHolidayMonth() == currentMonth
-					&& holiday.getHolidayDay() == currentDay);
-
-			if (!isWeekend && !isHoliday) {
-				workingDays++;
-			}
-		}
-
-		return workingDays;
-	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public List<ScheduleDTO> viewSubSchedules(Long scheduleId) {
-		List<ScheduleDTO> subSchedules = new ArrayList<>();
-		Stack<Long> stack = new Stack<>();
-		stack.push(scheduleId);
-
-		while (!stack.isEmpty()) {
-			Long currentId = stack.pop();
-			List<Schedule> childSchedules = scheduleRepository.findByScheduleParentScheduleId(currentId);
-			for (Schedule childSchedule : childSchedules) {
-				subSchedules.add(modelMapper.map(childSchedule, ScheduleDTO.class));
-				stack.push(childSchedule.getScheduleId());
-			}
-		}
-
-		return subSchedules;
-	}
-
-	/* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
-	@Override
-	public List<ScheduleDTO> getSchedulesForThisWeek() {
-		LocalDate today = LocalDate.now();
-		LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-		LocalDate thisSunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-		return scheduleRepository.getSchedulesForThisWeek(thisMonday, thisSunday);
-	}
-
-	/* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
-	@Override
-	public List<ScheduleDTO> getSchedulesForNextWeek() {
-		LocalDate today = LocalDate.now();
-		LocalDate NextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
-		LocalDate NextSunday = NextMonday.plusDays(6);
-		return scheduleRepository.getSchedulesForNextWeek(NextMonday, NextSunday);
-	}
-
-	/* 이번주 일정 진행률 계산 */
-	public int calculateRatioThisWeek() {
-		List<ScheduleDTO> schedulesThisWeek = getSchedulesForThisWeek();
-		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesThisWeek);
-	}
-
-	/* 차주 일정 진행률 계산 */
-	public int calculateRatioNextWeek() {
-		List<ScheduleDTO> schedulesNextWeek = getSchedulesForNextWeek();
-		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesNextWeek);
-	}
-
-	/* 구간별 일정 예상 누적 진행률 */
-	public int[] calculateScheduleRatios(LocalDate projectStartDate, LocalDate projectEndDate) {
-		// WorkingDays 10등분
-		List<LocalDate> dividedDates = projectService.divideWorkingDaysIntoTen(projectStartDate, projectEndDate);
-
-		// 모든 스케줄을 가져옴
-		List<Schedule> schedules = scheduleRepository.findAll();
-
-		// 날짜 구간별로 스케줄을 분류
-		int[] scheduleRatios = new int[dividedDates.size()];
-		int totalSchedules = schedules.size();
-		int sumratio = 0;
-
-		// 첫 번째 날짜에 대한 스케줄 비율 계산
-		LocalDate firstDate = dividedDates.get(0);
-		long firstCount = schedules.stream()
-			.filter(schedule -> !schedule.getScheduleEndDate().isAfter(firstDate))
-			.count();
-		int firstRatio = (int) Math.round(((double) firstCount / totalSchedules) * 100);
-		sumratio += firstRatio;
-		scheduleRatios[0] = sumratio;
-
-		// 중간 구간들에 대한 스케줄 비율 계산
-		for (int i = 1; i < dividedDates.size() - 1; i++) {
-			LocalDate startDate = dividedDates.get(i - 1).plusDays(1);
-			LocalDate endDate = dividedDates.get(i);
-
-			long count = schedules.stream()
-				.filter(schedule -> !schedule.getScheduleEndDate().isBefore(startDate) && !schedule.getScheduleEndDate().isAfter(endDate))
-				.count();
-
-			int ratio = (int) Math.round(((double) count / totalSchedules) * 100);
-			sumratio += ratio;
-			scheduleRatios[i] = sumratio;
-		}
-
-		// 마지막 날짜에 대한 스케줄 비율 계산
-		LocalDate lastDate = dividedDates.get(dividedDates.size() - 1);
-		long lastCount = schedules.stream()
-			.filter(schedule -> schedule.getScheduleEndDate().isAfter(dividedDates.get(dividedDates.size() - 2)))
-			.count();
-		int lastRatio = (int) Math.round(((double) lastCount / totalSchedules) * 100);
-		sumratio += lastRatio;
-		scheduleRatios[scheduleRatios.length - 1] = sumratio;
-
-		// 마지막 구간이 100이 아닌 경우 100으로 설정
-		if (scheduleRatios[scheduleRatios.length - 1] != 100) {
-			scheduleRatios[scheduleRatios.length - 1] = 100;
-		}
-
-		return scheduleRatios;
-	}
+    @Override
+    public ModifyScheduleTitleAndContentDTO modifyScheduleTitleAndContent(
+        RequestModifyScheduleDTO requestModifyScheduleDTO) {
+        /* modifyScheduleDTO를 ModifyScheduleTilteAndContentDTO에 담기 */
+        /* 별도로 빼놓은 이유는 혹여 다른 일정과 연계되었을 때 추가적인 작업을 작성하려고 */
+        return modelMapper.map(requestModifyScheduleDTO, ModifyScheduleTitleAndContentDTO.class);
+    }
+
+    @Override
+    public ModifyScheduleDateDTO modifyScheduleDate(RequestModifyScheduleDTO requestModifyScheduleDTO) {
+        ModifyScheduleDateDTO modifyScheduleDateDTO = modelMapper.map(requestModifyScheduleDTO,
+            ModifyScheduleDateDTO.class);
+
+        /* 공수 계산 후 DTO에 저장 */
+        int workingDays = calculateWorkingDays(modifyScheduleDateDTO.getScheduleStartDate(),
+            modifyScheduleDateDTO.getScheduleEndDate());
+        modifyScheduleDateDTO.setScheduleManHours(workingDays);
+
+        return modifyScheduleDateDTO;
+    }
+
+    @Override
+    public ModifyScheduleProgressDTO modifyScheduleProgress(RequestModifyScheduleDTO requestModifyScheduleDTO) {
+        /* modifyScheduleDTO를 ModifyScheduleProgressDTO 담기 */
+        ModifyScheduleProgressDTO modifyScheduleProgressDTO = modelMapper.map(requestModifyScheduleDTO,
+            ModifyScheduleProgressDTO.class);
+
+        /* 업무를 가지지 않은 비업무 일정인 경우, 일정 상태에 따른 진행률 설정 */
+        if (!isTaskSchedule(requestModifyScheduleDTO.getScheduleId())) {
+            modifyScheduleProgressDTO.calculateScheduleProgress();
+        }
+        return modifyScheduleProgressDTO;
+    }
+
+    @Override
+    @Transactional
+    public void removeSchedule(RequestModifyScheduleDTO requestScheduleDTO) {
+
+        Schedule schedule = scheduleRepository.findById(requestScheduleDTO.getScheduleId())
+            .orElseThrow(IllegalArgumentException::new);
+
+        schedule.remove();
+
+        scheduleRepository.save(schedule);
+
+        scheduleHistoryService.createScheduleHistory(requestScheduleDTO);
+    }
+
+    @Override
+    public boolean isTaskSchedule(Long scheduleId) {
+        return scheduleRepository.findSchedulesByScheduleParentScheduleId(scheduleId) != null;
+    }
+
+    /* Title을 통한 일정 검색 */
+    @Override
+    @Transactional(readOnly = true)
+    public List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle) {
+
+        return scheduleRepository.searchScheduleByScheduleTitle(scheduleTitle);
+    }
+
+    /* 전체 진행률 제공 메소드 (대시보드) */
+    @Override
+    public int updateGauge(Long projectId) {
+        UpdateDataDTO updateDataDTO = scheduleRepository.countScheduleStatusByProjectId(projectId);
+
+        double totalScheduleCount = updateDataDTO.getTotalScheduleCount().doubleValue();
+        double doneScheduleCount = updateDataDTO.getDoneScheduleCount().doubleValue();
+
+        // 결과 계산
+        double result = (doneScheduleCount / totalScheduleCount) * 100;
+
+        return (int)result;
+    }
+
+    @Override
+    public int[] updatePie(Long projectId) {
+        UpdateDataDTO updateDataDTO = scheduleRepository.countScheduleStatusByProjectId(projectId);
+
+        return new int[] {
+            updateDataDTO.getTotalScheduleCount().intValue(),
+            updateDataDTO.getTodoScheduleCount().intValue(),
+            updateDataDTO.getInProgressScheduleCount().intValue(),
+            updateDataDTO.getDoneScheduleCount().intValue()
+        };
+    }
+
+    @Override
+    public Map<String, Object> updateColumn(Long projectId) {
+        List<UpdateTableDataDTO> updateTableDataDTO = scheduleRepository.UpdateTableData(projectId);
+
+        List<String> categories = new ArrayList<>();
+        List<Integer> todoCounts = new ArrayList<>();
+        List<Integer> inProgressCounts = new ArrayList<>();
+        List<Integer> doneCounts = new ArrayList<>();
+
+        for (UpdateTableDataDTO dto : updateTableDataDTO) {
+            categories.add(dto.getEmployeeName());
+            todoCounts.add(dto.getTodoCount().intValue());
+            inProgressCounts.add(dto.getInProgressCount().intValue());
+            doneCounts.add(dto.getDoneCount().intValue());
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("categories", categories);
+        updates.put("series", List.of(
+            Map.of("name", "준비", "data", todoCounts),
+            Map.of("name", "진행", "data", inProgressCounts),
+            Map.of("name", "완료", "data", doneCounts)
+        ));
+
+        return updates;
+    }
+
+    /* 일정 상태값에 따른 일정 목록 확인 */
+    @Override
+    public List<Schedule> getSchedulesByStatusCodes(List<Long> codeIds) {
+        return scheduleRepository.findByScheduleStatusIn(codeIds);
+    }
+
+    /* 날짜 설정 범위에 따른 일정 확인 */
+    @Override
+    public List<ScheduleDTO> viewSchedulesByDateRange(LocalDate startDate, LocalDate endDate) {
+        List<Schedule> schedules = scheduleRepository.findSchedulesByDateRange(startDate, endDate);
+        return modelMapper.map(schedules, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
+    }
+
+    /* workingDays 계산 */
+    private int calculateWorkingDays(LocalDate scheduleStartDate, LocalDate scheduleEndDate) {
+        int workingDays = 0;
+
+        // 기간 내의 모든 공휴일을 조회합니다.
+        List<Holiday> holidays = holidayRepository.findHolidaysBetween(
+            scheduleStartDate.getYear(), scheduleStartDate.getMonthValue(), scheduleStartDate.getDayOfMonth(),
+            scheduleEndDate.getYear(), scheduleEndDate.getMonthValue(), scheduleEndDate.getDayOfMonth()
+        );
+
+        for (LocalDate date = scheduleStartDate; !date.isAfter(scheduleEndDate); date = date.plusDays(1)) {
+            final int currentYear = date.getYear();
+            final int currentMonth = date.getMonthValue();
+            final int currentDay = date.getDayOfMonth();
+
+            DayOfWeek dayOfWeek = date.getDayOfWeek();
+            boolean isWeekend = (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY);
+            boolean isHoliday = holidays.stream()
+                .anyMatch(holiday -> holiday.getHolidayYear() == currentYear
+                    && holiday.getHolidayMonth() == currentMonth
+                    && holiday.getHolidayDay() == currentDay);
+
+            if (!isWeekend && !isHoliday) {
+                workingDays++;
+            }
+        }
+
+        return workingDays;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<ScheduleDTO> viewSubSchedules(Long scheduleId) {
+        List<ScheduleDTO> subSchedules = new ArrayList<>();
+        Stack<Long> stack = new Stack<>();
+        stack.push(scheduleId);
+
+        while (!stack.isEmpty()) {
+            Long currentId = stack.pop();
+            List<Schedule> childSchedules = scheduleRepository.findByScheduleParentScheduleId(currentId);
+            for (Schedule childSchedule : childSchedules) {
+                subSchedules.add(modelMapper.map(childSchedule, ScheduleDTO.class));
+                stack.push(childSchedule.getScheduleId());
+            }
+        }
+
+        return subSchedules;
+    }
+
+    /* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
+    @Override
+    public List<ScheduleDTO> getSchedulesForThisWeek() {
+        LocalDate today = LocalDate.now();
+        LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate thisSunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        return scheduleRepository.getSchedulesForThisWeek(thisMonday, thisSunday);
+    }
+
+    /* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
+    @Override
+    public List<ScheduleDTO> getSchedulesForNextWeek() {
+        LocalDate today = LocalDate.now();
+        LocalDate NextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+        LocalDate NextSunday = NextMonday.plusDays(6);
+        return scheduleRepository.getSchedulesForNextWeek(NextMonday, NextSunday);
+    }
+
+    /* 이번주 일정 진행률 계산 */
+    public int calculateRatioThisWeek() {
+        List<ScheduleDTO> schedulesThisWeek = getSchedulesForThisWeek();
+        return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesThisWeek);
+    }
+
+    /* 차주 일정 진행률 계산 */
+    public int calculateRatioNextWeek() {
+        List<ScheduleDTO> schedulesNextWeek = getSchedulesForNextWeek();
+        return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesNextWeek);
+    }
+
+    /* 구간별 일정 예상 누적 진행률 */
+    public int[] calculateScheduleRatios(LocalDate projectStartDate, LocalDate projectEndDate) {
+        // WorkingDays 10등분
+        List<LocalDate> dividedDates = projectService.divideWorkingDaysIntoTen(projectStartDate, projectEndDate);
+
+        // 모든 스케줄을 가져옴
+        List<Schedule> schedules = scheduleRepository.findAll();
+
+        // 날짜 구간별로 스케줄을 분류
+        int[] scheduleRatios = new int[dividedDates.size()];
+        int totalSchedules = schedules.size();
+        int sumratio = 0;
+
+        // 첫 번째 날짜에 대한 스케줄 비율 계산
+        LocalDate firstDate = dividedDates.get(0);
+        long firstCount = schedules.stream()
+            .filter(schedule -> !schedule.getScheduleEndDate().isAfter(firstDate))
+            .count();
+        int firstRatio = (int)Math.round(((double)firstCount / totalSchedules) * 100);
+        sumratio += firstRatio;
+        scheduleRatios[0] = sumratio;
+
+        // 중간 구간들에 대한 스케줄 비율 계산
+        for (int i = 1; i < dividedDates.size() - 1; i++) {
+            LocalDate startDate = dividedDates.get(i - 1).plusDays(1);
+            LocalDate endDate = dividedDates.get(i);
+
+            long count = schedules.stream()
+                .filter(schedule -> !schedule.getScheduleEndDate().isBefore(startDate) && !schedule.getScheduleEndDate()
+                    .isAfter(endDate))
+                .count();
+
+            int ratio = (int)Math.round(((double)count / totalSchedules) * 100);
+            sumratio += ratio;
+            scheduleRatios[i] = sumratio;
+        }
+
+        // 마지막 날짜에 대한 스케줄 비율 계산
+        LocalDate lastDate = dividedDates.get(dividedDates.size() - 1);
+        long lastCount = schedules.stream()
+            .filter(schedule -> schedule.getScheduleEndDate().isAfter(dividedDates.get(dividedDates.size() - 2)))
+            .count();
+        int lastRatio = (int)Math.round(((double)lastCount / totalSchedules) * 100);
+        sumratio += lastRatio;
+        scheduleRatios[scheduleRatios.length - 1] = sumratio;
+
+        // 마지막 구간이 100이 아닌 경우 100으로 설정
+        if (scheduleRatios[scheduleRatios.length - 1] != 100) {
+            scheduleRatios[scheduleRatios.length - 1] = 100;
+        }
+
+        return scheduleRatios;
+    }
+
+    /* 일정 시트에 사용될 데이터 수집 */
+    @Override
+    public List<ResponseScheduleSheetData> getSheetData(Long projectId, String employeeId) {
+
+        List<Schedule> scheduleList =
+            scheduleRepository.findSchedulesByScheduleProjectIdAndScheduleIsDeleted(projectId, false);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
+        List<ScheduleSheetDataDTO> scheduleSheetDataDTOList = modelMapper.map(scheduleList,
+            new TypeToken<List<ScheduleSheetDataDTO>>() {
+            }.getType());
+
+        Long[] scheduleIdList = scheduleList.stream()
+            .map(Schedule::getScheduleId)
+            .toArray(Long[]::new);
+
+        List<StakeholdersEmployeeInfoDTO> stakeholdersEmployeeInfoDTOList = stakeholdersService.viewStakeholdersEmployeeInfo(
+            scheduleIdList);
+
+        for (ScheduleSheetDataDTO scheduleSheetDataDTO : scheduleSheetDataDTOList) {
+            Long scheduleId = scheduleSheetDataDTO.getScheduleId();
+            for (StakeholdersEmployeeInfoDTO stakeholdersEmployeeInfoDTO : stakeholdersEmployeeInfoDTOList) {
+                if (stakeholdersEmployeeInfoDTO.getStakeholdersScheduleId().equals(scheduleId)) {
+                    if (scheduleSheetDataDTO.getScheduleEmployeeInfoList() == null) {
+                        scheduleSheetDataDTO.setScheduleEmployeeInfoList(new ArrayList<>());
+                    }
+                    scheduleSheetDataDTO.getScheduleEmployeeInfoList().add(stakeholdersEmployeeInfoDTO);
+                }
+            }
+        }
+
+        Iterator<ScheduleSheetDataDTO> iterator = scheduleSheetDataDTOList.iterator();
+        while (iterator.hasNext()) {
+            ScheduleSheetDataDTO dto = iterator.next();
+            if (dto.getScheduleParentScheduleId() != null) {
+                for (ScheduleSheetDataDTO parentDto : scheduleSheetDataDTOList) {
+                    if (parentDto.getScheduleId().equals(dto.getScheduleParentScheduleId())) {
+                        if (parentDto.getScheduleChildScheduleList() == null) {
+                            parentDto.setScheduleChildScheduleList(new ArrayList<>());
+                        }
+                        parentDto.getScheduleChildScheduleList().add(dto);
+                        iterator.remove();
+                        break;
+                    }
+                }
+            }
+        }
+
+        // scheduleSheetDataDTOList를 형태에 맞추어 반환
+        List<ResponseScheduleSheetData> responseScheduleSheetDataList = modelMapper.map(scheduleSheetDataDTOList,
+            new TypeToken<List<ResponseScheduleSheetData>>() {
+            }.getType());
+
+        return responseScheduleSheetDataList;
+    }
 }
