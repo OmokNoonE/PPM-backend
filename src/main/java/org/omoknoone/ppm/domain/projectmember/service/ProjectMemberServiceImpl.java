@@ -3,6 +3,7 @@ package org.omoknoone.ppm.domain.projectmember.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
@@ -38,9 +39,12 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Transactional
     @Override
     public Integer createProjectMember(CreateProjectMemberRequestDTO dto) {
+
+
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         ProjectMember newMember = modelMapper.map(dto, ProjectMember.class);
 
-//        projectMemberRepository.save(newMember);
+        projectMemberRepository.save(newMember);
 
         return newMember.getProjectMemberId();
     }

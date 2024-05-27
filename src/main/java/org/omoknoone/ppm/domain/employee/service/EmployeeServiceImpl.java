@@ -60,6 +60,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         return modelMapper.map(employee, LoginEmployeeDTO.class);
     }
 
+    @Transactional
     @Override
     public String signUp(SignUpEmployeeRequestDTO signUpEmployeeRequestDTO) {
 

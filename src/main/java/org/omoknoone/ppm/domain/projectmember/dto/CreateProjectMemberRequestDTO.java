@@ -11,7 +11,7 @@ import lombok.Setter;
 public class CreateProjectMemberRequestDTO {
 
     private Integer projectMemberProjectId;
-    private Integer projectMemberRoleId;
+    // private Integer projectMemberRoleId;
     private String projectMemberEmployeeId;
 
 }
