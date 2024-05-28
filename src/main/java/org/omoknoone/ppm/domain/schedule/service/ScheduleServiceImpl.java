@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +20,8 @@ import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
+import org.omoknoone.ppm.domain.permission.dto.RoleAndSchedulesDTO;
+import org.omoknoone.ppm.domain.permission.service.PermissionService;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
@@ -49,11 +52,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleHistoryService scheduleHistoryService;
     private final ProjectService projectService;
     private final StakeholdersService stakeholdersService;
+    private final PermissionService permissionService;
 
     // TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
     public ScheduleServiceImpl(@Lazy ProjectService projectService, @Lazy StakeholdersService stakeholdersService,
+        @Lazy PermissionService permissionService,
         ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository,
         HolidayRepository holidayRepository, ModelMapper modelMapper) {
+        this.permissionService = permissionService;
         this.stakeholdersService = stakeholdersService;
         this.projectService = projectService;
         this.scheduleHistoryService = scheduleHistoryService;
@@ -439,13 +445,28 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private void addChildren(ScheduleSheetDataDTO parent, List<ScheduleSheetDataDTO> allSchedules) {
         for (ScheduleSheetDataDTO schedule : allSchedules) {
-            if (schedule.getScheduleParentScheduleId() != null && schedule.getScheduleParentScheduleId().equals(parent.getScheduleId())) {
+            if (schedule.getScheduleParentScheduleId() != null && schedule.getScheduleParentScheduleId()
+                .equals(parent.getScheduleId())) {
                 if (parent.get__children() == null) {
                     parent.set__children(new ArrayList<>());
                 }
                 if (!parent.get__children().contains(schedule)) {
                     parent.get__children().add(schedule);
                     addChildren(schedule, allSchedules);
+                }
+            }
+        }
+    }
+
+    /* filterScheduleIdList에 해당하는 일정들만 조회하도록 */
+    private void filterSchedules(List<ScheduleSheetDataDTO> schedules, List<Long> filterScheduleIdList,
+        List<ScheduleSheetDataDTO> resultScheduleList) {
+        for (ScheduleSheetDataDTO schedule : schedules) {
+            if (filterScheduleIdList.contains(schedule.getScheduleId())) {
+                resultScheduleList.add(schedule);
+            } else {
+                if (schedule.get__children() != null) {
+                    filterSchedules(schedule.get__children(), filterScheduleIdList, resultScheduleList);
                 }
             }
         }
@@ -466,6 +487,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<StakeholdersEmployeeInfoDTO> stakeholdersEmployeeInfoDTOList = stakeholdersService.viewStakeholdersEmployeeInfo(
             scheduleIdList);
 
+        /* 각 일정에 이해관계자 정보 입력 */
         for (ScheduleSheetDataDTO scheduleSheetDataDTO : scheduleSheetDataDTOList) {
             Long scheduleId = scheduleSheetDataDTO.getScheduleId();
             for (StakeholdersEmployeeInfoDTO stakeholdersEmployeeInfoDTO : stakeholdersEmployeeInfoDTOList) {
@@ -478,18 +500,36 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
         }
 
+        /* 일정간 부모 자식 관계 확립 */
         for (ScheduleSheetDataDTO scheduleSheetDataDTO : scheduleSheetDataDTOList) {
             addChildren(scheduleSheetDataDTO, scheduleSheetDataDTOList);
         }
 
+        /* 최상위 일정만 조회 */
         List<ScheduleSheetDataDTO> rootSchedules = scheduleSheetDataDTOList.stream()
             .filter(schedule -> schedule.getScheduleParentScheduleId() == null)
             .collect(Collectors.toList());
 
-        List<ResponseScheduleSheetData> responseScheduleSheetDataList = modelMapper.map(rootSchedules,
-            new TypeToken<List<ResponseScheduleSheetData>>() {
-            }.getType());
+        /* 권한에 해당하는 일정 리스트 */
+        RoleAndSchedulesDTO roleAndSchedulesDTO = permissionService
+            .getPermissionIdListByPermission(employeeId, projectId);
 
-        return responseScheduleSheetDataList;
+        /* PA, PL의 경우*/
+        if (roleAndSchedulesDTO.getRoleName() > 10601) {
+            List<Long> filterScheduleIdList = roleAndSchedulesDTO.getScheduleIdList();
+            List<ScheduleSheetDataDTO> resultScheduleList = new ArrayList<>();
+            filterSchedules(rootSchedules, filterScheduleIdList, resultScheduleList);
+
+            return modelMapper.map(resultScheduleList,
+                new TypeToken<List<ResponseScheduleSheetData>>() {
+                }.getType());
+        }
+        /* PM의 경우 */
+        else {
+            return modelMapper.map(rootSchedules,
+                new TypeToken<List<ResponseScheduleSheetData>>() {
+                }.getType());
+
+        }
     }
 }
