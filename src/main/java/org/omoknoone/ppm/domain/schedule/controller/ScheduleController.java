@@ -274,12 +274,12 @@ public class ScheduleController {
     }
 
     /* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
-    @GetMapping("/thisweek")
-    public ResponseEntity<ResponseMessage> findSchedulesForThisWeek(){
+    @GetMapping("/thisweek/{projectId}")
+    public ResponseEntity<ResponseMessage> findSchedulesForThisWeek(@PathVariable Integer projectId){
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        List<ScheduleDTO> schedules = scheduleService.getSchedulesForThisWeek();
+        List<ScheduleDTO> schedules = scheduleService.getSchedulesForThisWeek(projectId);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("findSchedulesForThisWeek", schedules);
@@ -291,12 +291,12 @@ public class ScheduleController {
     }
 
     /* 해당 날짜 기준으로 차주에 끝나야 할 일정 목록 조회 */
-    @GetMapping("/nextweek")
-    public ResponseEntity<ResponseMessage> findSchedulesForNextWeek(){
+    @GetMapping("/nextweek/{projectId}")
+    public ResponseEntity<ResponseMessage> findSchedulesForNextWeek(Integer projectId){
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        List<ScheduleDTO> schedules = scheduleService.getSchedulesForNextWeek();
+        List<ScheduleDTO> schedules = scheduleService.getSchedulesForNextWeek(projectId);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("findSchedulesForNextWeek", schedules);

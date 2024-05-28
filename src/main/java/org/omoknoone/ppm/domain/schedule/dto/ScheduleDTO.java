@@ -27,7 +27,7 @@ public class ScheduleDTO{
     private Integer scheduleDepth;
     private Integer schedulePriority;
     private Integer scheduleProgress;
-    private Long scheduleStatus;
+    private String scheduleStatus;
     private Integer scheduleManHours;
     private Long scheduleParentScheduleId;
     private Long schedulePrecedingScheduleId;
@@ -40,7 +40,7 @@ public class ScheduleDTO{
     @Builder
     public ScheduleDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate,
         LocalDate scheduleEndDate, Integer scheduleDepth, Integer schedulePriority, Integer scheduleProgress,
-        Long scheduleStatus, Integer scheduleManHours, Long scheduleParentScheduleId, Long schedulePrecedingScheduleId,
+        String scheduleStatus, Integer scheduleManHours, Long scheduleParentScheduleId, Long schedulePrecedingScheduleId,
         LocalDateTime scheduleCreatedDate, LocalDateTime scheduleModifiedDate, Boolean scheduleIsDeleted,
         LocalDateTime scheduleDeletedDate, Long scheduleProjectId) {
         this.scheduleId = scheduleId;

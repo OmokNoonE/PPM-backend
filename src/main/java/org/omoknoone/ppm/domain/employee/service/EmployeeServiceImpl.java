@@ -60,6 +60,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         return modelMapper.map(employee, LoginEmployeeDTO.class);
     }
 
+    @Transactional
     @Override
     public String signUp(SignUpEmployeeRequestDTO signUpEmployeeRequestDTO) {
 
@@ -106,12 +107,13 @@ public class EmployeeServiceImpl implements EmployeeService{
         return new ViewEmployeeResponseDTO(employee);
     }
 
-    @Override
-    public String getEmployeeNameByProjectMemberId(String projectMemberEmployeeId) {
-
-        Employee employee = employeeRepository.findByEmployeeId(projectMemberEmployeeId);
-
-        return employee.getEmployeeName();
-    }
+    /* 메소드가 옳지 않고 사용 되는 곳이 없음 */
+//    @Override
+//    public String getEmployeeNameByProjectMemberId(String projectMemberEmployeeId) {
+//
+//        Employee employee = employeeRepository.findByEmployeeId(projectMemberEmployeeId);
+//
+//        return employee.getEmployeeName();
+//    }
 
 }

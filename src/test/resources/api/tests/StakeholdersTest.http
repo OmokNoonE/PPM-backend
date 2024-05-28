@@ -1,0 +1,25 @@
+### 이해관계자 생성
+POST http://localhost:8888/stakeholders/create
+Content-Type: application/json
+
+{
+  "stakeholdersType" : 10402,
+  "stakeholdersScheduleId": 9,
+  "stakeholdersProjectMemberId": 2
+}
+
+### 이해관계자 조회
+GET http://localhost:8888/stakeholders/view/9
+
+### 이해관계자 수정
+PUT http://localhost:8888/stakeholders/modify
+Content-Type: application/json
+
+{
+  "stakeholdersId": 3,
+  "stakeholdersType" : 10402,
+  "stakeholdersProjectMemberId": 2
+}
+
+### 이해관계자 삭제
+DELETE http://localhost:8888/stakeholders/remove/3

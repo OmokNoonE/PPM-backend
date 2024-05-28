@@ -24,5 +24,5 @@ public interface EmployeeService extends UserDetailsService{
   
     String modifyPassword(ModifyPasswordRequestDTO modifyPasswordRequestDTO);
 
-	String getEmployeeNameByProjectMemberId(String projectMemberId);
+//	String getEmployeeNameByProjectMemberId(String projectMemberId);
 }
