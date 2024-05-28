@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class viewProjectMembersByProjectResponseDTO {
+public class ViewProjectMembersByProjectResponseDTO {
 
     private Integer projectMemberId;
     private Integer projectMemberProjectId;

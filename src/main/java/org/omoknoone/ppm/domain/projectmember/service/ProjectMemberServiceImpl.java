@@ -9,7 +9,8 @@ import org.omoknoone.ppm.domain.permission.service.PermissionService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.viewProjectMembersByProjectResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ViewAvailableMemberResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -31,13 +32,18 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<viewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId) {
+    public List<ViewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId) {
 
         List<ProjectMember> projectMembers = projectMemberRepository.findByProjectMemberProjectId(projectMemberProjectId);
 
         return projectMembers.stream()
-                .map(member -> modelMapper.map(member, viewProjectMembersByProjectResponseDTO.class))
+                .map(member -> modelMapper.map(member, ViewProjectMembersByProjectResponseDTO.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ViewAvailableMemberResponseDTO> viewAndSearchAvailableMembers(Integer projectMemberProjectId, String query) {
+        return List.of();
     }
 
     @Transactional
