@@ -55,12 +55,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ProjectService projectService;
     private final StakeholdersService stakeholdersService;
     private final PermissionService permissionService;
+	private final CommonCodeRepository commonCodeRepository;
 
     // TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
     public ScheduleServiceImpl(@Lazy ProjectService projectService, @Lazy StakeholdersService stakeholdersService,
-        @Lazy PermissionService permissionService,
+        @Lazy PermissionService permissionService, @Lazy CommonCodeRepository commonCodeRepository,
         ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository,
         HolidayRepository holidayRepository, ModelMapper modelMapper) {
+        this.commonCodeRepository = commonCodeRepository;
         this.permissionService = permissionService;
         this.stakeholdersService = stakeholdersService;
         this.projectService = projectService;
@@ -450,7 +452,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 		return scheduleRatios;
 	}
-  
+
   private void addChildren(ScheduleSheetDataDTO parent, List<ScheduleSheetDataDTO> allSchedules) {
       for (ScheduleSheetDataDTO schedule : allSchedules) {
           if (schedule.getScheduleParentScheduleId() != null && schedule.getScheduleParentScheduleId()
