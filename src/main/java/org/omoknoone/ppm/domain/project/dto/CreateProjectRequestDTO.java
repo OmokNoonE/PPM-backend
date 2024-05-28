@@ -1,13 +1,10 @@
 package org.omoknoone.ppm.domain.project.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 @ToString
 public class CreateProjectRequestDTO {
