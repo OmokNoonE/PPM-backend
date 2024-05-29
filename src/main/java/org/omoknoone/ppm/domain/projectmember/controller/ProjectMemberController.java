@@ -46,7 +46,7 @@ public class ProjectMemberController {
 
     @GetMapping("/available/{projectId}")
     public ResponseEntity<ResponseMessage> viewAndSearchAvailableMembers(@PathVariable("projectId") Integer projectId,
-                                                                        @RequestParam(value = "query", required = false) String query) {
+                                                                         @RequestParam(value = "query", required = false) String query) {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
@@ -85,10 +85,8 @@ public class ProjectMemberController {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        requestDTO.setProjectMemberId(projectMemberId);
-
         try {
-            projectMemberService.removeProjectMember(requestDTO);
+            projectMemberService.removeProjectMember(projectMemberId, requestDTO.getProjectMemberHistoryReason());
             Map<String, Object> responseMap = new HashMap<>();
             responseMap.put("removeProjectMember", projectMemberId);
 

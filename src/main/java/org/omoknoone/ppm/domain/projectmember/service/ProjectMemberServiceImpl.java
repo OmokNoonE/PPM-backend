@@ -9,15 +9,13 @@ import org.omoknoone.ppm.domain.employee.service.EmployeeService;
 import org.omoknoone.ppm.domain.permission.dto.CreatePermissionDTO;
 import org.omoknoone.ppm.domain.permission.service.PermissionService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
-import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewAvailableMembersResponseDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.*;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,11 +35,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Override
     public List<ViewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId) {
 
-        List<ProjectMember> projectMembers = projectMemberRepository.findByProjectMemberProjectId(projectMemberProjectId);
-
-        return projectMembers.stream()
-                .map(member -> modelMapper.map(member, ViewProjectMembersByProjectResponseDTO.class))
-                .collect(Collectors.toList());
+        return projectMemberRepository.findByProjectMembersProjectId(projectMemberProjectId);
     }
 
     @Transactional(readOnly = true)
@@ -72,9 +66,20 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
                 .findByProjectMemberEmployeeIdAndProjectMemberProjectId
                         (requestDTO.getProjectMemberEmployeeId(), requestDTO.getProjectMemberProjectId());
 
+        LocalDateTime now = LocalDateTime.now();
+
         if (projectMember != null) {
             // 기존 구성원이 존재하면 업데이트
             projectMember.include();
+            projectMemberRepository.save(projectMember);
+            projectMemberHistoryService.createProjectMemberHistory(
+                    new CreateProjectMemberHistoryRequestDTO(
+                            projectMember.getProjectMemberId(),
+                            "Re-added project member",
+                            now,
+                            null
+                    )
+            );
         } else {
             // 새로운 구성원 생성
             projectMember = ProjectMember.builder()
@@ -82,8 +87,16 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
                     .projectMemberEmployeeId(requestDTO.getProjectMemberEmployeeId())
                     .projectMemberIsExcluded(false)
                     .build();
+            projectMemberRepository.save(projectMember);
+            projectMemberHistoryService.createProjectMemberHistory(
+                    new CreateProjectMemberHistoryRequestDTO(
+                            projectMember.getProjectMemberId(),
+                            "Added new project member",
+                            now,
+                            null
+                    )
+            );
         }
-        projectMemberRepository.save(projectMember);
 
         // 권한 생성
         CreatePermissionDTO permissionDTO = CreatePermissionDTO.builder()
@@ -99,14 +112,37 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Transactional
     @Override
-    public void removeProjectMember(ModifyProjectMemberRequestDTO projectMemberRequestDTO) {
-        ProjectMember excludedMember = projectMemberRepository.findById(projectMemberRequestDTO.getProjectMemberId())
+    public void removeProjectMember(Integer projectMemberId, String projectMemberHistoryReason) {
+        ProjectMember excludedMember = projectMemberRepository.findById(projectMemberId)
                 .orElseThrow(() -> new EntityNotFoundException(environment.getProperty("exception.data.entityNotFound")));
-        excludedMember.remove();
 
+        LocalDateTime now = LocalDateTime.now();
+        excludedMember.remove();
         projectMemberRepository.save(excludedMember);
 
-        projectMemberHistoryService.createProjectMemberHistory(projectMemberRequestDTO);
+        projectMemberHistoryService.createProjectMemberHistory(
+                new CreateProjectMemberHistoryRequestDTO(
+                        excludedMember.getProjectMemberId(),
+                        projectMemberHistoryReason,
+                        excludedMember.getProjectMemberCreatedDate(),
+                        now
+                )
+        );
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Integer viewProjectMemberId(String employeeId, Integer projectId) {
+        ProjectMember projectMember = projectMemberRepository.
+                findByProjectMemberEmployeeIdAndProjectMemberProjectId(employeeId, projectId);
+        return projectMember.getProjectMemberId();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId) {
+
+        return projectMemberRepository.findByProjectMemberEmployeeId(employeeId);
     }
 
 //    @Transactional
@@ -121,7 +157,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 //        projectMemberHistoryService.createProjectMemberHistory(projectMemberRequestDTO);
 //    }
 
-//    @Transactional
+    //    @Transactional
 //    @Override
 //    public Integer modifyProjectMember(ModifyProjectMemberRequestDTO projectMemberRequestDTO) {
 //
@@ -136,17 +172,4 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 //        return existingMember.getProjectMemberId();
 //    }
 //
-//    @Override
-//    public Integer viewProjectMemberId(String employeeId, Integer projectId) {
-//        ProjectMember projectMember = projectMemberRepository.
-//                findByProjectMemberEmployeeIdAndProjectMemberProjectId(employeeId, projectId);
-//        return projectMember.getProjectMemberId();
-//    }
-//
-//    @Override
-//    public List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId) {
-//
-//        return projectMemberRepository.findByProjectMemberEmployeeId(employeeId);
-//    }
-
 }
