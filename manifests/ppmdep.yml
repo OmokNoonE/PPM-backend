@@ -1,0 +1,21 @@
+# deployments 파일은 어떤 이미지로 컨테이너들을 몇개 관리할지 정의하는 파일
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ppm-back
+spec:
+  selector:
+    matchLabels:
+      app: ppm-back
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ppm-back
+    spec:
+      containers:
+      - name: ppm-back
+        image: orlzll/ppm-back:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8888
