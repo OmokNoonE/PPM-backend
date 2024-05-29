@@ -18,6 +18,7 @@ import org.omoknoone.ppm.domain.requirements.vo.RequestRequirement;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirement;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirementsListByProject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -140,5 +141,27 @@ public class RequirementsController {
 				.status(HttpStatus.NO_CONTENT)
 				.headers(headers)
 				.body(new ResponseMessage(204, "요구사항 삭제 성공", responseMap));
+	}
+
+	// 요구사항 페이징 처리
+	@GetMapping("/list/{projectId}/{page}/{size}")
+	public ResponseEntity<ResponseMessage> viewRequirementsByProjectIdByPage(@PathVariable Long projectId,
+																			 @PathVariable int page,
+																			 @PathVariable int size) {
+
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+		// page는 0부터 시작
+		page = page - 1;
+		Page<RequirementsListByProjectDTO> projectRequirements = requirementsService
+				.viewRequirementsByProjectIdByPage(projectId, page, size);
+
+		Map<String, Object> responseMap = new HashMap<>();
+		responseMap.put("viewRequirementsByProjectIdByPage", projectRequirements);
+
+		return ResponseEntity
+				.ok()
+				.headers(headers)
+				.body(new ResponseMessage(200, "요구사항 조회 성공", responseMap));
 	}
 }
