@@ -23,24 +23,23 @@ public class ProjectMemberHistory {
     @Column(name = "project_member_history_reason", nullable = false)
     private String projectMemberHistoryReason;
 
-    @UpdateTimestamp
-    @Column(name = "project_member_history_modified_date", nullable = false, length = 30)
-    private LocalDateTime projectMemberHistoryModifiedDate;
+    @Column(name = "project_member_created_date", nullable = false)
+    private LocalDateTime projectMemberCreatedDate;
 
-    @Column(name = "project_member_history_is_deleted", nullable = false)
-    private Boolean projectMemberHistoryIsDeleted = false;
+    @Column(name = "project_member_exclusion_date")
+    private LocalDateTime projectMemberExclusionDate;
 
-    @Column(name = "project_member_history_deleted_date", length = 30)
-    private String projectMemberHistoryDeletedDate;
-
-    @Column(name = "project_member_history_project_member_id", nullable = false)
+    @JoinColumn(name = "project_member_id", nullable = false)
     private Integer projectMemberHistoryProjectMemberId;
 
     @Builder
-
-    public ProjectMemberHistory(String projectMemberHistoryReason, Boolean projectMemberHistoryIsDeleted, Integer projectMemberHistoryProjectMemberId) {
+    public ProjectMemberHistory(Long projectMemberHistoryId, String projectMemberHistoryReason,
+                                LocalDateTime projectMemberCreatedDate, LocalDateTime projectMemberExclusionDate,
+                                Integer projectMemberHistoryProjectMemberId) {
+        this.projectMemberHistoryId = projectMemberHistoryId;
         this.projectMemberHistoryReason = projectMemberHistoryReason;
-        this.projectMemberHistoryIsDeleted = projectMemberHistoryIsDeleted;
+        this.projectMemberCreatedDate = projectMemberCreatedDate;
+        this.projectMemberExclusionDate = projectMemberExclusionDate;
         this.projectMemberHistoryProjectMemberId = projectMemberHistoryProjectMemberId;
     }
 }
