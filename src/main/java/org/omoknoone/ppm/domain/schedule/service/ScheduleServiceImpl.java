@@ -179,6 +179,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 		/* 진행 상태 수정 (+진행률) */
 		schedule.modifyProgress(modifyScheduleProgress(requestModifyScheduleDTO));
 
+		schedule.modifyPriority(requestModifyScheduleDTO.getSchedulePriority());
+
 		scheduleRepository.save(schedule);
 
 		scheduleHistoryService.createScheduleHistory(requestModifyScheduleDTO);
