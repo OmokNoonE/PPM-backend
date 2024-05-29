@@ -13,4 +13,6 @@ public interface RequirementsRepository extends JpaRepository<Requirements, Long
 	Page<Requirements> findByRequirementsProjectIdAndRequirementsIsDeleted(Long projectId, Boolean isDeleted, Pageable pageable);
 
 	Requirements findRequirementByRequirementsProjectIdAndRequirementsId(Long projectId, Long requirementsId);
+
+	List<Requirements> findRequirementsByRequirementsNameInAndRequirementsProjectId(List<String> requirementsName, Long projectId);
 }

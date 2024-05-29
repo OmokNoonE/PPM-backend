@@ -162,6 +162,26 @@ public class RequirementsController {
 		return ResponseEntity
 				.ok()
 				.headers(headers)
-				.body(new ResponseMessage(200, "요구사항 조회 성공", responseMap));
+				.body(new ResponseMessage(200, "요구사항 페이징 조회 성공", responseMap));
 	}
+
+	// 요구사항 제목으로 요구사항 조회
+	@GetMapping("/search/{projectId}/{requirementsName}")
+public ResponseEntity<ResponseMessage> searchRequirementsByName(@PathVariable Long projectId,
+																	   @PathVariable String requirementsName) {
+
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+		List<RequirementsListByProjectDTO> projectRequirements = requirementsService
+							.searchRequirementsByName(projectId, requirementsName);
+
+		Map<String, Object> responseMap = new HashMap<>();
+		responseMap.put("searchRequirementsByName", projectRequirements);
+
+		return ResponseEntity
+				.ok()
+				.headers(headers)
+				.body(new ResponseMessage(200, "요구사항 검색 성공", responseMap));
+	}
+
 }

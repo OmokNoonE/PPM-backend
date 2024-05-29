@@ -69,6 +69,18 @@ public class RequirementsServiceImpl implements RequirementsService {
 		return requirementsPage.map(requirement -> modelMapper.map(requirement, RequirementsListByProjectDTO.class));
 	}
 
+	@Override
+	public List<RequirementsListByProjectDTO> searchRequirementsByName(Long projectId, String requirementsName) {
+
+		List<Requirements> requirements =
+				requirementsRepository.findRequirementsByRequirementsNameInAndRequirementsProjectId(
+						List.of(requirementsName), projectId);
+
+		return requirements.stream()
+				.map(requirement -> modelMapper.map(requirement, RequirementsListByProjectDTO.class))
+				.toList();
+	}
+
 
 	/* 일정 수정 */
 	@Transactional

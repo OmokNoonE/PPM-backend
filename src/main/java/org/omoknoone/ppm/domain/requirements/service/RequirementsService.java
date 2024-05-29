@@ -25,4 +25,6 @@ public interface RequirementsService {
 	Requirements createRequirement(RequirementsDTO requirementsDTO);
 
 	Page<RequirementsListByProjectDTO> viewRequirementsByProjectIdByPage(Long projectId, int page, int size);
+
+	List<RequirementsListByProjectDTO> searchRequirementsByName(Long projectId, String requirementsName);
 }
