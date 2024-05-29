@@ -26,7 +26,7 @@ public class ProjectMember {
 
     @CreationTimestamp
     @Column(name = "project_member_created_date", nullable = false, length = 30)
-    private LocalDate projectMemberCreatedDate;
+    private LocalDateTime projectMemberCreatedDate;
 
     @Column(name = "project_member_modified_date", length = 30)
     private LocalDateTime projectMemberModifiedDate;
@@ -46,7 +46,7 @@ public class ProjectMember {
     @Builder
     public ProjectMember(Integer projectMemberId, Integer projectMemberProjectId,
                          String projectMemberEmployeeId, Boolean projectMemberIsExcluded,
-                         LocalDateTime projectMemberExclusionDate, LocalDate projectMemberCreatedDate,
+                         LocalDateTime projectMemberExclusionDate, LocalDateTime projectMemberCreatedDate,
                          LocalDateTime projectMemberModifiedDate) {
         this.projectMemberId = projectMemberId;
         this.projectMemberProjectId = projectMemberProjectId;

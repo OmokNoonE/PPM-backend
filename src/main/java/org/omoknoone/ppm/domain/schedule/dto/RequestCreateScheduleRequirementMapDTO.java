@@ -19,6 +19,7 @@ import lombok.ToString;
 @Getter
 @ToString
 public class RequestCreateScheduleRequirementMapDTO{
+    /* TODO. scheduleRequirementMapScheduleId 로 변경해야함. */
     Long scheduleRequirementMapId;
     Long scheduleRequirementMapRequirementId;
 
