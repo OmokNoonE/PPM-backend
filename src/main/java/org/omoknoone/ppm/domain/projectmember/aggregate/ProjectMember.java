@@ -58,21 +58,13 @@ public class ProjectMember {
         this.projectMemberModifiedDate = projectMemberModifiedDate;
     }
 
-    public void modify(ModifyProjectMemberRequestDTO dto) {
-//        this.projectMemberRoleId = dto.getProjectMemberRoleId();
-        this.projectMemberModifiedDate = LocalDateTime.now();
-    }
-
     public void remove() {
         this.projectMemberIsExcluded = true;
         this.projectMemberExclusionDate = LocalDateTime.now();
     }
 
-    public void reactivate() {
-        if (!this.projectMemberIsExcluded) {
-            throw new IllegalStateException("이미 활성화된 구성원입니다. 다시 활성화할 수 없습니다.");
-        }
+    public void include() {
         this.projectMemberIsExcluded = false;
-        this.projectMemberExclusionDate = null;
+        this.projectMemberModifiedDate = LocalDateTime.now();
     }
 }
