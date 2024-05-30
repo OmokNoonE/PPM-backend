@@ -56,6 +56,7 @@ public class ScheduleController {
     @PostMapping("/create")
     public ResponseEntity<ResponseMessage> createSchedule(@RequestBody RequestSchedule requestSchedule) {
 
+        /* depth는 null로 들어와야하니, 부모 일정의 depth를 참고하여 계산해서 넣어야함. */
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
