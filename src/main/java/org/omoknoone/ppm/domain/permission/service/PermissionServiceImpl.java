@@ -20,6 +20,8 @@ public class PermissionServiceImpl implements PermissionService {
 
     private final ModelMapper modelMapper;
 
+    private static final Long PM_ROLE_ID = 10601L;
+
     @Autowired
     public PermissionServiceImpl(PermissionRepository permissionRepository, ModelMapper modelMapper
     ) {
@@ -44,7 +46,7 @@ public class PermissionServiceImpl implements PermissionService {
     public List<PermissionDTO> viewMemberPermission(Long projectMemberId) {
 
         List<Permission> permissionList = permissionRepository
-                .findPermissionByPermissionProjectMemberId(projectMemberId);
+            .findPermissionByPermissionProjectMemberId(projectMemberId);
 
         if (permissionList == null || permissionList.isEmpty()) {
             throw new IllegalArgumentException(projectMemberId + " 구성원에 해당하는 권한이 존재하지 않습니다.");
@@ -54,12 +56,21 @@ public class PermissionServiceImpl implements PermissionService {
         }.getType());
     }
 
+
+
+    @Transactional(readOnly = true)
+    public boolean hasPmRole(Long projectMemberId) {
+        List<PermissionDTO> permissions = permissionRepository.findByPermissionProjectMemberId(projectMemberId);
+        return permissions.stream()
+            .anyMatch(permission -> permission.getPermissionRoleName().equals(10601L));
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<PermissionDTO> viewSchedulePermission(Long scheduleId) {
 
         List<Permission> permissionList = permissionRepository
-                .findPermissionByPermissionScheduleId(scheduleId);
+            .findPermissionByPermissionScheduleId(scheduleId);
 
         if (permissionList == null || permissionList.isEmpty()) {
             throw new IllegalArgumentException(scheduleId + " 일정에 연관된 권한이 존재하지 않습니다.");
@@ -74,7 +85,7 @@ public class PermissionServiceImpl implements PermissionService {
     public Long removePermission(Long permissionId) {
 
         Permission permission = permissionRepository.findById(permissionId)
-                .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(IllegalArgumentException::new);
 
         permission.remove();
 

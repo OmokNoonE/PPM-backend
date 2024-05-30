@@ -23,6 +23,13 @@ public class PermissionDTO {
     Boolean permissionIsDeleted;
     LocalDateTime permissionDeletedDate;
     Long permissionProjectMemberId;
+
+    public PermissionDTO(Long permissionId, Long permissionRoleName, Long permissionProjectMemberId) {
+        this.permissionId = permissionId;
+        this.permissionRoleName = permissionRoleName;
+        this.permissionProjectMemberId = permissionProjectMemberId;
+    }
+
     Long permissionScheduleId;
 
     @Builder

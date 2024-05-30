@@ -8,7 +8,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-public class NotificationSettingRequestDTO {
+public class NotificationSettingsRequestDTO {
 
     private boolean emailEnabled;
     private boolean slackEnabled;

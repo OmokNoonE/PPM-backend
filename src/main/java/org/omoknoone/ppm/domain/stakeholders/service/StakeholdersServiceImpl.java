@@ -5,6 +5,7 @@ import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
+import org.omoknoone.ppm.domain.permission.dto.PermissionDTO;
 import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
 import org.omoknoone.ppm.domain.stakeholders.dto.CreateStakeholdersDTO;
 import org.omoknoone.ppm.domain.stakeholders.dto.ModifyStakeholdersDTO;
@@ -79,5 +80,16 @@ public class StakeholdersServiceImpl implements StakeholdersService {
         stakeholdersRepository.save(stakeholders);
 
         return stakeholders.getStakeholdersId();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasDevRole(Long projectMemberId) {
+        List<StakeholdersDTO> stakeholders = stakeholdersRepository.findByStakeholdersProjectMemberId(projectMemberId);
+        return stakeholders.stream()
+            .anyMatch(stakeholder -> stakeholder.getStakeholdersType().equals(10402L));
+    }
+
+    public List<Stakeholders> findByScheduleId(Long scheduleId) {
+        return stakeholdersRepository.findStakeholdersByStakeholdersScheduleId(scheduleId);
     }
 }

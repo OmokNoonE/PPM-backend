@@ -73,4 +73,8 @@ public class ProjectMember {
         this.projectMemberIsExcluded = false;
         this.projectMemberExclusionDate = null;
     }
+
+    public String getEmployeeId() {
+		return this.projectMemberEmployeeId;
+    }
 }

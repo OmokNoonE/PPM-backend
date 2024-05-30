@@ -30,4 +30,12 @@ public class StakeholdersDTO implements Serializable {
         this.stakeholdersScheduleId = stakeholdersScheduleId;
         this.stakeholdersProjectMemberId = stakeholdersProjectMemberId;
     }
+
+    public StakeholdersDTO(Long stakeholdersId, Long stakeholdersType, Long stakeholdersScheduleId,
+        Long stakeholdersProjectMemberId) {
+        this.stakeholdersId = stakeholdersId;
+        this.stakeholdersType = stakeholdersType;
+        this.stakeholdersScheduleId = stakeholdersScheduleId;
+        this.stakeholdersProjectMemberId = stakeholdersProjectMemberId;
+    }
 }
