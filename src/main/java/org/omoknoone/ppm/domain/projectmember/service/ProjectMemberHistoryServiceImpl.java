@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class ProjectMemberHistoryServiceImpl implements ProjectMemberHistoryService{
 
-    private ProjectMemberHistoryRepository projectMemberHistoryRepository;
+    private final ProjectMemberHistoryRepository projectMemberHistoryRepository;
 
     @Transactional
     @Override
