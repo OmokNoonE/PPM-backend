@@ -13,7 +13,8 @@ public class CreateProjectMemberRequestDTO {
     private Long permissionScheduleId;
 
     @Builder
-    public CreateProjectMemberRequestDTO(Integer projectMemberProjectId, Integer projectMemberRoleId, String projectMemberEmployeeId, Long permissionScheduleId) {
+    public CreateProjectMemberRequestDTO(Integer projectMemberProjectId, Integer projectMemberRoleId,
+                                         String projectMemberEmployeeId, Long permissionScheduleId) {
         this.projectMemberProjectId = projectMemberProjectId;
         this.projectMemberRoleId = projectMemberRoleId;
         this.projectMemberEmployeeId = projectMemberEmployeeId;

@@ -18,9 +18,12 @@ public class ViewEmployeeResponseDTO {
     private String employeeContact;
     private String employeeCompanyName;
     private Boolean employeeIsExternalPartner;
+    private LocalDateTime employeeCreatedDate;
 
     @Builder
-    public ViewEmployeeResponseDTO(String employeeId, String employeeName, String employeeEmail, String employeeDepartment, String employeeContact, String employeeCompanyName, Boolean employeeIsExternalPartner) {
+    public ViewEmployeeResponseDTO(String employeeId, String employeeName, String employeeEmail, String employeeDepartment,
+                                String employeeContact, String employeeCompanyName,
+                                Boolean employeeIsExternalPartner, LocalDateTime employeeCreatedDate) {
         this.employeeId = employeeId;
         this.employeeName = employeeName;
         this.employeeEmail = employeeEmail;
@@ -28,6 +31,7 @@ public class ViewEmployeeResponseDTO {
         this.employeeContact = employeeContact;
         this.employeeCompanyName = employeeCompanyName;
         this.employeeIsExternalPartner = employeeIsExternalPartner;
+        this.employeeCreatedDate = employeeCreatedDate;
     }
 
     public ViewEmployeeResponseDTO(Employee employee) {
