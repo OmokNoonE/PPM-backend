@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: ppm-back
-        image: orlzll/ppm-back:latest
+        image: orlzll/ppm-back
         imagePullPolicy: Always
         ports:
         - containerPort: 8888
