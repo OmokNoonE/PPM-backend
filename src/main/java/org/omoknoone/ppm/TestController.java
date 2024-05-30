@@ -6,8 +6,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TestController {
 
-	@RequestMapping("/test")
+	@GetMapping("/")
 	public String test() {
 		return "Hello World";
 	}
+	@GetMapping("/favicon.ico")
+    public void favicon() {
+        // Return no content or a favicon.ico image
+    }
 }
