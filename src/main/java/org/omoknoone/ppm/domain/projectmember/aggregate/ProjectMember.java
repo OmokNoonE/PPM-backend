@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
 
 import java.time.LocalDateTime;
 
@@ -62,6 +63,9 @@ public class ProjectMember {
         this.projectMemberEmployeeName = projectMemberEmployeeName;
     }
 
+    public void modify(ModifyProjectMemberRequestDTO requestDTO){
+        this.projectMemberRoleName = requestDTO.getProjectMemberRoleName();
+    }
 
     public void remove() {
         this.projectMemberIsExcluded = true;

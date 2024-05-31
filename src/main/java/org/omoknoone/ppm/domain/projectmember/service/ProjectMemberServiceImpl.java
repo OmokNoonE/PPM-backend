@@ -136,31 +136,20 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         return projectMemberRepository.findByProjectMemberEmployeeId(employeeId);
     }
 
-//    @Transactional
-//    @Override
-//    public void reactivateProjectMember(ModifyProjectMemberRequestDTO projectMemberRequestDTO) {
-//        ProjectMember reactivatedMember = projectMemberRepository.findById(projectMemberRequestDTO.getProjectMemberId())
-//                .orElseThrow(() -> new EntityNotFoundException(environment.getProperty("exception.data.entityNotFound")));
-//        reactivatedMember.reactivate();
-//
-//        projectMemberRepository.save(reactivatedMember);
-//
-//        projectMemberHistoryService.createProjectMemberHistory(projectMemberRequestDTO);
-//    }
+    /* 구성원 수정 (권한 변경) */
+    @Transactional
+    @Override
+    public Integer modifyProjectMember(ModifyProjectMemberRequestDTO projectMemberRequestDTO) {
 
-    //    @Transactional
-//    @Override
-//    public Integer modifyProjectMember(ModifyProjectMemberRequestDTO projectMemberRequestDTO) {
-//
-//        ProjectMember existingMember = projectMemberRepository.findById(projectMemberRequestDTO.getProjectMemberId())
-//                .orElseThrow(() -> new EntityNotFoundException(environment.getProperty("exception.data.entityNotFound")));
-//        existingMember.modify(projectMemberRequestDTO);
-//
-//        projectMemberRepository.save(existingMember);
-//
-//        projectMemberHistoryService.createProjectMemberHistory(projectMemberRequestDTO);
-//
-//        return existingMember.getProjectMemberId();
-//    }
-//
+        ProjectMember existingMember = projectMemberRepository.findById(projectMemberRequestDTO.getProjectMemberId())
+            .orElseThrow(() -> new EntityNotFoundException(environment.getProperty("exception.data.entityNotFound")));
+        existingMember.modify(projectMemberRequestDTO);
+
+        projectMemberRepository.save(existingMember);
+
+        projectMemberHistoryService.createProjectMemberHistory(projectMemberRequestDTO);
+
+        return existingMember.getProjectMemberId();
+    }
+
 }
