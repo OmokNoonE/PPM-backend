@@ -101,7 +101,7 @@ public class ProjectMemberController {
         }
     }
 
-    @PutMapping("/modify/{projectMemberId}")
+    @PutMapping("/modify")
     public ResponseEntity<ResponseMessage> modifyProjectMember(@RequestBody ModifyProjectMemberRequestDTO requestDTO) {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
