@@ -27,8 +27,6 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     private final ProjectMemberRepository projectMemberRepository;
     private final ProjectMemberHistoryService projectMemberHistoryService;
     private final EmployeeService employeeService;
-    private final PermissionService permissionService;
-    private final ModelMapper modelMapper;
     private final Environment environment;
 
     @Transactional(readOnly = true)
@@ -85,6 +83,8 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
             projectMember = ProjectMember.builder()
                     .projectMemberProjectId(requestDTO.getProjectMemberProjectId())
                     .projectMemberEmployeeId(requestDTO.getProjectMemberEmployeeId())
+                    .projectMemberEmployeeName(requestDTO.getProjectMemberEmployeeName())
+                    .projectMemberRoleName(requestDTO.getProjectMemberRoleName())
                     .projectMemberIsExcluded(false)
                     .build();
             projectMemberRepository.save(projectMember);
@@ -97,15 +97,6 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
                     )
             );
         }
-
-        // 권한 생성
-        CreatePermissionDTO permissionDTO = CreatePermissionDTO.builder()
-                .permissionProjectMemberId(Long.valueOf(projectMember.getProjectMemberId()))
-                .permissionRoleName(Long.valueOf(requestDTO.getProjectMemberRoleId()))
-                .permissionScheduleId(requestDTO.getPermissionScheduleId())
-                .build();
-
-        permissionService.createPermission(permissionDTO);
 
         return projectMember.getProjectMemberId();
     }
