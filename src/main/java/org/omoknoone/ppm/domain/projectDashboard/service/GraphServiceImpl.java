@@ -17,7 +17,7 @@ import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectDashboard.aggregate.Graph;
 import org.omoknoone.ppm.domain.projectDashboard.dto.GraphDTO;
 import org.omoknoone.ppm.domain.projectDashboard.repository.GraphRepository;
-import org.omoknoone.ppm.domain.projectmember.dto.viewProjectMembersByProjectResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
 import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -142,11 +142,11 @@ public class GraphServiceImpl implements GraphService {
         // 구성원 목록 (이름)
 
 
-        List<viewProjectMembersByProjectResponseDTO> dtoList =
+        List<ViewProjectMembersByProjectResponseDTO> dtoList =
             projectMemberService.viewProjectMembersByProject(Integer.valueOf(projectId));
 
         // categories에 구성원 이름 담기
-        for (viewProjectMembersByProjectResponseDTO dto : dtoList) {
+        for (ViewProjectMembersByProjectResponseDTO dto : dtoList) {
             // String name = employeeService.getEmployeeNameByProjectMemberId(String.valueOf(dto.getProjectMemberId()));
             // columnCategories.add(name);
             count += 1;

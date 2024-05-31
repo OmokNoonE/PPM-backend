@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
-import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
-import org.springframework.data.annotation.CreatedDate;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @ToString
@@ -26,7 +23,7 @@ public class ProjectMember {
 
     @CreationTimestamp
     @Column(name = "project_member_created_date", nullable = false, length = 30)
-    private LocalDate projectMemberCreatedDate;
+    private LocalDateTime projectMemberCreatedDate;
 
     @Column(name = "project_member_modified_date", length = 30)
     private LocalDateTime projectMemberModifiedDate;
@@ -46,7 +43,7 @@ public class ProjectMember {
     @Builder
     public ProjectMember(Integer projectMemberId, Integer projectMemberProjectId,
                          String projectMemberEmployeeId, Boolean projectMemberIsExcluded,
-                         LocalDateTime projectMemberExclusionDate, LocalDate projectMemberCreatedDate,
+                         LocalDateTime projectMemberExclusionDate, LocalDateTime projectMemberCreatedDate,
                          LocalDateTime projectMemberModifiedDate) {
         this.projectMemberId = projectMemberId;
         this.projectMemberProjectId = projectMemberProjectId;
@@ -58,21 +55,13 @@ public class ProjectMember {
         this.projectMemberModifiedDate = projectMemberModifiedDate;
     }
 
-    public void modify(ModifyProjectMemberRequestDTO dto) {
-//        this.projectMemberRoleId = dto.getProjectMemberRoleId();
-        this.projectMemberModifiedDate = LocalDateTime.now();
-    }
-
     public void remove() {
         this.projectMemberIsExcluded = true;
         this.projectMemberExclusionDate = LocalDateTime.now();
     }
 
-    public void reactivate() {
-        if (!this.projectMemberIsExcluded) {
-            throw new IllegalStateException("이미 활성화된 구성원입니다. 다시 활성화할 수 없습니다.");
-        }
+    public void include() {
         this.projectMemberIsExcluded = false;
-        this.projectMemberExclusionDate = null;
+        this.projectMemberModifiedDate = LocalDateTime.now();
     }
 }

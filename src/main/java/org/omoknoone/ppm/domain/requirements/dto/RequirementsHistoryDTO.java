@@ -19,12 +19,11 @@ public class RequirementsHistoryDTO {
 	private Long requirementHistoryProjectMemberId;
 	private Boolean requirementHistoryIsDeleted;
 	private LocalDateTime requirementHistoryDeletedDate;
+	private Long requirementHistoryRequirementId;
+
 
 	@Builder
-	public RequirementsHistoryDTO(Long requirementHistoryId, String requirementHistoryReason,
-		LocalDateTime requirementHistoryModifiedDate, Long requirementHistoryScheduleId,
-		Long requirementHistoryProjectMemberId, Boolean requirementHistoryIsDeleted,
-		LocalDateTime requirementHistoryDeletedDate) {
+	public RequirementsHistoryDTO(Long requirementHistoryId, String requirementHistoryReason, LocalDateTime requirementHistoryModifiedDate, Long requirementHistoryScheduleId, Long requirementHistoryProjectMemberId, Boolean requirementHistoryIsDeleted, LocalDateTime requirementHistoryDeletedDate, Long requirementHistoryRequirementId) {
 		this.requirementHistoryId = requirementHistoryId;
 		this.requirementHistoryReason = requirementHistoryReason;
 		this.requirementHistoryModifiedDate = requirementHistoryModifiedDate;
@@ -32,5 +31,6 @@ public class RequirementsHistoryDTO {
 		this.requirementHistoryProjectMemberId = requirementHistoryProjectMemberId;
 		this.requirementHistoryIsDeleted = requirementHistoryIsDeleted;
 		this.requirementHistoryDeletedDate = requirementHistoryDeletedDate;
+		this.requirementHistoryRequirementId = requirementHistoryRequirementId;
 	}
 }

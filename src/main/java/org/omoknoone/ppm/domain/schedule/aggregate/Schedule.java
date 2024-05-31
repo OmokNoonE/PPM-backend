@@ -142,4 +142,7 @@ public class Schedule {
     }
 
 
+    public void modifyPriority(Integer schedulePriority) {
+        this.schedulePriority = schedulePriority;
+    }
 }
