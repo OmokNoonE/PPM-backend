@@ -35,6 +35,7 @@ import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
 import org.omoknoone.ppm.domain.stakeholders.service.StakeholdersServiceImpl;
 import org.omoknoone.ppm.domain.task.repository.TaskRepository;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +67,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final PermissionServiceImpl permissionServiceImpl;
     private final ProjectMemberRepository projectMemberRepository;
     private final StakeholdersServiceImpl stakeholdersServiceImpl;
+    private final SimpMessagingTemplate brokerMessagingTemplate;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -158,6 +160,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         return modelMapper.map(notification, NotificationResponseDTO.class);
     }
+
     @Transactional(readOnly = true)
     @Override
     public List<NotificationResponseDTO> viewRecentNotifications(String employeeId) {
@@ -189,6 +192,11 @@ public class NotificationServiceImpl implements NotificationService {
         log.info("알림 읽음 처리 완료: {}", notification);
 
         return modelMapper.map(notification, NotificationResponseDTO.class);
+    }
+
+    /* 설명. 웹소켓을 활용하여 유저에게 실시간으로 최신 알림을 보여줄 수 있도록 해줌 */
+    private void notifyClients(Notification notification) {
+        brokerMessagingTemplate.convertAndSend("/topic/notifications/" + notification.getEmployeeId(), notification);
     }
 
     private void sendNotificationToEmployee(Employee employee, Notification notification) {
