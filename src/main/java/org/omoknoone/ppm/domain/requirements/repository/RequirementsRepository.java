@@ -14,5 +14,5 @@ public interface RequirementsRepository extends JpaRepository<Requirements, Long
 
 	Requirements findRequirementByRequirementsProjectIdAndRequirementsId(Long projectId, Long requirementsId);
 
-	List<Requirements> findRequirementsByRequirementsNameInAndRequirementsProjectId(List<String> requirementsName, Long projectId);
+	List<Requirements> findRequirementsByRequirementsNameContainingAndRequirementsProjectId(String requirementsName, Long requirementsProjectId);
 }

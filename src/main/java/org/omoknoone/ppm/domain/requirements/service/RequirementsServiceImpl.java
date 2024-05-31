@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class RequirementsServiceImpl implements RequirementsService {
@@ -55,6 +57,7 @@ public class RequirementsServiceImpl implements RequirementsService {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		Requirements requirements = modelMapper.map(requirementsDTO, Requirements.class);
 
+
 		return requirementsRepository.save(requirements);
 	}
 
@@ -71,11 +74,14 @@ public class RequirementsServiceImpl implements RequirementsService {
 
 	@Override
 	public List<RequirementsListByProjectDTO> searchRequirementsByName(Long projectId, String requirementsName) {
+		log.info("searchRequirementsByName");
+		log.info("projectId : " + projectId);
+		log.info("requirementsName : " + requirementsName);
 
 		List<Requirements> requirements =
-				requirementsRepository.findRequirementsByRequirementsNameInAndRequirementsProjectId(
-						List.of(requirementsName), projectId);
-
+				requirementsRepository.findRequirementsByRequirementsNameContainingAndRequirementsProjectId(
+						requirementsName, projectId);
+		log.info("requirements : " + requirements);
 		return requirements.stream()
 				.map(requirement -> modelMapper.map(requirement, RequirementsListByProjectDTO.class))
 				.toList();
