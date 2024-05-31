@@ -145,6 +145,19 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         return projectMemberRepository.findByProjectMemberEmployeeId(employeeId);
     }
 
+    @Override
+    public ViewProjectMemberNameByPermissionDTO viewProjectMemberNameByPermission(Long projectMemberId) {
+
+        ProjectMember projectMember = projectMemberRepository.findByProjectMemberId(Math.toIntExact(projectMemberId));
+
+        return ViewProjectMemberNameByPermissionDTO
+                .builder()
+                .employeeId(projectMember.getProjectMemberEmployeeId())
+                .employeeName(employeeService.viewEmployee(projectMember.getProjectMemberEmployeeId()).getEmployeeName())
+                .projectMemberId(projectMember.getProjectMemberId())
+                .build();
+    }
+
 //    @Transactional
 //    @Override
 //    public void reactivateProjectMember(ModifyProjectMemberRequestDTO projectMemberRequestDTO) {

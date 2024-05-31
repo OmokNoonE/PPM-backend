@@ -13,10 +13,7 @@ import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
+import org.omoknoone.ppm.domain.schedule.dto.*;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.omoknoone.ppm.domain.schedule.vo.RequestSchedule;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseSchedule;
@@ -280,7 +277,7 @@ public class ScheduleController {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        List<ScheduleDTO> schedules = scheduleService.getSchedulesForThisWeek(projectId);
+        List<FindSchedulesForWeekDTO> schedules = scheduleService.getSchedulesForThisWeek(projectId);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("findSchedulesForThisWeek", schedules);
@@ -293,11 +290,11 @@ public class ScheduleController {
 
     /* 해당 날짜 기준으로 차주에 끝나야 할 일정 목록 조회 */
     @GetMapping("/nextweek/{projectId}")
-    public ResponseEntity<ResponseMessage> findSchedulesForNextWeek(Integer projectId){
+    public ResponseEntity<ResponseMessage> findSchedulesForNextWeek(@PathVariable Integer projectId){
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        List<ScheduleDTO> schedules = scheduleService.getSchedulesForNextWeek(projectId);
+        List<FindSchedulesForWeekDTO> schedules = scheduleService.getSchedulesForNextWeek(projectId);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("findSchedulesForNextWeek", schedules);

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.omoknoone.ppm.domain.permission.aggregate.Permission;
 import org.omoknoone.ppm.domain.permission.dto.CreatePermissionDTO;
 import org.omoknoone.ppm.domain.permission.dto.PermissionDTO;
+import org.omoknoone.ppm.domain.permission.dto.PermissionMemberEmployeeDTO;
 import org.omoknoone.ppm.domain.permission.dto.RoleAndSchedulesDTO;
 
 public interface PermissionService {
@@ -19,4 +20,6 @@ public interface PermissionService {
     Long removePermission(Long plPermissionId);
 
     RoleAndSchedulesDTO getPermissionIdListByPermission(String employeeId, Long projectId);
+
+    List<PermissionMemberEmployeeDTO> viewPermissionsByScheduleIdAndRoleName(Long scheduleId, Long roleName);
 }

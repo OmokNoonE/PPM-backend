@@ -19,4 +19,6 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
         + "JOIN Employee e ON e.employeeId = pm.projectMemberEmployeeId "
         + "WHERE pm.projectMemberEmployeeId = :employeeId AND pm.projectMemberProjectId = :projectId")
     List<Permission> findPermissionIdListByEmployeeIdAndProjectId(String employeeId, Long projectId);
+
+    List<Permission> findPermissionsByPermissionScheduleIdAndPermissionRoleName(Long scheduleId, Long roleName);
 }

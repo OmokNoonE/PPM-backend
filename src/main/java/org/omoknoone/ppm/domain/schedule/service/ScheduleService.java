@@ -5,13 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
-import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
+import org.omoknoone.ppm.domain.schedule.dto.*;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
 
 public interface ScheduleService {
@@ -73,10 +67,10 @@ public interface ScheduleService {
     List<ScheduleDTO> viewSchedulesByDateRange(LocalDate startDate, LocalDate endDate);
 
     /* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
-    List<ScheduleDTO> getSchedulesForThisWeek(Integer projectId);
+    List<FindSchedulesForWeekDTO> getSchedulesForThisWeek(Integer projectId);
 
     /* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
-	List<ScheduleDTO> getSchedulesForNextWeek(Integer projectId);
+    List<FindSchedulesForWeekDTO> getSchedulesForNextWeek(Integer projectId);
 
     /* 구간별 일정 예상 누적 진행률 */
     int[] calculateScheduleRatios(LocalDate startDate, LocalDate endDate);

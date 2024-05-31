@@ -4,38 +4,30 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCode;
 import org.omoknoone.ppm.domain.commoncode.repository.CommonCodeRepository;
+import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
+import org.omoknoone.ppm.domain.permission.dto.PermissionDTO;
+import org.omoknoone.ppm.domain.permission.dto.PermissionMemberEmployeeDTO;
 import org.omoknoone.ppm.domain.permission.dto.RoleAndSchedulesDTO;
 import org.omoknoone.ppm.domain.permission.service.PermissionService;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
+import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
-import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ScheduleSheetDataDTO;
-import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
-import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
-import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
+import org.omoknoone.ppm.domain.schedule.dto.*;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
 import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
@@ -45,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 //@RequiredArgsConstructor
+@Slf4j
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
@@ -56,12 +49,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final StakeholdersService stakeholdersService;
     private final PermissionService permissionService;
 	private final CommonCodeRepository commonCodeRepository;
+	private final ProjectMemberService projectMemberService;
+	private final CommonCodeService commonCodeService;
 
     // TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
     public ScheduleServiceImpl(@Lazy ProjectService projectService, @Lazy StakeholdersService stakeholdersService,
-        @Lazy PermissionService permissionService, @Lazy CommonCodeRepository commonCodeRepository,
-        ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository,
-        HolidayRepository holidayRepository, ModelMapper modelMapper) {
+                               @Lazy PermissionService permissionService, @Lazy CommonCodeRepository commonCodeRepository,
+                               ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository,
+                               HolidayRepository holidayRepository, ModelMapper modelMapper, ProjectMemberService projectMemberService, CommonCodeService commonCodeService) {
         this.commonCodeRepository = commonCodeRepository;
         this.permissionService = permissionService;
         this.stakeholdersService = stakeholdersService;
@@ -70,6 +65,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         this.scheduleRepository = scheduleRepository;
         this.holidayRepository = holidayRepository;
         this.modelMapper = modelMapper;
+        this.projectMemberService = projectMemberService;
+        this.commonCodeService = commonCodeService;
     }
 
     @Override
@@ -367,38 +364,51 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	/* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
 	@Override
-	public List<ScheduleDTO> getSchedulesForThisWeek(Integer projectId) {
+	public List<FindSchedulesForWeekDTO> getSchedulesForThisWeek(Integer projectId) {
 		LocalDate today = LocalDate.now();
 		LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate thisSunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-		List<ScheduleDTO> schedules = scheduleRepository.getSchedulesForThisWeek(thisMonday, thisSunday);
 
-		for (ScheduleDTO schedule : schedules) {
-			CommonCode commonCode = commonCodeRepository.findById(Long.valueOf(schedule.getScheduleStatus())).orElse(null);
-			if (commonCode != null) {
-				schedule.setScheduleStatus(commonCode.getCodeName());
-			}
-		}
-
-		return schedules;
+		return getFindSchedulesForWeekDTOList(thisMonday, thisSunday);
 	}
 
 	/* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
 	@Override
-	public List<ScheduleDTO> getSchedulesForNextWeek(Integer projectId) {
+	public List<FindSchedulesForWeekDTO> getSchedulesForNextWeek(Integer projectId) {
 		LocalDate today = LocalDate.now();
-		LocalDate NextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
-		LocalDate NextSunday = NextMonday.plusDays(6);
-		List<ScheduleDTO> schedules = scheduleRepository.getSchedulesForNextWeek(NextMonday, NextSunday);
+		LocalDate nextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+		LocalDate nextSunday = nextMonday.plusDays(6);
 
-		for (ScheduleDTO schedule : schedules) {
-			CommonCode commonCode = commonCodeRepository.findById(Long.valueOf(schedule.getScheduleStatus())).orElse(null);
-			if (commonCode != null) {
-				schedule.setScheduleStatus(commonCode.getCodeName());
-			}
+		return getFindSchedulesForWeekDTOList(nextMonday, nextSunday);
+	}
+
+	@NotNull
+	private List<FindSchedulesForWeekDTO> getFindSchedulesForWeekDTOList(LocalDate nextMonday, LocalDate nextSunday) {
+
+		// PL 권한 코드 조회
+		Long rolePLId = commonCodeService.viewCommonCodeByCodeName("PL").getCodeId();
+
+		// 금주에 끝나는 일정 조회
+		List<Schedule> schedules = scheduleRepository.findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(
+																								nextMonday, nextSunday);
+
+		List<FindSchedulesForWeekDTO> findSchedulesForWeekDTOList = modelMapper
+				.map(schedules, new TypeToken<List<FindSchedulesForWeekDTO>>() {}.getType());
+
+		for (FindSchedulesForWeekDTO findSchedulesForWeekDTO : findSchedulesForWeekDTOList) {
+
+			// 권한명이 "PL"인 권한 조회
+			List<PermissionMemberEmployeeDTO> permissionMemberEmployeeDTOList = permissionService
+					.viewPermissionsByScheduleIdAndRoleName(findSchedulesForWeekDTO.getScheduleId(), rolePLId);		// PL의 상태코드
+			findSchedulesForWeekDTO.setPermissionDTOList(permissionMemberEmployeeDTOList);
+
+			// 일정 상태 코드를 코드명으로 변경
+			CommonCode commonCode = commonCodeRepository.findById(
+				Long.valueOf(findSchedulesForWeekDTO.getScheduleStatus())).orElseThrow(IllegalArgumentException::new);
+			findSchedulesForWeekDTO.setScheduleStatus(commonCode.getCodeName());
 		}
 
-		return schedules;
+		return findSchedulesForWeekDTOList;
 	}
 
 

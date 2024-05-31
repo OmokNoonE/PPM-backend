@@ -1,32 +1,38 @@
 package org.omoknoone.ppm.domain.permission.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.permission.aggregate.Permission;
 import org.omoknoone.ppm.domain.permission.dto.CreatePermissionDTO;
 import org.omoknoone.ppm.domain.permission.dto.PermissionDTO;
+import org.omoknoone.ppm.domain.permission.dto.PermissionMemberEmployeeDTO;
 import org.omoknoone.ppm.domain.permission.dto.RoleAndSchedulesDTO;
 import org.omoknoone.ppm.domain.permission.repository.PermissionRepository;
+import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMemberNameByPermissionDTO;
+import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionRepository permissionRepository;
-
+    private final ProjectMemberService projectMemberService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public PermissionServiceImpl(PermissionRepository permissionRepository, ModelMapper modelMapper
-    ) {
+    public PermissionServiceImpl(PermissionRepository permissionRepository,
+                                 @Lazy ProjectMemberService projectMemberService, ModelMapper modelMapper) {
         this.permissionRepository = permissionRepository;
+        this.projectMemberService = projectMemberService;
         this.modelMapper = modelMapper;
     }
 
@@ -114,5 +120,35 @@ public class PermissionServiceImpl implements PermissionService {
             .scheduleIdList(scheduleIdList)
             .build();
 
+    }
+
+    // 일정 ID와 권한 이름을 통한 권한 조회
+    @Transactional(readOnly = true)
+    @Override
+    public List<PermissionMemberEmployeeDTO> viewPermissionsByScheduleIdAndRoleName(Long scheduleId, Long roleName) {
+
+        List<Permission> permissionList = permissionRepository
+                .findPermissionsByPermissionScheduleIdAndPermissionRoleName(scheduleId, roleName);
+
+        return permissionList.stream()
+                .map(permission -> {
+                    // projectMemberService를 사용하여 필요한 정보를 가져옵니다.
+                    ViewProjectMemberNameByPermissionDTO projectMemberName  = projectMemberService
+                            .viewProjectMemberNameByPermission(permission.getPermissionProjectMemberId());
+
+                    // 가져온 정보를 DTO에 설정합니다.
+                    return PermissionMemberEmployeeDTO.builder()
+                            .permissionId(permission.getPermissionId())
+                            .permissionRoleName(permission.getPermissionRoleName())
+                            .permissionIsDeleted(permission.getPermissionIsDeleted())
+                            .permissionScheduleId(permission.getPermissionScheduleId())
+                            .permissionProjectMemberId(permission.getPermissionProjectMemberId())
+
+                            // 회원
+                            .employeeId(projectMemberName.getEmployeeId())
+                            .employeeName(projectMemberName.getEmployeeName())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 }
