@@ -3,6 +3,7 @@ package org.omoknoone.ppm.domain.projectmember.service;
 import lombok.RequiredArgsConstructor;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMemberHistory;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberHistoryRequestDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberHistoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +28,20 @@ public class ProjectMemberHistoryServiceImpl implements ProjectMemberHistoryServ
         projectMemberHistoryRepository.save(history);
     }
 
+    /* 구성원 권한 변경 관련 수정 내역 */
+    @Override
+    public void createProjectMemberHistory(ModifyProjectMemberRequestDTO requestDTO) {
+        ProjectMemberHistory history = ProjectMemberHistory.builder()
+                .projectMemberHistoryProjectMemberId(requestDTO.getProjectMemberId())
+                .projectMemberHistoryReason(requestDTO.getProjectMemberHistoryReason())
+                .build();
+        projectMemberHistoryRepository.save(history);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public List<ProjectMemberHistory> viewProjectMemberHistory(Integer projectMemberId) {
         return projectMemberHistoryRepository.findByProjectMemberHistoryProjectMemberId(projectMemberId);
     }
+
 }

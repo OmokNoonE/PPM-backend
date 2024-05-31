@@ -7,25 +7,23 @@ Content-Type: application/json
 
 {
   "projectMemberProjectId" : 2,
-  "projectMemberEmployeeId" : "EP001"
+  "projectMemberEmployeeId" : "EP001",
+  "projectMemberRoleName": 10601,
+  "projectMemberEmployeeName": "김수정"
 }
 
-# 여기부터 해야됨
+
 ### Remove Project Member
 DELETE http://localhost:8888/projectMembers/remove/2
 Content-Type: application/json
 
 
-### Reactivate Project Member
-PUT http://localhost:8888/projectMembers/reactivate/{projectMemberId}
-Content-Type: application/json
-{
-  // Fill in the required fields
-}
-
 ### Modify Project Member
-PUT http://localhost:8888/projectMembers/modify/{projectMemberId}
+PUT http://localhost:8888/projectMembers/modify
 Content-Type: application/json
+
 {
-  // Fill in the required fields
+  "projectMemberId" : 2,
+  "projectMemberRoleName": 10602,
+  "projectMemberHistoryReason": "권한 수정 사유 : PL 변경 요청에 의한 변경"
 }

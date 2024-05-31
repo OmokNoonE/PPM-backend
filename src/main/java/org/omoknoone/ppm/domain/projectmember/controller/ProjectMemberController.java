@@ -101,55 +101,26 @@ public class ProjectMemberController {
         }
     }
 
-//    @PutMapping("/reactivate/{projectMemberId}")
-//    public ResponseEntity<ResponseMessage> reactivateProjectMember(
-//            @PathVariable Integer projectMemberId,
-//            @RequestBody ModifyProjectMemberRequestDTO requestDTO) {
-//
-//        HttpHeaders headers = HttpHeadersCreator.createHeaders();
-//
-//        requestDTO.setProjectMemberId(projectMemberId);
-//
-//        try {
-//            projectMemberService.reactivateProjectMember(requestDTO);
-//            Map<String, Object> responseMap = new HashMap<>();
-//            responseMap.put("reactivateProjectMember", projectMemberId);
-//
-//            return ResponseEntity
-//                    .ok()
-//                    .headers(headers)
-//                    .body(new ResponseMessage(200, "구성원 활성화가 완료.", responseMap));
-//        } catch (EntityNotFoundException ex) {
-//            return ResponseEntity
-//                    .status(HttpStatus.NOT_FOUND)
-//                    .body(new ResponseMessage(404, "구성원을 찾을 수 없음."));
-//        } catch (IllegalStateException ex) {
-//            return ResponseEntity
-//                    .status(HttpStatus.BAD_REQUEST)
-//                    .body(new ResponseMessage(400, "이미 활성화된 구성원입니다. 다시 활성화할 수 없습니다."));
-//        }
-//    }
+    @PutMapping("/modify")
+    public ResponseEntity<ResponseMessage> modifyProjectMember(@RequestBody ModifyProjectMemberRequestDTO requestDTO) {
 
-//    @PutMapping("/modify/{projectMemberId}")
-//    public ResponseEntity<ResponseMessage> modifyProjectMember(@RequestBody ModifyProjectMemberRequestDTO requestDTO) {
-//
-//        HttpHeaders headers = HttpHeadersCreator.createHeaders();
-//
-//        try {
-//            Integer projectMemberId = projectMemberService.modifyProjectMember(requestDTO);
-//
-//            Map<String, Object> responseMap = new HashMap<>();
-//            responseMap.put("modifyProjectMember", projectMemberId);
-//
-//            return ResponseEntity
-//                    .ok()
-//                    .headers(headers)
-//                    .body(new ResponseMessage(200, "구성원의 권한 수정이 완료.", responseMap));
-//        } catch (EntityNotFoundException ex) {
-//            return ResponseEntity
-//                    .status(HttpStatus.NOT_FOUND)
-//                    .body(new ResponseMessage(404, "구성원을 찾을 수 없음."));
-//        }
-//    }
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        try {
+            Integer projectMemberId = projectMemberService.modifyProjectMember(requestDTO);
+
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put("modifyProjectMember", projectMemberId);
+
+            return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "구성원의 권한 수정이 완료.", responseMap));
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ResponseMessage(404, "구성원을 찾을 수 없음."));
+        }
+    }
 
 }
