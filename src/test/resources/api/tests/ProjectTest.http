@@ -8,8 +8,8 @@ Content-Type: application/json
     "projectTitle": "New Project",
     "projectStartDate": "2023-01-01",
     "projectEndDate": "2023-12-31",
-    "projectStatus": 10202,
-    "projectIsDeleted": false
+    "projectStatus": "계획",
+    "employeeId" : "EP001"
 }
 
 ### 프로젝트 수정

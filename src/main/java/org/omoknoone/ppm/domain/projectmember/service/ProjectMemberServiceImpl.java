@@ -60,14 +60,18 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Transactional
     @Override
     public Integer createProjectMember(CreateProjectMemberRequestDTO requestDTO) {
+
+        System.out.println("requestDTO = " + requestDTO);
         ProjectMember projectMember = projectMemberRepository
                 .findByProjectMemberEmployeeIdAndProjectMemberProjectId
                         (requestDTO.getProjectMemberEmployeeId(), requestDTO.getProjectMemberProjectId());
 
+        System.out.println("projectMember = " + projectMember);
         LocalDateTime now = LocalDateTime.now();
 
         if (projectMember != null) {
             // 기존 구성원이 존재하면 업데이트
+            /* TODO. project_created_date 에러 */
             projectMember.include();
             projectMemberRepository.save(projectMember);
             projectMemberHistoryService.createProjectMemberHistory(
@@ -86,7 +90,10 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
                     .projectMemberEmployeeName(requestDTO.getProjectMemberEmployeeName())
                     .projectMemberRoleName(requestDTO.getProjectMemberRoleName())
                     .projectMemberIsExcluded(false)
+                    .projectMemberCreatedDate(now)
+                    .projectMemberModifiedDate(now)
                     .build();
+            System.out.println("projectMember 2= " + projectMember);
             projectMemberRepository.save(projectMember);
             projectMemberHistoryService.createProjectMemberHistory(
                     new CreateProjectMemberHistoryRequestDTO(
