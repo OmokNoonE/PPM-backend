@@ -224,10 +224,10 @@ public class ScheduleController {
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<SearchScheduleListDTO> searchScheduleListDTO = scheduleService.searchSchedulesByTitle(scheduleTitle);
-        ResponseSearchScheduleList searchResult = new ResponseSearchScheduleList(searchScheduleListDTO);
+        // ResponseSearchScheduleList searchResult = new ResponseSearchScheduleList(searchScheduleListDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("searchScheduleByTitle", searchResult);
+        responseMap.put("searchScheduleByTitle", searchScheduleListDTO);
 
         return ResponseEntity
                 .ok()
