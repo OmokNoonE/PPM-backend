@@ -29,7 +29,7 @@ public class ProjectMemberController {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        List<ViewProjectMembersByProjectResponseDTO> responseDTOs
+        List<ProjectMemberDTO> responseDTOs
                 = projectMemberService.viewProjectMembersByProject(projectId);
 
         Map<String, Object> responseMap = new HashMap<>();

@@ -1,8 +1,5 @@
 package org.omoknoone.ppm.domain.stakeholders.dto;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +14,7 @@ public class StakeholdersEmployeeInfoDTO {
     Long stakeholdersId;
     Long stakeholdersType;
     Long stakeholdersScheduleId;
-    Long ProjectMemberId;
+    Long projectMemberId;
     String employeeId;
     String employeeName;
 
@@ -27,7 +24,7 @@ public class StakeholdersEmployeeInfoDTO {
         this.stakeholdersId = stakeholdersId;
         this.stakeholdersType = stakeholdersType;
         this.stakeholdersScheduleId = stakeholdersScheduleId;
-        ProjectMemberId = projectMemberId;
+        this.projectMemberId = projectMemberId;
         this.employeeId = employeeId;
         this.employeeName = employeeName;
     }

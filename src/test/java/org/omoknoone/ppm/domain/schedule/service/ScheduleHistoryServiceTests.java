@@ -10,6 +10,7 @@ import org.omoknoone.ppm.domain.schedule.aggregate.ScheduleHistory;
 import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleHistoryDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ViewScheduleHistoryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -49,7 +50,7 @@ class ScheduleHistoryServiceTests {
 
         // Then
         // 수정내역 조회(viewScheduleHistory())도 같이 테스트
-        List<ScheduleHistoryDTO> scheduleHistoryDTOList = scheduleHistoryService.viewScheduleHistory(scheduleDTO.getScheduleId());
+        List<ViewScheduleHistoryDTO> scheduleHistoryDTOList = scheduleHistoryService.viewScheduleHistory(scheduleDTO.getScheduleId());
 
         assertNotNull(scheduleHistoryDTOList);
         assertEquals(1, scheduleHistoryDTOList.size());

@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
@@ -31,6 +33,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     private final EmployeeService employeeService;
     private final CommonCodeService commonCodeService;
     private final Environment environment;
+    private final ModelMapper modelMapper;
 
     @Transactional(readOnly = true)
     @Override

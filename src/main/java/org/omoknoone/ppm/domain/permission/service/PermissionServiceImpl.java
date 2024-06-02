@@ -95,7 +95,7 @@ public class PermissionServiceImpl implements PermissionService {
         permissionRepository.save(permission);
 
         return permission.getPermissionId();
-    }
+
 }
 
 
