@@ -1,0 +1,27 @@
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "task제목",
+  "taskScheduleId": 9
+}
+
+### 업무 조회
+GET http://localhost:8888/tasks/view/1
+
+### 일정에 따른 업무 조회
+GET http://localhost:8888/tasks/list/9
+
+### 업무 수정
+PUT http://localhost:8888/tasks/modify
+Content-Type: application/json
+
+{
+  "taskId": 1,
+  "taskTitle": "task제목 수정",
+  "taskIsCompleted": 1
+}
+
+### 업무 삭제
+DELETE http://localhost:8888/tasks/remove/1

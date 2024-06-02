@@ -11,7 +11,9 @@ import org.omoknoone.ppm.domain.projectDashboard.dto.GraphDTO;
 import org.omoknoone.ppm.domain.projectDashboard.service.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +48,37 @@ public class GraphController {
 		return ResponseEntity
 				.ok()
 				.headers(headers)
-				.body(new ResponseMessage(200, "회원 검색 성공", responseMap));
+				.body(new ResponseMessage(200, "그래프 조회 성공", responseMap));
+	}
+
+	// graph 삭제
+	@DeleteMapping("/delete/{projectId}")
+	public ResponseEntity<ResponseMessage> deleteGraphByProjectId(@PathVariable String projectId){
+
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+		graphService.deleteGraphByProjectId(projectId);
+
+		Map<String, Object> responseMap = new HashMap<>();
+		responseMap.put("deleteGraphByProjectId", projectId);
+
+		return ResponseEntity
+			.ok()
+			.headers(headers)
+			.body(new ResponseMessage(204, "그래프 삭제 성공", responseMap));
+	}
+
+	@DeleteMapping("/delete/all")
+	public ResponseEntity<ResponseMessage> deleteAll() {
+
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+		graphService.deleteAllGraph();
+
+		return ResponseEntity
+			.ok()
+			.headers(headers)
+			.body(new ResponseMessage(204, "mongodb 초기화 성공"));
 	}
 
 

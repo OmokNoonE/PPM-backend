@@ -6,12 +6,15 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.permission.aggregate.Permission;
 import org.omoknoone.ppm.domain.permission.dto.CreatePermissionDTO;
 import org.omoknoone.ppm.domain.permission.dto.PermissionDTO;
+import org.omoknoone.ppm.domain.permission.dto.RoleAndSchedulesDTO;
 import org.omoknoone.ppm.domain.permission.repository.PermissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class PermissionServiceImpl implements PermissionService {
@@ -94,3 +97,36 @@ public class PermissionServiceImpl implements PermissionService {
         return permission.getPermissionId();
     }
 }
+
+
+    @Override
+    public RoleAndSchedulesDTO getPermissionIdListByPermission(String employeeId, Long projectId) {
+
+        List<Permission> permissionList = permissionRepository.
+            findPermissionIdListByEmployeeIdAndProjectId(employeeId, projectId);
+
+        if (permissionList == null || permissionList.isEmpty()) {
+            throw new IllegalArgumentException(employeeId + "의 " + projectId
+                + "프로젝트에 연관된 권한이 존재하지 않습니다.");
+        }
+
+        /* permissionList의 모든 permission에 대하여 permissionRoleName을 조회하여 제일 낮은 숫자를 조회 */
+        Long roleName = permissionList.stream()
+            .map(Permission::getPermissionRoleName)
+            .min(Long::compareTo)
+            .orElseThrow(IllegalArgumentException::new);
+
+        /* 조회된 권한들의 scheduleId 리스트화 (중복 제거) */
+        List<Long> scheduleIdList = permissionList.stream()
+            .map(Permission::getPermissionScheduleId)
+            .distinct()
+            .toList();
+
+        return RoleAndSchedulesDTO.builder()
+            .roleName(roleName)
+            .scheduleIdList(scheduleIdList)
+            .build();
+
+    }
+}
+

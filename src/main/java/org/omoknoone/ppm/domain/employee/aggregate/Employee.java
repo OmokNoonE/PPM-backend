@@ -9,6 +9,7 @@ import org.omoknoone.ppm.domain.employee.dto.ModifyEmployeeRequestDTO;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@ToString
 @NoArgsConstructor
 @Getter
 @Entity

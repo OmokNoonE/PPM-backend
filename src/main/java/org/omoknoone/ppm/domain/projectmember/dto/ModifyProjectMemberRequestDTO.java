@@ -2,16 +2,14 @@ package org.omoknoone.ppm.domain.projectmember.dto;
 
 import lombok.*;
 
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Getter @Setter
 public class ModifyProjectMemberRequestDTO {
 
-    @Setter
     private Integer projectMemberId;
-
-    @Setter
-    private Integer projectMemberRoleId;
-
+    private Integer projectMemberRoleName;
     private String projectMemberHistoryReason;
+
 }

@@ -11,11 +11,15 @@ import org.omoknoone.ppm.domain.requirements.dto.RequirementsDTO;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsListByProjectDTO;
 import org.omoknoone.ppm.domain.requirements.repository.RequirementsRepository;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirement;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class RequirementsServiceImpl implements RequirementsService {
@@ -53,7 +57,34 @@ public class RequirementsServiceImpl implements RequirementsService {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		Requirements requirements = modelMapper.map(requirementsDTO, Requirements.class);
 
+
 		return requirementsRepository.save(requirements);
+	}
+
+	/* 페이징 처리하여 요구사항 목록 조회 */
+	@Override
+	public Page<RequirementsListByProjectDTO> viewRequirementsByProjectIdByPage(Long projectId, int page, int size) {
+
+		Page<Requirements> requirementsPage = requirementsRepository
+												.findByRequirementsProjectIdAndRequirementsIsDeleted(
+														projectId, false, PageRequest.of(page, size));
+
+		return requirementsPage.map(requirement -> modelMapper.map(requirement, RequirementsListByProjectDTO.class));
+	}
+
+	@Override
+	public List<RequirementsListByProjectDTO> searchRequirementsByName(Long projectId, String requirementsName) {
+		log.info("searchRequirementsByName");
+		log.info("projectId : " + projectId);
+		log.info("requirementsName : " + requirementsName);
+
+		List<Requirements> requirements =
+				requirementsRepository.findRequirementsByRequirementsNameContainingAndRequirementsProjectId(
+						requirementsName, projectId);
+		log.info("requirements : " + requirements);
+		return requirements.stream()
+				.map(requirement -> modelMapper.map(requirement, RequirementsListByProjectDTO.class))
+				.toList();
 	}
 
 

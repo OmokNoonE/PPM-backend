@@ -1,0 +1,29 @@
+### View Project Members By Project
+GET http://localhost:8888/projectMembers/list/2
+
+### Create Project Member
+POST http://localhost:8888/projectMembers/create
+Content-Type: application/json
+
+{
+  "projectMemberProjectId" : 2,
+  "projectMemberEmployeeId" : "EP001",
+  "projectMemberRoleName": 10601,
+  "projectMemberEmployeeName": "김수정"
+}
+
+
+### Remove Project Member
+DELETE http://localhost:8888/projectMembers/remove/2
+Content-Type: application/json
+
+
+### Modify Project Member
+PUT http://localhost:8888/projectMembers/modify
+Content-Type: application/json
+
+{
+  "projectMemberId" : 2,
+  "projectMemberRoleName": 10602,
+  "projectMemberHistoryReason": "권한 수정 사유 : PL 변경 요청에 의한 변경"
+}

@@ -4,11 +4,14 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +22,8 @@ import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCode;
 import org.omoknoone.ppm.domain.commoncode.repository.CommonCodeRepository;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
+import org.omoknoone.ppm.domain.permission.dto.RoleAndSchedulesDTO;
+import org.omoknoone.ppm.domain.permission.service.PermissionService;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
@@ -27,10 +32,14 @@ import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
 import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleSheetDataDTO;
 import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
+import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
+import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
+import org.omoknoone.ppm.domain.stakeholders.service.StakeholdersService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,114 +48,120 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
-	private final ModelMapper modelMapper;
-	private final HolidayRepository holidayRepository;
-	private final ScheduleRepository scheduleRepository;
-	private final ScheduleHistoryService scheduleHistoryService;
-	private final ProjectService projectService;
+    private final ModelMapper modelMapper;
+    private final HolidayRepository holidayRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final ScheduleHistoryService scheduleHistoryService;
+    private final ProjectService projectService;
+    private final StakeholdersService stakeholdersService;
+    private final PermissionService permissionService;
 	private final CommonCodeRepository commonCodeRepository;
 
-	// TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
-	public ScheduleServiceImpl(@Lazy ProjectService projectService, ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository, HolidayRepository holidayRepository, ModelMapper modelMapper,
-		CommonCodeRepository commonCodeRepository) {
-		this.projectService = projectService;
-		this.scheduleHistoryService = scheduleHistoryService;
-		this.scheduleRepository = scheduleRepository;
-		this.holidayRepository = holidayRepository;
-		this.modelMapper = modelMapper;
-		this.commonCodeRepository = commonCodeRepository;
-	}
+    // TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
+    public ScheduleServiceImpl(@Lazy ProjectService projectService, @Lazy StakeholdersService stakeholdersService,
+        @Lazy PermissionService permissionService, @Lazy CommonCodeRepository commonCodeRepository,
+        ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository,
+        HolidayRepository holidayRepository, ModelMapper modelMapper) {
+        this.commonCodeRepository = commonCodeRepository;
+        this.permissionService = permissionService;
+        this.stakeholdersService = stakeholdersService;
+        this.projectService = projectService;
+        this.scheduleHistoryService = scheduleHistoryService;
+        this.scheduleRepository = scheduleRepository;
+        this.holidayRepository = holidayRepository;
+        this.modelMapper = modelMapper;
+    }
 
-	@Override
-	@Transactional
-	public Schedule createSchedule(CreateScheduleDTO createScheduleDTO) {
-		// 일정 상태와 삭제 여부 기본값 부여
-		createScheduleDTO.newScheduleDefaultValueSet();
+    @Override
+    @Transactional
+    public Schedule createSchedule(CreateScheduleDTO createScheduleDTO) {
+        // 일정 상태와 삭제 여부 기본값 부여
+        createScheduleDTO.newScheduleDefaultValueSet();
 
-		// 근무 일수 계산
-		int workingDays = calculateWorkingDays(createScheduleDTO.getScheduleStartDate(),
-			createScheduleDTO.getScheduleEndDate());
-		createScheduleDTO.setScheduleManHours(workingDays);
+        // 근무 일수 계산
+        int workingDays = calculateWorkingDays(createScheduleDTO.getScheduleStartDate(),
+            createScheduleDTO.getScheduleEndDate());
+        createScheduleDTO.setScheduleManHours(workingDays);
 
-		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		Schedule schedule = modelMapper.map(createScheduleDTO, Schedule.class);
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        Schedule schedule = modelMapper.map(createScheduleDTO, Schedule.class);
 
-		return scheduleRepository.save(schedule);
-	}
+        return scheduleRepository.save(schedule);
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public ScheduleDTO viewSchedule(Long scheduleId) {
-		Schedule schedule = scheduleRepository.findById(scheduleId)
-			.orElseThrow(IllegalArgumentException::new);
+    @Override
+    @Transactional(readOnly = true)
+    public ScheduleDTO viewSchedule(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(IllegalArgumentException::new);
 
-		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-		ScheduleDTO scheduleDTO = modelMapper.map(schedule, ScheduleDTO.class);
+        ScheduleDTO scheduleDTO = modelMapper.map(schedule, ScheduleDTO.class);
 
-		return scheduleDTO;
-	}
+        return scheduleDTO;
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public List<ScheduleDTO> viewScheduleByProject(Long projectId) {
+    @Override
+    @Transactional(readOnly = true)
+    public List<ScheduleDTO> viewScheduleByProject(Long projectId) {
 
-		List<Schedule> scheduleList = scheduleRepository
-			.findSchedulesByScheduleProjectIdAndScheduleIsDeleted(projectId, false);
-		if (scheduleList == null || scheduleList.isEmpty()) {
-			throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
-		}
+        List<Schedule> scheduleList = scheduleRepository
+            .findSchedulesByScheduleProjectIdAndScheduleIsDeleted(projectId, false);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
 
-		List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
-		}.getType());
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
 
-		return scheduleDTOList;
-	}
+        return scheduleDTOList;
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public List<ScheduleDTO> viewScheduleOrderBy(Long projectId, String sort) {
+    @Override
+    @Transactional(readOnly = true)
+    public List<ScheduleDTO> viewScheduleOrderBy(Long projectId, String sort) {
 
-		List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectIdAndSort(projectId, sort);
-		if (scheduleList == null || scheduleList.isEmpty()) {
-			throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
-		}
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectIdAndSort(projectId, sort);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
 
-		List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
-		}.getType());
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
 
-		return scheduleDTOList;
-	}
+        return scheduleDTOList;
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public List<ScheduleDTO> viewScheduleNearByStart(Long projectId) {
+    @Override
+    @Transactional(readOnly = true)
+    public List<ScheduleDTO> viewScheduleNearByStart(Long projectId) {
 
-		List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectNearByStart(projectId);
-		if (scheduleList == null || scheduleList.isEmpty()) {
-			throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
-		}
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectNearByStart(projectId);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
 
-		List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
-		}.getType());
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
 
-		return scheduleDTOList;
-	}
+        return scheduleDTOList;
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public List<ScheduleDTO> viewScheduleNearByEnd(Long projectId) {
+    @Override
+    @Transactional(readOnly = true)
+    public List<ScheduleDTO> viewScheduleNearByEnd(Long projectId) {
 
-		List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectNearByEnd(projectId);
-		if (scheduleList == null || scheduleList.isEmpty()) {
-			throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
-		}
+        List<Schedule> scheduleList = scheduleRepository.findSchedulesByProjectNearByEnd(projectId);
+        if (scheduleList == null || scheduleList.isEmpty()) {
+            throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
 
-		List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
-		}.getType());
+        List<ScheduleDTO> scheduleDTOList = modelMapper.map(scheduleList, new TypeToken<List<ScheduleDTO>>() {
+        }.getType());
 
-		return scheduleDTOList;
-	}
+        return scheduleDTOList;
+    }
 
 	@Override
 	@Transactional
@@ -163,6 +178,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 		/* 진행 상태 수정 (+진행률) */
 		schedule.modifyProgress(modifyScheduleProgress(requestModifyScheduleDTO));
+
+		schedule.modifyPriority(requestModifyScheduleDTO.getSchedulePriority());
 
 		scheduleRepository.save(schedule);
 
@@ -449,4 +466,94 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 		return scheduleRatios;
 	}
+
+  private void addChildren(ScheduleSheetDataDTO parent, List<ScheduleSheetDataDTO> allSchedules) {
+      for (ScheduleSheetDataDTO schedule : allSchedules) {
+          if (schedule.getScheduleParentScheduleId() != null && schedule.getScheduleParentScheduleId()
+              .equals(parent.getScheduleId())) {
+              if (parent.get__children() == null) {
+                  parent.set__children(new ArrayList<>());
+              }
+              if (!parent.get__children().contains(schedule)) {
+                  parent.get__children().add(schedule);
+                  addChildren(schedule, allSchedules);
+              }
+          }
+      }
+  }
+
+  /* filterScheduleIdList에 해당하는 일정들만 조회하도록 */
+  private void filterSchedules(List<ScheduleSheetDataDTO> schedules, List<Long> filterScheduleIdList,
+      List<ScheduleSheetDataDTO> resultScheduleList) {
+      for (ScheduleSheetDataDTO schedule : schedules) {
+          if (filterScheduleIdList.contains(schedule.getScheduleId())) {
+              resultScheduleList.add(schedule);
+          } else {
+              if (schedule.get__children() != null) {
+                  filterSchedules(schedule.get__children(), filterScheduleIdList, resultScheduleList);
+              }
+          }
+      }
+  }
+
+  @Override
+  public List<ResponseScheduleSheetData> getSheetData(Long projectId, String employeeId) {
+      List<Schedule> scheduleList = scheduleRepository.findSchedulesByScheduleProjectIdAndScheduleIsDeleted(projectId,
+          false);
+      if (scheduleList == null || scheduleList.isEmpty()) {
+          throw new IllegalArgumentException(projectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+      }
+      List<ScheduleSheetDataDTO> scheduleSheetDataDTOList = modelMapper.map(scheduleList,
+          new TypeToken<List<ScheduleSheetDataDTO>>() {
+          }.getType());
+
+      Long[] scheduleIdList = scheduleList.stream().map(Schedule::getScheduleId).toArray(Long[]::new);
+      List<StakeholdersEmployeeInfoDTO> stakeholdersEmployeeInfoDTOList = stakeholdersService.viewStakeholdersEmployeeInfo(
+          scheduleIdList);
+
+      /* 각 일정에 이해관계자 정보 입력 */
+      for (ScheduleSheetDataDTO scheduleSheetDataDTO : scheduleSheetDataDTOList) {
+          Long scheduleId = scheduleSheetDataDTO.getScheduleId();
+          for (StakeholdersEmployeeInfoDTO stakeholdersEmployeeInfoDTO : stakeholdersEmployeeInfoDTOList) {
+              if (stakeholdersEmployeeInfoDTO.getStakeholdersScheduleId().equals(scheduleId)) {
+                  if (scheduleSheetDataDTO.getScheduleEmployeeInfoList() == null) {
+                      scheduleSheetDataDTO.setScheduleEmployeeInfoList(new ArrayList<>());
+                  }
+                  scheduleSheetDataDTO.getScheduleEmployeeInfoList().add(stakeholdersEmployeeInfoDTO);
+              }
+          }
+      }
+
+      /* 일정간 부모 자식 관계 확립 */
+      for (ScheduleSheetDataDTO scheduleSheetDataDTO : scheduleSheetDataDTOList) {
+          addChildren(scheduleSheetDataDTO, scheduleSheetDataDTOList);
+      }
+
+      /* 최상위 일정만 조회 */
+      List<ScheduleSheetDataDTO> rootSchedules = scheduleSheetDataDTOList.stream()
+          .filter(schedule -> schedule.getScheduleParentScheduleId() == null)
+          .collect(Collectors.toList());
+
+      /* 권한에 해당하는 일정 리스트 */
+      RoleAndSchedulesDTO roleAndSchedulesDTO = permissionService
+          .getPermissionIdListByPermission(employeeId, projectId);
+
+      /* PA, PL의 경우*/
+      if (roleAndSchedulesDTO.getRoleName() > 10601) {
+          List<Long> filterScheduleIdList = roleAndSchedulesDTO.getScheduleIdList();
+          List<ScheduleSheetDataDTO> resultScheduleList = new ArrayList<>();
+          filterSchedules(rootSchedules, filterScheduleIdList, resultScheduleList);
+
+          return modelMapper.map(resultScheduleList,
+              new TypeToken<List<ResponseScheduleSheetData>>() {
+              }.getType());
+      }
+      /* PM의 경우 */
+      else {
+          return modelMapper.map(rootSchedules,
+              new TypeToken<List<ResponseScheduleSheetData>>() {
+              }.getType());
+
+      }
+  }
 }

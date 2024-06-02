@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -60,6 +62,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         return modelMapper.map(employee, LoginEmployeeDTO.class);
     }
 
+    @Transactional
     @Override
     public String signUp(SignUpEmployeeRequestDTO signUpEmployeeRequestDTO) {
 
@@ -106,12 +109,32 @@ public class EmployeeServiceImpl implements EmployeeService{
         return new ViewEmployeeResponseDTO(employee);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public String getEmployeeNameByProjectMemberId(String projectMemberEmployeeId) {
-
-        Employee employee = employeeRepository.findByEmployeeId(projectMemberEmployeeId);
-
-        return employee.getEmployeeName();
+    public List<ViewEmployeeResponseDTO> viewAvailableMembers(Integer projectId) {
+        return employeeRepository.findAvailableMembers(projectId)
+                .stream()
+                .map(employee -> modelMapper.map(employee, ViewEmployeeResponseDTO.class))
+                .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<ViewEmployeeResponseDTO> viewAndSearchAvailableMembersByQuery(Integer projectId, String query) {
+        return employeeRepository.findAvailableMembersByQuery(projectId, query)
+                .stream()
+                .map(employee -> modelMapper.map(employee, ViewEmployeeResponseDTO.class))
+                .collect(Collectors.toList());
+    }
+
+
+    /* 메소드가 옳지 않고 사용 되는 곳이 없음 */
+//    @Override
+//    public String getEmployeeNameByProjectMemberId(String projectMemberEmployeeId) {
+//
+//        Employee employee = employeeRepository.findByEmployeeId(projectMemberEmployeeId);
+//
+//        return employee.getEmployeeName();
+//    }
 
 }

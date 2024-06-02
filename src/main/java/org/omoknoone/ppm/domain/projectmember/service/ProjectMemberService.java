@@ -3,22 +3,24 @@ package org.omoknoone.ppm.domain.projectmember.service;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.viewProjectMembersByProjectResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ViewAvailableMembersResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
 
 import java.util.List;
 
 public interface ProjectMemberService {
-    List<viewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId);
 
-    Integer createProjectMember(CreateProjectMemberRequestDTO createProjectMemberRequestDTO);
+	List<ViewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId);
 
-    void removeProjectMember(ModifyProjectMemberRequestDTO projectMemberId);
+	List<ViewAvailableMembersResponseDTO> viewAndSearchAvailableMembers(Integer projectId, String query);
 
-    void reactivateProjectMember(ModifyProjectMemberRequestDTO projectMemberId);
+	Integer createProjectMember(CreateProjectMemberRequestDTO createProjectMemberRequestDTO);
 
-    Integer modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO);
+	void removeProjectMember(Integer projectMemberId, String projectMemberHistoryReason);
 
-    Integer viewProjectMemberId(String employeeId, Integer projectId);
+	Integer modifyProjectMember(ModifyProjectMemberRequestDTO modifyProjectMemberRequestDTO);
 
-    List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId);
+	Integer viewProjectMemberId(String employeeId, Integer projectId);
+
+	List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId);
 }

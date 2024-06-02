@@ -20,6 +20,7 @@ import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.omoknoone.ppm.domain.schedule.vo.RequestSchedule;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseSchedule;
+import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseSearchScheduleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,6 +56,7 @@ public class ScheduleController {
     @PostMapping("/create")
     public ResponseEntity<ResponseMessage> createSchedule(@RequestBody RequestSchedule requestSchedule) {
 
+        /* depth는 null로 들어와야하니, 부모 일정의 depth를 참고하여 계산해서 넣어야함. */
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -221,10 +224,10 @@ public class ScheduleController {
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<SearchScheduleListDTO> searchScheduleListDTO = scheduleService.searchSchedulesByTitle(scheduleTitle);
-        ResponseSearchScheduleList searchResult = new ResponseSearchScheduleList(searchScheduleListDTO);
+        // ResponseSearchScheduleList searchResult = new ResponseSearchScheduleList(searchScheduleListDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("searchScheduleByTitle", searchResult);
+        responseMap.put("searchScheduleByTitle", searchScheduleListDTO);
 
         return ResponseEntity
                 .ok()
@@ -323,5 +326,22 @@ public class ScheduleController {
             .ok()
             .headers(headers)
             .body(new ResponseMessage(200, "일정을 10등분 후 각각의 예상 비율 계산", responseMap));
+    }
+
+    /* 일정 시트에 사용될 데이터 수집 */
+    @GetMapping("/sheet/{projectId}")
+    public ResponseEntity<ResponseMessage> getSheetData(@PathVariable Long projectId, @RequestHeader String employeeId){
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        List<ResponseScheduleSheetData> sheetDataList = scheduleService.getSheetData(projectId, employeeId);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("SheetData", sheetDataList);
+
+        return ResponseEntity
+            .ok()
+            .headers(headers)
+            .body(new ResponseMessage(200, "시트에 삽입될 데이터 조회 완료", responseMap));
     }
 }

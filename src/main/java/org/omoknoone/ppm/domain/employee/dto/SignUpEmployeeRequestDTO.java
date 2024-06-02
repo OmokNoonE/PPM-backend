@@ -1,12 +1,11 @@
 package org.omoknoone.ppm.domain.employee.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import java.time.LocalDate;
+
+import lombok.*;
 
 @NoArgsConstructor
-@Getter
+@Getter @Setter
 @ToString
 public class SignUpEmployeeRequestDTO {
 
@@ -14,7 +13,7 @@ public class SignUpEmployeeRequestDTO {
     private String employeePassword;
     private String employeeName;
     private String employeeEmail;
-    private String employeeJoinDate;
+    private LocalDate employeeJoinDate;
     private Integer employeeEmploymentStatus;
     private String employeeDepartment;
     private String employeeContact;
@@ -22,7 +21,7 @@ public class SignUpEmployeeRequestDTO {
     private Boolean employeeIsExternalPartner;
 
     @Builder
-    public SignUpEmployeeRequestDTO(String employeeId, String employeePassword, String employeeName, String employeeEmail, String employeeJoinDate, Integer employeeEmploymentStatus, String employeeDepartment, String employeeContact, String employeeCompanyName, Boolean employeeIsExternalPartner) {
+    public SignUpEmployeeRequestDTO(String employeeId, String employeePassword, String employeeName, String employeeEmail, LocalDate employeeJoinDate, Integer employeeEmploymentStatus, String employeeDepartment, String employeeContact, String employeeCompanyName, Boolean employeeIsExternalPartner) {
         this.employeeId = employeeId;
         this.employeePassword = employeePassword;
         this.employeeName = employeeName;

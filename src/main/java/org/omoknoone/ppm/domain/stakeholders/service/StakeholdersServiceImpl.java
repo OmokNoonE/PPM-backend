@@ -10,6 +10,7 @@ import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
 import org.omoknoone.ppm.domain.stakeholders.dto.CreateStakeholdersDTO;
 import org.omoknoone.ppm.domain.stakeholders.dto.ModifyStakeholdersDTO;
 import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersDTO;
+import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
 import org.omoknoone.ppm.domain.stakeholders.repository.StakeholdersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -91,5 +92,11 @@ public class StakeholdersServiceImpl implements StakeholdersService {
 
     public List<Stakeholders> findByScheduleId(Long scheduleId) {
         return stakeholdersRepository.findStakeholdersByStakeholdersScheduleId(scheduleId);
+
+    @Override
+    public List<StakeholdersEmployeeInfoDTO> viewStakeholdersEmployeeInfo(Long[] scheduleIdList) {
+
+
+        return stakeholdersRepository.findStakeholdersEmployeeInfoByScheduleIdList(scheduleIdList);
     }
 }
