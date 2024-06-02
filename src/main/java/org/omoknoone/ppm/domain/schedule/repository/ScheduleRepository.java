@@ -102,25 +102,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findSchedulesByDateRange(@Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate);
 
-    /* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
-    @Query("SELECT new org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO" +
-        "(s.scheduleId, s.scheduleTitle, s.scheduleContent, s.scheduleStartDate" +
-        ", s.scheduleEndDate, s.scheduleDepth, s.schedulePriority, s.scheduleProgress" +
-        ", CAST(s.scheduleStatus AS string), s.scheduleManHours, s.scheduleParentScheduleId, s.schedulePrecedingScheduleId" +
-        ", s.scheduleCreatedDate, s.scheduleModifiedDate, s.scheduleIsDeleted" +
-        ", s.scheduleDeletedDate, s.scheduleProjectId) " +
-        "FROM Schedule s " +
-        "WHERE s.scheduleEndDate >= :thisMonday AND s.scheduleEndDate <= :thisSunday")
-    List<ScheduleDTO> getSchedulesForThisWeek(@Param("thisMonday") LocalDate thisMonday, @Param("thisSunday") LocalDate thisSunday);
-
-    /* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
-    @Query("SELECT new org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO" +
-        "(s.scheduleId, s.scheduleTitle, s.scheduleContent, s.scheduleStartDate" +
-        ", s.scheduleEndDate, s.scheduleDepth, s.schedulePriority, s.scheduleProgress" +
-        ", CAST(s.scheduleStatus AS string), s.scheduleManHours, s.scheduleParentScheduleId, s.schedulePrecedingScheduleId" +
-        ", s.scheduleCreatedDate, s.scheduleModifiedDate, s.scheduleIsDeleted" +
-        ", s.scheduleDeletedDate, s.scheduleProjectId) " +
-        "FROM Schedule s " +
-        "WHERE s.scheduleEndDate >= :NextMonday AND s.scheduleEndDate <= :NextSunday")
-    List<ScheduleDTO> getSchedulesForNextWeek(@Param("NextMonday") LocalDate NextMonday, @Param("NextSunday") LocalDate NextSunday);
+    /* 해당 일자가 포함된 주에 끝나야 할 일정 목록 조회 */
+    List<Schedule> findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(@Param("monday") LocalDate monday, @Param("sunday") LocalDate sunday);
 }
