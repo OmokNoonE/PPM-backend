@@ -103,5 +103,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         @Param("endDate") LocalDate endDate);
 
     /* 해당 일자가 포함된 주에 끝나야 할 일정 목록 조회 */
-    List<Schedule> findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(@Param("thisMonday") LocalDate thisMonday, @Param("thisSunday") LocalDate thisSunday);
+    List<Schedule> findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(@Param("monday") LocalDate monday, @Param("sunday") LocalDate sunday);
 }

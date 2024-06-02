@@ -3,6 +3,7 @@ package org.omoknoone.ppm.domain.schedule.dto;
 import lombok.*;
 import org.omoknoone.ppm.domain.permission.dto.PermissionMemberEmployeeDTO;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersDTO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,18 +25,15 @@ public class FindSchedulesForWeekDTO {
     private Boolean scheduleIsDeleted;
     private Long scheduleProjectId;
 
-    // 권한
-    private List<PermissionMemberEmployeeDTO> permissionDTOList;
+    // 작성자
+    private String authorId;
+    private String authorName;
 
-    // 구성원
-    private Long permissionProjectMemberId;
-    private String employeeId;
-
-    // 회원
-    private String employeeName;
+    // 담당자
+    private List<StakeholdersDTO> assigneeList;
 
     @Builder
-    public FindSchedulesForWeekDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate, LocalDate scheduleEndDate, String scheduleStatus, Boolean scheduleIsDeleted, Long scheduleProjectId, List<PermissionMemberEmployeeDTO> permissionDTOList, Long permissionProjectMemberId, String employeeId, String employeeName) {
+    public FindSchedulesForWeekDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate, LocalDate scheduleEndDate, String scheduleStatus, Boolean scheduleIsDeleted, Long scheduleProjectId, String authorId, String authorName, List<StakeholdersDTO> assigneeList) {
         this.scheduleId = scheduleId;
         this.scheduleTitle = scheduleTitle;
         this.scheduleContent = scheduleContent;
@@ -44,9 +42,8 @@ public class FindSchedulesForWeekDTO {
         this.scheduleStatus = scheduleStatus;
         this.scheduleIsDeleted = scheduleIsDeleted;
         this.scheduleProjectId = scheduleProjectId;
-        this.permissionDTOList = permissionDTOList;
-        this.permissionProjectMemberId = permissionProjectMemberId;
-        this.employeeId = employeeId;
-        this.employeeName = employeeName;
+        this.authorId = authorId;
+        this.authorName = authorName;
+        this.assigneeList = assigneeList;
     }
 }

@@ -383,24 +383,21 @@ public class ScheduleServiceImpl implements ScheduleService {
 	}
 
 	@NotNull
-	private List<FindSchedulesForWeekDTO> getFindSchedulesForWeekDTOList(LocalDate nextMonday, LocalDate nextSunday) {
-
-		// PL 권한 코드 조회
-		Long rolePLId = commonCodeService.viewCommonCodeByCodeName("PL").getCodeId();
+	private List<FindSchedulesForWeekDTO> getFindSchedulesForWeekDTOList(LocalDate monday, LocalDate sunday) {
 
 		// 금주에 끝나는 일정 조회
 		List<Schedule> schedules = scheduleRepository.findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(
-																								nextMonday, nextSunday);
+																								monday, sunday);
 
 		List<FindSchedulesForWeekDTO> findSchedulesForWeekDTOList = modelMapper
 				.map(schedules, new TypeToken<List<FindSchedulesForWeekDTO>>() {}.getType());
 
 		for (FindSchedulesForWeekDTO findSchedulesForWeekDTO : findSchedulesForWeekDTOList) {
 
-			// 권한명이 "PL"인 권한 조회
-			List<PermissionMemberEmployeeDTO> permissionMemberEmployeeDTOList = permissionService
-					.viewPermissionsByScheduleIdAndRoleName(findSchedulesForWeekDTO.getScheduleId(), rolePLId);		// PL의 상태코드
-			findSchedulesForWeekDTO.setPermissionDTOList(permissionMemberEmployeeDTOList);
+			// 일정의 작성자 조회
+
+
+			// 일정의 담당자 조회
 
 			// 일정 상태 코드를 코드명으로 변경
 			CommonCode commonCode = commonCodeRepository.findById(
