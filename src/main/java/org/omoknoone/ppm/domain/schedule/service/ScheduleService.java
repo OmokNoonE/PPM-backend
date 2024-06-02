@@ -74,9 +74,12 @@ public interface ScheduleService {
     /* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
     List<ScheduleDTO> getSchedulesForThisWeek(Integer projectId);
 
+    int calculateRatioThisWeek(Integer projectId);
+
     /* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
 	List<ScheduleDTO> getSchedulesForNextWeek(Integer projectId);
 
     /* 구간별 일정 예상 누적 진행률 */
     int[] calculateScheduleRatios(LocalDate startDate, LocalDate endDate);
-}
+
+    }

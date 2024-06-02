@@ -15,4 +15,8 @@ public interface PermissionService {
     List<PermissionDTO> viewSchedulePermission(Long scheduleId);
 
     Long removePermission(Long plPermissionId);
+
+    boolean hasPmRole(Long projectMemberId);
+
+
 }

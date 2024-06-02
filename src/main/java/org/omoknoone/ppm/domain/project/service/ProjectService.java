@@ -1,7 +1,6 @@
 package org.omoknoone.ppm.domain.project.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.omoknoone.ppm.domain.project.aggregate.Project;
@@ -26,4 +25,6 @@ public interface ProjectService {
     List<ViewProjectResponseDTO> viewProjectList(String employeeId);
 
 	ViewProjectResponseDTO viewProject(int projectId);
+
+	String getProjectTitleById(Integer projectId);
 }
