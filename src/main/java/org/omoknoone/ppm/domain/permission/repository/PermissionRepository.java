@@ -18,7 +18,7 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
     @Query("SELECT new org.omoknoone.ppm.domain.permission.dto.PermissionDTO(p.permissionId, p.permissionRoleName, p.permissionProjectMemberId) " +
         "FROM Permission p WHERE p.permissionProjectMemberId = :permissionProjectMemberId")
     List<PermissionDTO> findByPermissionProjectMemberId(@Param("permissionProjectMemberId") Long permissionProjectMemberId);
-}
+
 
     @Query("SELECT "
         + "p "
