@@ -1,12 +1,11 @@
 package org.omoknoone.ppm.domain.notification.service;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCode;
 import org.omoknoone.ppm.domain.commoncode.repository.CommonCodeRepository;
@@ -20,7 +19,6 @@ import org.omoknoone.ppm.domain.notification.dto.NotificationResponseDTO;
 import org.omoknoone.ppm.domain.notification.dto.NotificationSettingsResponseDTO;
 import org.omoknoone.ppm.domain.notification.dto.SentRequestDTO;
 import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
-import org.omoknoone.ppm.domain.notification.repository.SentRepository;
 import org.omoknoone.ppm.domain.notification.service.strategy.EmailNotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.NotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.SlackNotificationStrategy;
@@ -33,18 +31,16 @@ import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceCalculator;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceImpl;
 import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
 import org.omoknoone.ppm.domain.stakeholders.service.StakeholdersServiceImpl;
-import org.omoknoone.ppm.domain.task.repository.TaskRepository;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -58,16 +54,12 @@ public class NotificationServiceImpl implements NotificationService {
     private final JavaMailSender javaMailSender;
     private final SlackNotificationStrategy slackNotificationStrategy;
     private final ModelMapper modelMapper;
-    private final SentRepository sentRepository;
-    private final TaskRepository taskRepository;
     private final ScheduleServiceImpl scheduleServiceImpl;
     private final CommonCodeRepository commonCodeRepository;
-    private final ScheduleServiceCalculator scheduleServiceCalculator;
     private final ProjectServiceImpl projectServiceImpl;
     private final PermissionServiceImpl permissionServiceImpl;
     private final ProjectMemberRepository projectMemberRepository;
     private final StakeholdersServiceImpl stakeholdersServiceImpl;
-    private final SimpMessagingTemplate brokerMessagingTemplate;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -183,7 +175,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         Notification notification = notificationRepository.findById(notificationId)
             .orElseThrow(() -> new EntityNotFoundException("해당 알림 Id는 존재 하지 않습니다: " + notificationId));
-        notification.markAsRead();
+        notification.read();
 
         notificationRepository.save(notification);
 
@@ -194,10 +186,6 @@ public class NotificationServiceImpl implements NotificationService {
         return modelMapper.map(notification, NotificationResponseDTO.class);
     }
 
-    /* 설명. 웹소켓을 활용하여 유저에게 실시간으로 최신 알림을 보여줄 수 있도록 해줌 */
-    private void notifyClients(Notification notification) {
-        brokerMessagingTemplate.convertAndSend("/topic/notifications/" + notification.getEmployeeId(), notification);
-    }
 
     private void sendNotificationToEmployee(Employee employee, Notification notification) {
         log.info("알림 전송 조건 확인: 직원 ID {}", employee.getEmployeeId());
