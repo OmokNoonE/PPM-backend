@@ -10,6 +10,7 @@ import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
 import org.omoknoone.ppm.domain.stakeholders.dto.*;
 import org.omoknoone.ppm.domain.stakeholders.service.StakeholdersService;
 import org.omoknoone.ppm.domain.stakeholders.vo.ResponseStakeholders;
+import org.omoknoone.ppm.domain.stakeholders.vo.ResponseViewStakeholders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -62,9 +63,9 @@ public class StakeholdersController {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        List<StakeholdersDTO> stakeholdersDTOList = stakeholdersService.viewStakeholders(scheduleId);
-        List<ResponseStakeholders> responseStakeholdersList = modelMapper.map(stakeholdersDTOList,
-                new TypeToken<List<Stakeholders>>(){}.getType());
+        List<ViewStakeholdersDTO> stakeholdersDTOList = stakeholdersService.viewStakeholders(scheduleId);
+        List<ResponseViewStakeholders> responseStakeholdersList = modelMapper.map(stakeholdersDTOList,
+                new TypeToken<List<ViewStakeholdersDTO>>(){}.getType());
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("viewStakeholders", responseStakeholdersList);
