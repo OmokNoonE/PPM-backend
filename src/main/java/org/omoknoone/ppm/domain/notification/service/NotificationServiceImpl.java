@@ -26,6 +26,7 @@ import org.omoknoone.ppm.domain.permission.service.PermissionServiceImpl;
 import org.omoknoone.ppm.domain.project.service.ProjectServiceImpl;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
+import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceCalculator;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceImpl;
@@ -78,7 +79,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public void checkConditionsAndSendNotifications(Integer projectId) {
         int alarm = scheduleServiceImpl.calculateRatioThisWeek(projectId);
-        List<ScheduleDTO> schedules = scheduleServiceImpl.getSchedulesForThisWeek(projectId);
+        List<FindSchedulesForWeekDTO> schedules = scheduleServiceImpl.getSchedulesForThisWeek(projectId);
         String projectTitle = projectServiceImpl.getProjectTitleById(projectId);
         List<ProjectMember> projectMembers = projectMemberRepository.findByProjectMemberProjectId(projectId);
 
@@ -87,7 +88,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private void handleNotificationsForMember(ProjectMember member, List<ScheduleDTO> schedules, String projectTitle, int alarm) {
+    private void handleNotificationsForMember(ProjectMember member, List<FindSchedulesForWeekDTO> schedules, String projectTitle, int alarm) {
         boolean isPm = permissionServiceImpl.hasPmRole(Long.valueOf(member.getProjectMemberId()));
         boolean isDev = stakeholdersServiceImpl.hasDevRole(Long.valueOf(member.getProjectMemberId()));
 
@@ -103,13 +104,13 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private List<ScheduleDTO> getIncompleteSchedulesForMember(List<ScheduleDTO> schedules, ProjectMember member) {
+    private List<FindSchedulesForWeekDTO> getIncompleteSchedulesForMember(List<FindSchedulesForWeekDTO> schedules, ProjectMember member) {
         return schedules.stream()
             .filter(schedule -> isScheduleIncompleteForMember(schedule, member))
             .toList();
     }
 
-    private boolean isScheduleIncompleteForMember(ScheduleDTO schedule, ProjectMember member) {
+    private boolean isScheduleIncompleteForMember(FindSchedulesForWeekDTO schedule, ProjectMember member) {
         List<Stakeholders> stakeholders = stakeholdersServiceImpl.findByScheduleId(schedule.getScheduleId());
         return stakeholders.stream().anyMatch(stakeholder ->
             stakeholder.getProjectMemberId().equals(Long.valueOf(member.getProjectMemberId())) && !isCompleted(schedule, commonCodeRepository));
@@ -243,7 +244,7 @@ public class NotificationServiceImpl implements NotificationService {
             .replace("{notificationContent}", notification.getNotificationContent());
     }
 
-    private boolean isCompleted(ScheduleDTO schedule, CommonCodeRepository commonCodeRepository) {
+    private boolean isCompleted(FindSchedulesForWeekDTO schedule, CommonCodeRepository commonCodeRepository) {
         String status = schedule.getScheduleStatus();
         String scheduleCompleted = commonCodeRepository.findById(ScheduleServiceCalculator.schedule_completed)
             .map(CommonCode::getCodeName)

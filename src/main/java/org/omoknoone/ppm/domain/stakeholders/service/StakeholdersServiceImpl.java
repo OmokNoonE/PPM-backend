@@ -88,6 +88,7 @@ public class StakeholdersServiceImpl implements StakeholdersService {
 
     public List<Stakeholders> findByScheduleId(Long scheduleId) {
         return stakeholdersRepository.findStakeholdersByStakeholdersScheduleId(scheduleId);
+    }
 
     @Override
     public List<StakeholdersEmployeeInfoDTO> viewStakeholdersEmployeeInfo(Long[] scheduleIdList) {
