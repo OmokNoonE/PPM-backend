@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 public class ViewAvailableMembersResponseDTO {
 
+    private String projectMemberEmployeeId;
     private String employeeName;
     private String employeeEmail;
     private String employeeContact;

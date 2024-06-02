@@ -6,9 +6,9 @@ POST http://localhost:8888/projectMembers/create
 Content-Type: application/json
 
 {
-  "projectMemberProjectId" : 2,
-  "projectMemberEmployeeId" : "EP001",
-  "projectMemberRoleName": 10601,
+  "projectMemberProjectId": 2,
+  "projectMemberEmployeeId": "EP001",
+  "projectMemberRoleId": 10601,
   "projectMemberEmployeeName": "김수정"
 }
 
@@ -23,7 +23,7 @@ PUT http://localhost:8888/projectMembers/modify
 Content-Type: application/json
 
 {
-  "projectMemberId" : 2,
-  "projectMemberRoleName": 10602,
+  "projectMemberId": 2,
+  "projectMemberRoleId": 10602,
   "projectMemberHistoryReason": "권한 수정 사유 : PL 변경 요청에 의한 변경"
 }

@@ -6,5 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ProjectMemberHistoryRepository extends JpaRepository<ProjectMemberHistory, Long> {
+
+    ProjectMemberHistory findFirstByProjectMemberHistoryProjectMemberIdOrderByIdDesc(Integer projectMemberId);
+
     List<ProjectMemberHistory> findByProjectMemberHistoryProjectMemberId(Integer projectMemberId);
+
+
 }

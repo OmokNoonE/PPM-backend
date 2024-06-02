@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
-import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewAvailableMembersResponseDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.*;
 import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -46,7 +43,7 @@ public class ProjectMemberController {
 
     @GetMapping("/available/{projectId}")
     public ResponseEntity<ResponseMessage> viewAndSearchAvailableMembers(@PathVariable("projectId") Integer projectId,
-                                                                         @RequestParam(value = "query", required = false) String query) {
+                                                                        @RequestParam(value = "query", required = false) String query) {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
@@ -81,7 +78,7 @@ public class ProjectMemberController {
     @DeleteMapping("/remove/{projectMemberId}")
     public ResponseEntity<ResponseMessage> removeProjectMember(
             @PathVariable Integer projectMemberId,
-            @RequestBody ModifyProjectMemberRequestDTO requestDTO) {
+            @RequestBody RemoveProjectMemberRequestDTO requestDTO) {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
@@ -113,13 +110,13 @@ public class ProjectMemberController {
             responseMap.put("modifyProjectMember", projectMemberId);
 
             return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(new ResponseMessage(200, "구성원의 권한 수정이 완료.", responseMap));
+                    .ok()
+                    .headers(headers)
+                    .body(new ResponseMessage(200, "구성원의 권한 수정이 완료.", responseMap));
         } catch (EntityNotFoundException ex) {
             return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ResponseMessage(404, "구성원을 찾을 수 없음."));
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseMessage(404, "구성원을 찾을 수 없음."));
         }
     }
 
