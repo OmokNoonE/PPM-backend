@@ -14,7 +14,7 @@ public interface NotificationService {
 
     NotificationResponseDTO markAsRead(Long id);
 
-//    void checkConditionsAndSendNotifications();
-//
+   void checkConditionsAndSendNotifications(Integer projectId);
+
 //    void createTestData();
 }

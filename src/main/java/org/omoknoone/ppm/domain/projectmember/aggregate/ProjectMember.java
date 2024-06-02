@@ -76,4 +76,10 @@ public class ProjectMember {
         this.projectMemberIsExcluded = false;
         this.projectMemberModifiedDate = LocalDateTime.now();
     }
+
+
+    public String getEmployeeId() {
+		return this.projectMemberEmployeeId;
+    }
 }
+

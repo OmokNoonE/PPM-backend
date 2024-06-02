@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
-import org.omoknoone.ppm.domain.notification.dto.NotificationSettingRequestDTO;
-import org.omoknoone.ppm.domain.notification.dto.NotificationSettingResponseDTO;
-import org.omoknoone.ppm.domain.notification.service.NotificationSettingService;
+import org.omoknoone.ppm.domain.notification.dto.NotificationSettingsRequestDTO;
+import org.omoknoone.ppm.domain.notification.dto.NotificationSettingsResponseDTO;
+import org.omoknoone.ppm.domain.notification.service.NotificationSettingsService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +18,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/notification-settings")
-public class NotificationSettingController {
+public class NotificationSettingsController {
 
-    private final NotificationSettingService notificationSettingService;
+    private final NotificationSettingsService notificationSettingService;
 
     /* 설명. 알림 옵션을 보여줍니다. */
     @GetMapping("/{employeeId}")
@@ -28,7 +28,7 @@ public class NotificationSettingController {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        NotificationSettingResponseDTO responseDTO = notificationSettingService.viewNotificationSetting(employeeId);
+        NotificationSettingsResponseDTO responseDTO = notificationSettingService.viewNotificationSettings(employeeId);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("viewNotificationSetting", responseDTO);
@@ -42,11 +42,11 @@ public class NotificationSettingController {
     /* 설명. 알림 온오프 기능을 제공합니다. */
     @PutMapping
     public ResponseEntity<ResponseMessage> updateNotificationSettings
-            (@RequestBody NotificationSettingRequestDTO requestDTO) {
+            (@RequestBody NotificationSettingsRequestDTO requestDTO) {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        NotificationSettingResponseDTO responseDTO = notificationSettingService.updateNotificationSettings(requestDTO);
+        NotificationSettingsResponseDTO responseDTO = notificationSettingService.updateNotificationSettings(requestDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("updateNotificationSettings", responseDTO);

@@ -63,4 +63,8 @@ public class Stakeholders {
         this.stakeholdersDeletedDate = LocalDateTime.now();
 
     }
+
+    public Long getProjectMemberId() {
+        return this.stakeholdersProjectMemberId = stakeholdersProjectMemberId;
+	}
 }

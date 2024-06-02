@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.omoknoone.ppm.domain.employee.aggregate.Employee;
+import org.omoknoone.ppm.domain.notification.aggregate.enums.NotificationSentStatus;
 import org.omoknoone.ppm.domain.notification.aggregate.enums.NotificationType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -21,12 +22,19 @@ public class SlackNotificationStrategy implements NotificationStrategy {
 
     @Transactional
     @Override
-    public void send(Employee employee, String title, String content, NotificationType type) {
-        String slackId = getSlackIdByEmail(employee.getEmployeeEmail());
-        if (slackId != null) {
-            sendMessageToSlack(slackId, title, content);
-        } else {
-            log.error("슬랙 ID를 찾을 수 없습니다. 이메일: {}", employee.getEmployeeEmail());
+    public NotificationSentStatus send(Employee employee, String title, String content, NotificationType type) {
+        try {
+            String slackId = getSlackIdByEmail(employee.getEmployeeEmail());
+            if (slackId != null) {
+                sendMessageToSlack(slackId, title, content);
+                return NotificationSentStatus.SUCCESS;
+            } else {
+                log.error("슬랙 ID를 찾을 수 없습니다. 이메일: {}", employee.getEmployeeEmail());
+                return NotificationSentStatus.FAILURE;
+            }
+        } catch (Exception e) {
+            log.error("슬랙 알림 전송 실패: " + e.getMessage());
+            return NotificationSentStatus.FAILURE;
         }
     }
 

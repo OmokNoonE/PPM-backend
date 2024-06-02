@@ -23,6 +23,8 @@ public class PermissionServiceImpl implements PermissionService {
 
     private final ModelMapper modelMapper;
 
+    private static final Long PM_ROLE_ID = 10601L;
+
     @Autowired
     public PermissionServiceImpl(PermissionRepository permissionRepository, ModelMapper modelMapper
     ) {
@@ -57,6 +59,15 @@ public class PermissionServiceImpl implements PermissionService {
         }.getType());
     }
 
+
+
+    @Transactional(readOnly = true)
+    public boolean hasPmRole(Long projectMemberId) {
+        List<PermissionDTO> permissions = permissionRepository.findByPermissionProjectMemberId(projectMemberId);
+        return permissions.stream()
+            .anyMatch(permission -> permission.getPermissionRoleName().equals(10601L));
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<PermissionDTO> viewSchedulePermission(Long scheduleId) {
@@ -85,6 +96,8 @@ public class PermissionServiceImpl implements PermissionService {
 
         return permission.getPermissionId();
     }
+}
+
 
     @Override
     public RoleAndSchedulesDTO getPermissionIdListByPermission(String employeeId, Long projectId) {
@@ -116,3 +129,4 @@ public class PermissionServiceImpl implements PermissionService {
 
     }
 }
+

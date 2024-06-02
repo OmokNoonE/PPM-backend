@@ -305,4 +305,10 @@ public class ProjectServiceImpl implements ProjectService {
                 .projectModifiedDate(project.getProjectModifiedDate())
                 .build();
     }
+
+    public String getProjectTitleById(Integer projectId) {
+        return projectRepository.findById(projectId)
+            .map(Project::getProjectTitle)
+            .orElse("Unknown Project");
+    }
 }

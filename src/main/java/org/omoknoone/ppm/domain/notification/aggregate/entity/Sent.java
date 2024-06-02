@@ -25,16 +25,16 @@ public class Sent {
     private NotificationType notificationType;
 
     @Column(name = "sent_date", length = 30)
-    private LocalDateTime SentDate;
+    private LocalDateTime sentDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sent_status")
     private NotificationSentStatus sentStatus;
 
-    @JoinColumn(name = "notification_id", nullable = false)
+    @Column(name = "notification_id", nullable = false)
     private Long notificationId;
 
-    @JoinColumn(name = "employee_id", nullable = false)
+    @Column(name = "employee_id", nullable = false)
     private String employeeId;
 
     @Builder
@@ -42,7 +42,7 @@ public class Sent {
                 NotificationSentStatus sentStatus, Long notificationId, String employeeId) {
         this.sentId = sentId;
         this.notificationType = notificationType;
-        SentDate = sentDate;
+        this.sentDate = sentDate;
         this.sentStatus = sentStatus;
         this.notificationId = notificationId;
         this.employeeId = employeeId;

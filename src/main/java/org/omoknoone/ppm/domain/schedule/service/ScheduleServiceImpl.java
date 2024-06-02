@@ -401,6 +401,18 @@ public class ScheduleServiceImpl implements ScheduleService {
 		return schedules;
 	}
 
+	/* 이번주 일정 진행률 계산 */
+	public int calculateRatioThisWeek(Integer projectId) {
+		List<ScheduleDTO> schedulesThisWeek = getSchedulesForThisWeek(projectId);
+		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesThisWeek, commonCodeRepository);
+	}
+
+
+	/* 차주 일정 진행률 계산 */
+	public int calculateRatioNextWeek(Integer projectId) {
+		List<ScheduleDTO> schedulesNextWeek = getSchedulesForNextWeek(projectId);
+		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesNextWeek, commonCodeRepository);
+	}
 
 	/* 구간별 일정 예상 누적 진행률 */
 	public int[] calculateScheduleRatios(LocalDate projectStartDate, LocalDate projectEndDate) {
