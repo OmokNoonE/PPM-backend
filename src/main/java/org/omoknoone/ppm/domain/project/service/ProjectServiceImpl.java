@@ -91,7 +91,7 @@ public class ProjectServiceImpl implements ProjectService {
         CreateProjectMemberRequestDTO createProjectMemberRequestDTO = CreateProjectMemberRequestDTO.builder()
                 .projectMemberEmployeeId(createProjectRequestDTO.getEmployeeId())
                 .projectMemberProjectId(project.getProjectId())
-                .projectMemberRoleName(pmRoleId)
+                .projectMemberRoleId(pmRoleId)
                 .projectMemberEmployeeName(name)
                 .build();
 

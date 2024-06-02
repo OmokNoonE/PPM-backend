@@ -9,17 +9,22 @@ import java.time.LocalDateTime;
 @Getter
 public class ViewProjectMembersByProjectResponseDTO {
 
+    private Integer projectMemberId;
+    private String projectMemberEmployeeId;
     private String employeeName;
-    private Long projectMemberRoleName;
+    private Long codeId;
     private String employeeEmail;
     private String employeeContact;
     private LocalDateTime projectMemberCreatedDate;
 
     @Builder
-    public ViewProjectMembersByProjectResponseDTO(String employeeName, Long projectMemberRoleName,
-                                                String employeeEmail, String employeeContact, LocalDateTime projectMemberCreatedDate) {
+    public ViewProjectMembersByProjectResponseDTO(Integer projectMemberId, String projectMemberEmployeeId,
+                                                String employeeName, Long codeId, String employeeEmail,
+                                                String employeeContact, LocalDateTime projectMemberCreatedDate) {
+        this.projectMemberId = projectMemberId;
+        this.projectMemberEmployeeId = projectMemberEmployeeId;
         this.employeeName = employeeName;
-        this.projectMemberRoleName = projectMemberRoleName;
+        this.codeId = codeId;
         this.employeeEmail = employeeEmail;
         this.employeeContact = employeeContact;
         this.projectMemberCreatedDate = projectMemberCreatedDate;

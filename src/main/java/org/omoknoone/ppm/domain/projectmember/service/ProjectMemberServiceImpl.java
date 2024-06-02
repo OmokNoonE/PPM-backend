@@ -4,11 +4,14 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
+import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
+import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
 import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
+import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMemberHistory;
 import org.omoknoone.ppm.domain.projectmember.dto.*;
+import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberHistoryRepository;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -24,21 +27,17 @@ import java.util.stream.Collectors;
 public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     private final ProjectMemberRepository projectMemberRepository;
+    private final ProjectMemberHistoryRepository projectMemberHistoryRepository;
     private final ProjectMemberHistoryService projectMemberHistoryService;
     private final EmployeeService employeeService;
+    private final CommonCodeService commonCodeService;
     private final Environment environment;
     private final ModelMapper modelMapper;
 
     @Transactional(readOnly = true)
     @Override
-    public List<ProjectMemberDTO> viewProjectMembersByProject(Integer projectMemberProjectId) {
-
-        List<ProjectMember> projectMembers = projectMemberRepository.findProjectMembersByProjectMemberProjectId(projectMemberProjectId);
-        if (projectMembers == null || projectMembers.isEmpty()) {
-            throw new IllegalArgumentException(projectMemberProjectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
-        }
-
-        return modelMapper.map(projectMembers, new TypeToken<List<ProjectMemberDTO>>() {}.getType());
+    public List<ViewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId) {
+        return projectMemberRepository.findByProjectMembersProjectId(projectMemberProjectId);
     }
 
     @Transactional(readOnly = true)
@@ -54,6 +53,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         return availableMembers
                 .stream()
                 .map(e -> new ViewAvailableMembersResponseDTO(
+                        e.getEmployeeId(),
                         e.getEmployeeName(),
                         e.getEmployeeEmail(),
                         e.getEmployeeContact(),
@@ -65,49 +65,43 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Transactional
     @Override
     public Integer createProjectMember(CreateProjectMemberRequestDTO requestDTO) {
+        validateProjectMemberRoleId(requestDTO.getProjectMemberRoleId());
 
-        System.out.println("requestDTO = " + requestDTO);
         ProjectMember projectMember = projectMemberRepository
-                .findByProjectMemberEmployeeIdAndProjectMemberProjectId
-                        (requestDTO.getProjectMemberEmployeeId(), requestDTO.getProjectMemberProjectId());
+                .findByProjectMemberEmployeeIdAndProjectMemberProjectId(
+                        requestDTO.getProjectMemberEmployeeId(), requestDTO.getProjectMemberProjectId());
 
-        System.out.println("projectMember = " + projectMember);
         LocalDateTime now = LocalDateTime.now();
 
         if (projectMember != null) {
-            // 기존 구성원이 존재하면 업데이트
-            /* TODO. project_created_date 에러 */
-            projectMember.include();
-            projectMemberRepository.save(projectMember);
-            projectMemberHistoryService.createProjectMemberHistory(
-                    new CreateProjectMemberHistoryRequestDTO(
-                            projectMember.getProjectMemberId(),
-                            "Re-added project member",
-                            now,
-                            null
-                    )
-            );
+            if (projectMember.getProjectMemberIsExcluded()) {
+                projectMember.include();
+                projectMember.setProjectMemberRoleId(requestDTO.getProjectMemberRoleId()); // 역할 업데이트
+                projectMemberRepository.save(projectMember);
+
+                CreateProjectMemberHistoryRequestDTO historyRequestDTO = CreateProjectMemberHistoryRequestDTO.builder()
+                        .projectMemberHistoryProjectMemberId(projectMember.getProjectMemberId())
+                        .projectMemberHistoryCreatedDate(now)
+                        .build();
+                projectMemberHistoryService.createProjectMemberHistory(historyRequestDTO);
+            }
         } else {
-            // 새로운 구성원 생성
             projectMember = ProjectMember.builder()
                     .projectMemberProjectId(requestDTO.getProjectMemberProjectId())
                     .projectMemberEmployeeId(requestDTO.getProjectMemberEmployeeId())
                     .projectMemberEmployeeName(requestDTO.getProjectMemberEmployeeName())
-                    .projectMemberRoleName(requestDTO.getProjectMemberRoleName())
+                    .projectMemberRoleId(requestDTO.getProjectMemberRoleId())
                     .projectMemberIsExcluded(false)
                     .projectMemberCreatedDate(now)
-                    .projectMemberModifiedDate(now)
+                    .projectMemberModifiedDate(null)
                     .build();
-            System.out.println("projectMember 2= " + projectMember);
             projectMemberRepository.save(projectMember);
-            projectMemberHistoryService.createProjectMemberHistory(
-                    new CreateProjectMemberHistoryRequestDTO(
-                            projectMember.getProjectMemberId(),
-                            "Added new project member",
-                            now,
-                            null
-                    )
-            );
+
+            CreateProjectMemberHistoryRequestDTO historyRequestDTO = CreateProjectMemberHistoryRequestDTO.builder()
+                    .projectMemberHistoryProjectMemberId(projectMember.getProjectMemberId())
+                    .projectMemberHistoryCreatedDate(now)
+                    .build();
+            projectMemberHistoryService.createProjectMemberHistory(historyRequestDTO);
         }
 
         return projectMember.getProjectMemberId();
@@ -119,47 +113,38 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         ProjectMember excludedMember = projectMemberRepository.findById(projectMemberId)
                 .orElseThrow(() -> new EntityNotFoundException(environment.getProperty("exception.data.entityNotFound")));
 
-        LocalDateTime now = LocalDateTime.now();
         excludedMember.remove();
         projectMemberRepository.save(excludedMember);
 
-        projectMemberHistoryService.createProjectMemberHistory(
-                new CreateProjectMemberHistoryRequestDTO(
-                        excludedMember.getProjectMemberId(),
-                        projectMemberHistoryReason,
-                        excludedMember.getProjectMemberCreatedDate(),
-                        now
-                )
-        );
+        ProjectMemberHistory history = projectMemberHistoryRepository.findFirstByProjectMemberHistoryProjectMemberIdOrderByIdDesc(projectMemberId);
+        if (history == null) {
+            throw new EntityNotFoundException("History not found");
+        }
+
+        CreateProjectMemberHistoryRequestDTO historyRequestDTO = CreateProjectMemberHistoryRequestDTO.builder()
+                .projectMemberHistoryProjectMemberId(history.getProjectMemberHistoryProjectMemberId())
+                .projectMemberHistoryReason(projectMemberHistoryReason)
+                .projectMemberHistoryExclusionDate(LocalDateTime.now())
+                .build();
+        projectMemberHistoryService.createProjectMemberHistory(historyRequestDTO);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public Integer viewProjectMemberId(String employeeId, Integer projectId) {
-        ProjectMember projectMember = projectMemberRepository.
-                findByProjectMemberEmployeeIdAndProjectMemberProjectId(employeeId, projectId);
-        return projectMember.getProjectMemberId();
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId) {
-
-        return projectMemberRepository.findByProjectMemberEmployeeId(employeeId);
-    }
-
-    /* 구성원 수정 (권한 변경) */
     @Transactional
     @Override
     public Integer modifyProjectMember(ModifyProjectMemberRequestDTO projectMemberRequestDTO) {
+        validateProjectMemberRoleId(projectMemberRequestDTO.getProjectMemberRoleId());
 
         ProjectMember existingMember = projectMemberRepository.findById(projectMemberRequestDTO.getProjectMemberId())
-            .orElseThrow(() -> new EntityNotFoundException(environment.getProperty("exception.data.entityNotFound")));
-        existingMember.modify(projectMemberRequestDTO);
+                .orElseThrow(() -> new EntityNotFoundException(environment.getProperty("exception.data.entityNotFound")));
+        existingMember.modifyRole(projectMemberRequestDTO);
 
         projectMemberRepository.save(existingMember);
 
-        projectMemberHistoryService.createProjectMemberHistory(projectMemberRequestDTO);
+        CreateProjectMemberHistoryRequestDTO historyRequestDTO = CreateProjectMemberHistoryRequestDTO.builder()
+                .projectMemberHistoryProjectMemberId(existingMember.getProjectMemberId())
+                .projectMemberHistoryModifiedDate(LocalDateTime.now())
+                .build();
+        projectMemberHistoryService.createProjectMemberHistory(historyRequestDTO);
 
         return existingMember.getProjectMemberId();
     }
@@ -173,4 +158,26 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
 
+    @Transactional(readOnly = true)
+    @Override
+    public Integer viewProjectMemberId(String employeeId, Integer projectId) {
+        ProjectMember projectMember = projectMemberRepository
+                .findByProjectMemberEmployeeIdAndProjectMemberProjectId(employeeId, projectId);
+        return projectMember.getProjectMemberId();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId) {
+        return projectMemberRepository.findByProjectMemberEmployeeId(employeeId);
+    }
+
+    private void validateProjectMemberRoleId(Long projectMemberRoleId) {
+        Long codeGroupId = 106L; // 권한 역할명 그룹 ID
+        List<CommonCodeResponseDTO> commonCodes = commonCodeService.viewCommonCodesByGroup(codeGroupId);
+        boolean isValid = commonCodes.stream().anyMatch(code -> code.getCodeId().equals(projectMemberRoleId));
+        if (!isValid) {
+            throw new IllegalArgumentException("Invalid project member role ID");
+        }
+    }
 }

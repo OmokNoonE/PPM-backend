@@ -6,8 +6,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-public class ModifyProjectMemberRequestDTO {
+public class RemoveProjectMemberRequestDTO {
 
-    private Integer projectMemberId;
-    private Long projectMemberRoleId;
+    private String projectMemberHistoryReason;
 }

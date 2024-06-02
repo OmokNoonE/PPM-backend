@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ProjectMemberService {
 
-	List<ProjectMemberDTO> viewProjectMembersByProject(Integer projectMemberProjectId);
+	List<ViewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId);
 
 	List<ViewAvailableMembersResponseDTO> viewAndSearchAvailableMembers(Integer projectId, String query);
 
