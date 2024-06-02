@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
@@ -26,16 +27,7 @@ import org.omoknoone.ppm.domain.permission.dto.RoleAndSchedulesDTO;
 import org.omoknoone.ppm.domain.permission.service.PermissionService;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
-import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ScheduleSheetDataDTO;
-import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
-import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
-import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
+import org.omoknoone.ppm.domain.schedule.dto.*;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
 import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
@@ -367,50 +359,60 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	/* 해당 일자가 포함된 주에 끝나야할 일정 목록 조회 */
 	@Override
-	public List<ScheduleDTO> getSchedulesForThisWeek(Integer projectId) {
+	public List<FindSchedulesForWeekDTO> getSchedulesForThisWeek(Integer projectId) {
 		LocalDate today = LocalDate.now();
 		LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate thisSunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-		List<ScheduleDTO> schedules = scheduleRepository.getSchedulesForThisWeek(thisMonday, thisSunday);
 
-		for (ScheduleDTO schedule : schedules) {
-			CommonCode commonCode = commonCodeRepository.findById(Long.valueOf(schedule.getScheduleStatus())).orElse(null);
-			if (commonCode != null) {
-				schedule.setScheduleStatus(commonCode.getCodeName());
-			}
-		}
-
-		return schedules;
+		return getFindSchedulesForWeekDTOList(thisMonday, thisSunday);
 	}
 
 	/* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
 	@Override
-	public List<ScheduleDTO> getSchedulesForNextWeek(Integer projectId) {
+	public List<FindSchedulesForWeekDTO> getSchedulesForNextWeek(Integer projectId) {
 		LocalDate today = LocalDate.now();
-		LocalDate NextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
-		LocalDate NextSunday = NextMonday.plusDays(6);
-		List<ScheduleDTO> schedules = scheduleRepository.getSchedulesForNextWeek(NextMonday, NextSunday);
+		LocalDate nextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+		LocalDate nextSunday = nextMonday.plusDays(6);
 
-		for (ScheduleDTO schedule : schedules) {
-			CommonCode commonCode = commonCodeRepository.findById(Long.valueOf(schedule.getScheduleStatus())).orElse(null);
-			if (commonCode != null) {
-				schedule.setScheduleStatus(commonCode.getCodeName());
-			}
+		return getFindSchedulesForWeekDTOList(nextMonday, nextSunday);
+	}
+
+	@NotNull
+	private List<FindSchedulesForWeekDTO> getFindSchedulesForWeekDTOList(LocalDate monday, LocalDate sunday) {
+
+		// 금주에 끝나는 일정 조회
+		List<Schedule> schedules = scheduleRepository.findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(
+				monday, sunday);
+
+		List<FindSchedulesForWeekDTO> findSchedulesForWeekDTOList = modelMapper
+				.map(schedules, new TypeToken<List<FindSchedulesForWeekDTO>>() {}.getType());
+
+		for (FindSchedulesForWeekDTO findSchedulesForWeekDTO : findSchedulesForWeekDTOList) {
+
+			// 일정의 작성자 조회
+
+
+			// 일정의 담당자 조회
+
+			// 일정 상태 코드를 코드명으로 변경
+			CommonCode commonCode = commonCodeRepository.findById(
+					Long.valueOf(findSchedulesForWeekDTO.getScheduleStatus())).orElseThrow(IllegalArgumentException::new);
+			findSchedulesForWeekDTO.setScheduleStatus(commonCode.getCodeName());
 		}
 
-		return schedules;
+		return findSchedulesForWeekDTOList;
 	}
 
 	/* 이번주 일정 진행률 계산 */
 	public int calculateRatioThisWeek(Integer projectId) {
-		List<ScheduleDTO> schedulesThisWeek = getSchedulesForThisWeek(projectId);
+		List<FindSchedulesForWeekDTO> schedulesThisWeek = getSchedulesForThisWeek(projectId);
 		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesThisWeek, commonCodeRepository);
 	}
 
 
 	/* 차주 일정 진행률 계산 */
 	public int calculateRatioNextWeek(Integer projectId) {
-		List<ScheduleDTO> schedulesNextWeek = getSchedulesForNextWeek(projectId);
+		List<FindSchedulesForWeekDTO> schedulesNextWeek = getSchedulesForNextWeek(projectId);
 		return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesNextWeek, commonCodeRepository);
 	}
 
