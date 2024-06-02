@@ -93,7 +93,7 @@ public class NotificationServiceImpl implements NotificationService {
         boolean isPm = permissionServiceImpl.hasPmRole(Long.valueOf(member.getProjectMemberId()));
         boolean isDev = stakeholdersServiceImpl.hasDevRole(Long.valueOf(member.getProjectMemberId()));
 
-        List<ScheduleDTO> incompleteSchedulesForMember = getIncompleteSchedulesForMember(schedules, member);
+        List<FindSchedulesForWeekDTO> incompleteSchedulesForMember = getIncompleteSchedulesForMember(schedules, member);
 
         if (!incompleteSchedulesForMember.isEmpty()) {
             String notificationContent = createNotificationContent(incompleteSchedulesForMember, projectTitle);
@@ -112,16 +112,16 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
 
-    private boolean isScheduleIncompleteForMember(ScheduleDTO schedule, ProjectMember member) {
+    private boolean isScheduleIncompleteForMember(FindSchedulesForWeekDTO schedule, ProjectMember member) {
         List<ViewStakeholdersDTO> stakeholders = stakeholdersServiceImpl.findByScheduleId(schedule.getScheduleId());
         return stakeholders.stream().anyMatch(stakeholder ->
             stakeholder.getStakeholdersProjectMemberId().equals(Long.valueOf(member.getProjectMemberId())) && !isCompleted(schedule, commonCodeRepository));
     }
 
-    private String createNotificationContent(List<ScheduleDTO> incompleteSchedules, String projectTitle) {
+    private String createNotificationContent(List<FindSchedulesForWeekDTO> incompleteSchedules, String projectTitle) {
         StringBuilder notificationContentBuilder = new StringBuilder();
         notificationContentBuilder.append("미완료 일정 목록:\n");
-        for (ScheduleDTO schedule : incompleteSchedules) {
+        for (FindSchedulesForWeekDTO schedule : incompleteSchedules) {
             String scheduleInfo = String.format("- 프로젝트 '%s'의 일정 '%s'가 아직 완료되지 않았습니다.\n", projectTitle,
                 schedule.getScheduleTitle());
             notificationContentBuilder.append(scheduleInfo);
