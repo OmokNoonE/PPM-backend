@@ -31,6 +31,7 @@ import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceCalculator;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceImpl;
 import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
+import org.omoknoone.ppm.domain.stakeholders.dto.ViewStakeholdersDTO;
 import org.omoknoone.ppm.domain.stakeholders.service.StakeholdersServiceImpl;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -81,7 +82,7 @@ public class NotificationServiceImpl implements NotificationService {
         int alarm = scheduleServiceImpl.calculateRatioThisWeek(projectId);
         List<FindSchedulesForWeekDTO> schedules = scheduleServiceImpl.getSchedulesForThisWeek(projectId);
         String projectTitle = projectServiceImpl.getProjectTitleById(projectId);
-        List<ProjectMember> projectMembers = projectMemberRepository.findByProjectMemberProjectId(projectId);
+        List<ProjectMember> projectMembers = projectMemberRepository.findProjectMembersByProjectMemberProjectId(projectId);
 
         for (ProjectMember member : projectMembers) {
             handleNotificationsForMember(member, schedules, projectTitle, alarm);
@@ -110,10 +111,11 @@ public class NotificationServiceImpl implements NotificationService {
             .toList();
     }
 
-    private boolean isScheduleIncompleteForMember(FindSchedulesForWeekDTO schedule, ProjectMember member) {
-        List<Stakeholders> stakeholders = stakeholdersServiceImpl.findByScheduleId(schedule.getScheduleId());
+
+    private boolean isScheduleIncompleteForMember(ScheduleDTO schedule, ProjectMember member) {
+        List<ViewStakeholdersDTO> stakeholders = stakeholdersServiceImpl.findByScheduleId(schedule.getScheduleId());
         return stakeholders.stream().anyMatch(stakeholder ->
-            stakeholder.getProjectMemberId().equals(Long.valueOf(member.getProjectMemberId())) && !isCompleted(schedule, commonCodeRepository));
+            stakeholder.getStakeholdersProjectMemberId().equals(Long.valueOf(member.getProjectMemberId())) && !isCompleted(schedule, commonCodeRepository));
     }
 
     private String createNotificationContent(List<ScheduleDTO> incompleteSchedules, String projectTitle) {

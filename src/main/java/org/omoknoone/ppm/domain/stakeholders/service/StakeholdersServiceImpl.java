@@ -86,7 +86,7 @@ public class StakeholdersServiceImpl implements StakeholdersService {
             .anyMatch(stakeholder -> stakeholder.getStakeholdersType().equals(10402L));
     }
 
-    public List<Stakeholders> findByScheduleId(Long scheduleId) {
+    public List<ViewStakeholdersDTO> findByScheduleId(Long scheduleId) {
         return stakeholdersRepository.findStakeholdersByStakeholdersScheduleId(scheduleId);
     }
 

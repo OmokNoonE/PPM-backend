@@ -17,6 +17,7 @@ import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectDashboard.aggregate.Graph;
 import org.omoknoone.ppm.domain.projectDashboard.dto.GraphDTO;
 import org.omoknoone.ppm.domain.projectDashboard.repository.GraphRepository;
+import org.omoknoone.ppm.domain.projectmember.dto.ProjectMemberDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
 import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
@@ -142,11 +143,11 @@ public class GraphServiceImpl implements GraphService {
         // 구성원 목록 (이름)
 
 
-        List<ViewProjectMembersByProjectResponseDTO> dtoList =
+        List<ProjectMemberDTO> dtoList =
             projectMemberService.viewProjectMembersByProject(Integer.valueOf(projectId));
 
         // categories에 구성원 이름 담기
-        for (ViewProjectMembersByProjectResponseDTO dto : dtoList) {
+        for (ProjectMemberDTO dto : dtoList) {
             // String name = employeeService.getEmployeeNameByProjectMemberId(String.valueOf(dto.getProjectMemberId()));
             // columnCategories.add(name);
             count += 1;
