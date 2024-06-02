@@ -164,4 +164,13 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         return existingMember.getProjectMemberId();
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public ProjectMember viewProjectMemberInfo(String employeeId, Integer projectId) {
+        return projectMemberRepository.
+                findByProjectMemberEmployeeIdAndProjectMemberProjectId(employeeId, projectId);
+
+    }
+
+
 }
