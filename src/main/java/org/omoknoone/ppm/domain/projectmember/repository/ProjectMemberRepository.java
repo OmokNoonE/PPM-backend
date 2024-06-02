@@ -1,7 +1,10 @@
 package org.omoknoone.ppm.domain.projectmember.repository;
 
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
+import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
