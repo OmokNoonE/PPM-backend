@@ -3,6 +3,7 @@ package org.omoknoone.ppm.domain.schedule.dto;
 import lombok.*;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersDTO;
+import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,10 +30,10 @@ public class FindSchedulesForWeekDTO {
     private String authorName;
 
     // 담당자
-    private List<StakeholdersDTO> assigneeList;
+    private List<StakeholdersEmployeeInfoDTO> assigneeList;
 
     @Builder
-    public FindSchedulesForWeekDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate, LocalDate scheduleEndDate, String scheduleStatus, Boolean scheduleIsDeleted, Long scheduleProjectId, String authorId, String authorName, List<StakeholdersDTO> assigneeList) {
+    public FindSchedulesForWeekDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate, LocalDate scheduleEndDate, String scheduleStatus, Boolean scheduleIsDeleted, Long scheduleProjectId, String authorId, String authorName, List<StakeholdersEmployeeInfoDTO> assigneeList) {
         this.scheduleId = scheduleId;
         this.scheduleTitle = scheduleTitle;
         this.scheduleContent = scheduleContent;

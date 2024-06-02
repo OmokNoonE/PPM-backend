@@ -1,5 +1,6 @@
 package org.omoknoone.ppm.domain.schedule.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -374,16 +375,32 @@ public class ScheduleServiceImpl implements ScheduleService {
 		// 금주에 끝나는 일정 조회
 		List<Schedule> schedules = scheduleRepository.findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(
 				monday, sunday);
+		Long[] scheduleIdList = schedules.stream().map(Schedule::getScheduleId).toArray(Long[]::new);
+
+		// 일정의 이해관계자 정보 조회
+		List<StakeholdersEmployeeInfoDTO> stakeholdersEmployeeInfoDTOList = stakeholdersService.viewStakeholdersEmployeeInfo(
+				scheduleIdList);
 
 		List<FindSchedulesForWeekDTO> findSchedulesForWeekDTOList = modelMapper
 				.map(schedules, new TypeToken<List<FindSchedulesForWeekDTO>>() {}.getType());
 
 		for (FindSchedulesForWeekDTO findSchedulesForWeekDTO : findSchedulesForWeekDTOList) {
+			for (StakeholdersEmployeeInfoDTO stakeholdersEmployeeInfoDTO : stakeholdersEmployeeInfoDTOList) {
 
-			// 일정의 작성자 조회
+				if (stakeholdersEmployeeInfoDTO.getStakeholdersScheduleId().equals(findSchedulesForWeekDTO.getScheduleId())) {
 
+					if (stakeholdersEmployeeInfoDTO.getStakeholdersType() == 10401L) {			// 작성자인 경우
+						findSchedulesForWeekDTO.setAuthorId(stakeholdersEmployeeInfoDTO.getEmployeeId());
+						findSchedulesForWeekDTO.setAuthorName(stakeholdersEmployeeInfoDTO.getEmployeeName());
 
-			// 일정의 담당자 조회
+					} else if (stakeholdersEmployeeInfoDTO.getStakeholdersType() == 10402L) {	// 담당자인 경우
+						if (findSchedulesForWeekDTO.getAssigneeList() == null) {
+							findSchedulesForWeekDTO.setAssigneeList(new ArrayList<>());
+						}
+						findSchedulesForWeekDTO.getAssigneeList().add(stakeholdersEmployeeInfoDTO);
+					}
+				}
+			}
 
 			// 일정 상태 코드를 코드명으로 변경
 			CommonCode commonCode = commonCodeRepository.findById(
