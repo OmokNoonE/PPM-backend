@@ -1,16 +1,13 @@
 package org.omoknoone.ppm.domain.projectmember.service;
 
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
-import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewAvailableMembersResponseDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.*;
 
 import java.util.List;
 
 public interface ProjectMemberService {
 
-	List<ViewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId);
+	List<ProjectMemberDTO> viewProjectMembersByProject(Integer projectMemberProjectId);
 
 	List<ViewAvailableMembersResponseDTO> viewAndSearchAvailableMembers(Integer projectId, String query);
 

@@ -3,6 +3,8 @@ package org.omoknoone.ppm.domain.projectmember.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
@@ -25,12 +27,18 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     private final ProjectMemberHistoryService projectMemberHistoryService;
     private final EmployeeService employeeService;
     private final Environment environment;
+    private final ModelMapper modelMapper;
 
     @Transactional(readOnly = true)
     @Override
-    public List<ViewProjectMembersByProjectResponseDTO> viewProjectMembersByProject(Integer projectMemberProjectId) {
+    public List<ProjectMemberDTO> viewProjectMembersByProject(Integer projectMemberProjectId) {
 
-        return projectMemberRepository.findByProjectMembersProjectId(projectMemberProjectId);
+        List<ProjectMember> projectMembers = projectMemberRepository.findProjectMembersByProjectMemberProjectId(projectMemberProjectId);
+        if (projectMembers == null || projectMembers.isEmpty()) {
+            throw new IllegalArgumentException(projectMemberProjectId + " 프로젝트에 해당하는 일정이 존재하지 않습니다.");
+        }
+
+        return modelMapper.map(projectMembers, new TypeToken<List<ProjectMemberDTO>>() {}.getType());
     }
 
     @Transactional(readOnly = true)
