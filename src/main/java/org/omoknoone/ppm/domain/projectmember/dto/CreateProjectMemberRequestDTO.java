@@ -9,16 +9,15 @@ public class CreateProjectMemberRequestDTO {
 
     private Integer projectMemberProjectId;
     private String projectMemberEmployeeId;
-    private Integer projectMemberRoleName;
+    private Long projectMemberRoleId;
     private String projectMemberEmployeeName;
-
 
     @Builder
     public CreateProjectMemberRequestDTO(Integer projectMemberProjectId, String projectMemberEmployeeId,
-        Integer projectMemberRoleName, String projectMemberEmployeeName) {
+                                        Long projectMemberRoleId, String projectMemberEmployeeName) {
         this.projectMemberProjectId = projectMemberProjectId;
         this.projectMemberEmployeeId = projectMemberEmployeeId;
-        this.projectMemberRoleName = projectMemberRoleName;
+        this.projectMemberRoleId = projectMemberRoleId;
         this.projectMemberEmployeeName = projectMemberEmployeeName;
     }
 }

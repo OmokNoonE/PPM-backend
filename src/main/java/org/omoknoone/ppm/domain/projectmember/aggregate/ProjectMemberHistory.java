@@ -18,26 +18,40 @@ public class ProjectMemberHistory {
     private Long projectMemberHistoryId;
 
     @Lob
-    @Column(name = "project_member_history_reason", nullable = false)
+    @Column(name = "project_member_history_reason")
     private String projectMemberHistoryReason;
 
-    @Column(name = "project_member_created_date", nullable = false)
-    private LocalDateTime projectMemberCreatedDate;
+    @Column(name = "project_member_history_is_deleted")
+    private Boolean projectMemberHistoryIsDeleted;
 
-    @Column(name = "project_member_exclusion_date")
-    private LocalDateTime projectMemberExclusionDate;
+    @Column(name = "project_member_history_deleted_date")
+    private LocalDateTime projectMemberHistoryDeletedDate;
+
+    @Column(name = "project_member_history_created_date", nullable = false)
+    private LocalDateTime projectMemberHistoryCreatedDate;
+
+    @Column(name = "project_member_history_exclusion_date")
+    private LocalDateTime projectMemberHistoryExclusionDate;
+
+    @Column(name = "project_member_history_modified_date")
+    private LocalDateTime projectMemberHistoryModifiedDate;
 
     @JoinColumn(name = "project_member_id", nullable = false)
     private Integer projectMemberHistoryProjectMemberId;
 
     @Builder
     public ProjectMemberHistory(Long projectMemberHistoryId, String projectMemberHistoryReason,
-                                LocalDateTime projectMemberCreatedDate, LocalDateTime projectMemberExclusionDate,
+                                Boolean projectMemberHistoryIsDeleted, LocalDateTime projectMemberHistoryDeletedDate,
+                                LocalDateTime projectMemberHistoryCreatedDate,
+                                LocalDateTime projectMemberHistoryExclusionDate, LocalDateTime projectMemberHistoryModifiedDate,
                                 Integer projectMemberHistoryProjectMemberId) {
         this.projectMemberHistoryId = projectMemberHistoryId;
         this.projectMemberHistoryReason = projectMemberHistoryReason;
-        this.projectMemberCreatedDate = projectMemberCreatedDate;
-        this.projectMemberExclusionDate = projectMemberExclusionDate;
+        this.projectMemberHistoryIsDeleted = projectMemberHistoryIsDeleted;
+        this.projectMemberHistoryDeletedDate = projectMemberHistoryDeletedDate;
+        this.projectMemberHistoryCreatedDate = projectMemberHistoryCreatedDate;
+        this.projectMemberHistoryExclusionDate = projectMemberHistoryExclusionDate;
+        this.projectMemberHistoryModifiedDate = projectMemberHistoryModifiedDate;
         this.projectMemberHistoryProjectMemberId = projectMemberHistoryProjectMemberId;
     }
 }

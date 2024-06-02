@@ -22,21 +22,21 @@ public class ProjectMemberHistoryServiceImpl implements ProjectMemberHistoryServ
         ProjectMemberHistory history = ProjectMemberHistory.builder()
                 .projectMemberHistoryProjectMemberId(requestDTO.getProjectMemberHistoryProjectMemberId())
                 .projectMemberHistoryReason(requestDTO.getProjectMemberHistoryReason())
-                .projectMemberCreatedDate(requestDTO.getProjectMemberCreatedDate())
-                .projectMemberExclusionDate(requestDTO.getProjectMemberExclusionDate())
+                .projectMemberHistoryCreatedDate(requestDTO.getProjectMemberHistoryCreatedDate())
+                .projectMemberHistoryExclusionDate(requestDTO.getProjectMemberHistoryExclusionDate())
+                .projectMemberHistoryModifiedDate(requestDTO.getProjectMemberHistoryModifiedDate())
                 .build();
         projectMemberHistoryRepository.save(history);
     }
 
     /* 구성원 권한 변경 관련 수정 내역 */
-    @Override
-    public void createProjectMemberHistory(ModifyProjectMemberRequestDTO requestDTO) {
-        ProjectMemberHistory history = ProjectMemberHistory.builder()
-                .projectMemberHistoryProjectMemberId(requestDTO.getProjectMemberId())
-                .projectMemberHistoryReason(requestDTO.getProjectMemberHistoryReason())
-                .build();
-        projectMemberHistoryRepository.save(history);
-    }
+//    @Override
+//    public void modifyProjectMemberHistory(ModifyProjectMemberRequestDTO requestDTO) {
+//        ProjectMemberHistory history = ProjectMemberHistory.builder()
+//                .projectMemberHistoryProjectMemberId(requestDTO.getProjectMemberId())
+//                .build();
+//        projectMemberHistoryRepository.save(history);
+//    }
 
     @Transactional(readOnly = true)
     @Override

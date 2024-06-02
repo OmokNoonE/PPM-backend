@@ -11,16 +11,19 @@ public class CreateProjectMemberHistoryRequestDTO {
     private final Integer projectMemberHistoryProjectMemberId; // Final 필드로 설정하여 setter를 자동으로 차단
 
     private String projectMemberHistoryReason;
-    private LocalDateTime projectMemberCreatedDate;
-    private LocalDateTime projectMemberExclusionDate;
+    private LocalDateTime projectMemberHistoryCreatedDate;
+    private LocalDateTime projectMemberHistoryExclusionDate;
+    private LocalDateTime projectMemberHistoryModifiedDate;
 
     @Builder
+
     public CreateProjectMemberHistoryRequestDTO(Integer projectMemberHistoryProjectMemberId,
-                                                String projectMemberHistoryReason, LocalDateTime projectMemberCreatedDate,
-                                                LocalDateTime projectMemberExclusionDate) {
+                                                String projectMemberHistoryReason, LocalDateTime projectMemberHistoryCreatedDate,
+                                                LocalDateTime projectMemberHistoryExclusionDate, LocalDateTime projectMemberHistoryModifiedDate) {
         this.projectMemberHistoryProjectMemberId = projectMemberHistoryProjectMemberId;
         this.projectMemberHistoryReason = projectMemberHistoryReason;
-        this.projectMemberCreatedDate = projectMemberCreatedDate;
-        this.projectMemberExclusionDate = projectMemberExclusionDate;
+        this.projectMemberHistoryCreatedDate = projectMemberHistoryCreatedDate;
+        this.projectMemberHistoryExclusionDate = projectMemberHistoryExclusionDate;
+        this.projectMemberHistoryModifiedDate = projectMemberHistoryModifiedDate;
     }
 }

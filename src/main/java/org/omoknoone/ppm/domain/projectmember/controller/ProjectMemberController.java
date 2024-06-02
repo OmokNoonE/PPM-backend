@@ -43,7 +43,7 @@ public class ProjectMemberController {
 
     @GetMapping("/available/{projectId}")
     public ResponseEntity<ResponseMessage> viewAndSearchAvailableMembers(@PathVariable("projectId") Integer projectId,
-                                                                         @RequestParam(value = "query", required = false) String query) {
+                                                                        @RequestParam(value = "query", required = false) String query) {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
@@ -78,7 +78,7 @@ public class ProjectMemberController {
     @DeleteMapping("/remove/{projectMemberId}")
     public ResponseEntity<ResponseMessage> removeProjectMember(
             @PathVariable Integer projectMemberId,
-            @RequestBody ModifyProjectMemberRequestDTO requestDTO) {
+            @RequestBody RemoveProjectMemberRequestDTO requestDTO) {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
@@ -110,13 +110,13 @@ public class ProjectMemberController {
             responseMap.put("modifyProjectMember", projectMemberId);
 
             return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(new ResponseMessage(200, "구성원의 권한 수정이 완료.", responseMap));
+                    .ok()
+                    .headers(headers)
+                    .body(new ResponseMessage(200, "구성원의 권한 수정이 완료.", responseMap));
         } catch (EntityNotFoundException ex) {
             return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(new ResponseMessage(404, "구성원을 찾을 수 없음."));
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ResponseMessage(404, "구성원을 찾을 수 없음."));
         }
     }
 

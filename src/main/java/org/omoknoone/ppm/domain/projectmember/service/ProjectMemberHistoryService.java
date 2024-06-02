@@ -9,6 +9,8 @@ import java.util.List;
 public interface ProjectMemberHistoryService {
 
     void createProjectMemberHistory(CreateProjectMemberHistoryRequestDTO requestDTO);
-    void createProjectMemberHistory(ModifyProjectMemberRequestDTO requestDTO);
+
+//    void modifyProjectMemberHistory(ModifyProjectMemberRequestDTO requestDTO);
 
     List<ProjectMemberHistory> viewProjectMemberHistory(Integer projectMemberId);}
+
