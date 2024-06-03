@@ -23,7 +23,6 @@ import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
 import org.omoknoone.ppm.domain.notification.service.strategy.EmailNotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.NotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.SlackNotificationStrategy;
-import org.omoknoone.ppm.domain.permission.service.PermissionServiceImpl;
 import org.omoknoone.ppm.domain.project.service.ProjectServiceImpl;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
@@ -58,7 +57,6 @@ public class NotificationServiceImpl implements NotificationService {
     private final ScheduleServiceImpl scheduleService;
     private final CommonCodeRepository commonCodeRepository;
     private final ProjectServiceImpl projectService;
-    private final PermissionServiceImpl permissionService;
     private final ProjectMemberRepository projectMemberRepository;
     private final StakeholdersServiceImpl stakeholdersService;
 
@@ -89,7 +87,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void handleNotificationsForMember(ProjectMember member, List<FindSchedulesForWeekDTO> schedules, String projectTitle, int alarm) {
-        boolean isPm = permissionService.hasPmRole(Long.valueOf(member.getProjectMemberId()));
+        boolean isAuthor = stakeholdersService.hasAuthorRole(Long.valueOf(member.getProjectMemberId()));
         boolean isDev = stakeholdersService.hasDevRole(Long.valueOf(member.getProjectMemberId()));
 
         List<FindSchedulesForWeekDTO> incompleteSchedulesForMember = getIncompleteSchedulesForMember(schedules, member);
@@ -98,8 +96,8 @@ public class NotificationServiceImpl implements NotificationService {
             String notificationContent = createNotificationContent(incompleteSchedulesForMember, projectTitle);
             if (isDev) {
                 createAndSendNotification(member, "담당자에게 알립니다", notificationContent);
-            } else if (alarm < 90 && isPm) {
-                createAndSendNotification(member, "PM 에게 알립니다", notificationContent);
+            } else if (alarm < 90 && isAuthor) {
+                createAndSendNotification(member, "작성자에게 알립니다", notificationContent);
             }
         }
     }
