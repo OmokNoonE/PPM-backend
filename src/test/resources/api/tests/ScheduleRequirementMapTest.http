@@ -1,0 +1,16 @@
+// 완료
+
+### 일정 등록
+POST http://localhost:8888/scheduleRequirementsMaps/create
+Content-Type: application/json
+
+{
+  "scheduleRequirementMapScheduleId": 7,
+  "scheduleRequirementMapRequirementId": 1
+}
+
+### 일정 상세 조회
+GET http://localhost:8888/scheduleRequirementsMaps/view/7
+
+### 프로젝트별 일정 목록 조회
+DELETE http://localhost:8888/scheduleRequirementsMaps/remove/1
