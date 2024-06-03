@@ -574,7 +574,7 @@ class ScheduleServiceTests {
 
         // When
         // 생성된 일정들이 속한 프로젝트의 ID를 사용하여 현재 주에 끝나야 하는 일정을 조회합니다.
-        List<ScheduleDTO> viewedSchedules = scheduleService.getSchedulesForThisWeek(Math.toIntExact(createdSchedule1.getScheduleProjectId()));
+        List<FindSchedulesForWeekDTO> viewedSchedules = scheduleService.getSchedulesForThisWeek(Math.toIntExact(createdSchedule1.getScheduleProjectId()));
 
         // Then
         // 반환된 일정 목록이 null이 아니며, 현재 주에 끝나야 하는 일정의 수와 일치하는지 확인합니다.
@@ -584,7 +584,7 @@ class ScheduleServiceTests {
         // 모든 조회된 일정의 종료일이 현재 주에 포함되는지 확인합니다.
         LocalDate startOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate endOfWeek = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-        for (ScheduleDTO schedule : viewedSchedules) {
+        for (FindSchedulesForWeekDTO schedule : viewedSchedules) {
             assertTrue(schedule.getScheduleEndDate().isEqual(startOfWeek) || schedule.getScheduleEndDate().isAfter(startOfWeek));
             assertTrue(schedule.getScheduleEndDate().isEqual(endOfWeek) || schedule.getScheduleEndDate().isBefore(endOfWeek));
         }
@@ -610,7 +610,7 @@ class ScheduleServiceTests {
 
         // When
         // 생성된 일정들이 속한 프로젝트의 ID를 사용하여 다음 주에 끝나야 하는 일정을 조회합니다.
-        List<ScheduleDTO> viewedSchedules = scheduleService.getSchedulesForNextWeek(Math.toIntExact(createdSchedule1.getScheduleProjectId()));
+        List<FindSchedulesForWeekDTO> viewedSchedules = scheduleService.getSchedulesForNextWeek(Math.toIntExact(createdSchedule1.getScheduleProjectId()));
 
         // Then
         // 반환된 일정 목록이 null이 아니며, 다음 주에 끝나야 하는 일정의 수와 일치하는지 확인합니다.
@@ -620,7 +620,7 @@ class ScheduleServiceTests {
         // 모든 조회된 일정의 종료일이 다음 주에 포함되는지 확인합니다.
         LocalDate startOfNextWeek = LocalDate.now().plusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate endOfNextWeek = LocalDate.now().plusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-        for (ScheduleDTO schedule : viewedSchedules) {
+        for (FindSchedulesForWeekDTO schedule : viewedSchedules) {
             assertTrue(schedule.getScheduleEndDate().isEqual(startOfNextWeek) || schedule.getScheduleEndDate().isAfter(startOfNextWeek));
             assertTrue(schedule.getScheduleEndDate().isEqual(endOfNextWeek) || schedule.getScheduleEndDate().isBefore(endOfNextWeek));
         }
