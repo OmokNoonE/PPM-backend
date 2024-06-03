@@ -1,7 +1,12 @@
 package org.omoknoone.ppm.domain.project.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
@@ -24,12 +29,8 @@ import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -91,7 +92,7 @@ public class ProjectServiceImpl implements ProjectService {
         CreateProjectMemberRequestDTO createProjectMemberRequestDTO = CreateProjectMemberRequestDTO.builder()
                 .projectMemberEmployeeId(createProjectRequestDTO.getEmployeeId())
                 .projectMemberProjectId(project.getProjectId())
-                .projectMemberRoleId(pmRoleId)
+                .projectMemberRoleId((long)pmRoleId)
                 .projectMemberEmployeeName(name)
                 .build();
 
