@@ -1,6 +1,5 @@
 package org.omoknoone.ppm.domain.schedule.controller;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -13,17 +12,18 @@ import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.*;
+import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
+import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.omoknoone.ppm.domain.schedule.vo.RequestSchedule;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseSchedule;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
-import org.omoknoone.ppm.domain.schedule.vo.ResponseSearchScheduleList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -306,15 +306,12 @@ public class ScheduleController {
     }
 
     /* 구간별 일정 예상 누적 진행률 */
-    @GetMapping("/predictionProgress")
-    public ResponseEntity<ResponseMessage> predictionProgress(
-        @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
-        @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
-    ) {
+    @GetMapping("/predictionProgress/{projectId}")
+    public ResponseEntity<ResponseMessage> predictionProgress(@PathVariable Integer projectId) {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        int[] predictionProgressRatio = scheduleService.calculateScheduleRatios(startDate, endDate);
+        int[] predictionProgressRatio = scheduleService.calculateScheduleRatios(projectId);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("predictionProgressRatio", predictionProgressRatio);
