@@ -33,9 +33,9 @@ public class ScheduleHistoryServiceImpl implements ScheduleHistoryService {
         ScheduleHistory scheduleHistory = ScheduleHistory
                 .builder()
                 .scheduleHistoryReason(scheduleHistoryDTO.getScheduleHistoryReason())
-                .scheduleHistoryScheduleId(scheduleHistoryDTO.getScheduleId())
-                .scheduleHistoryProjectMemberId(scheduleHistoryDTO.getScheduleHistoryProjectMemberId())
-                .scheduleHistoryIsDeleted(false)
+            .scheduleHistoryIsDeleted(false)
+            .scheduleHistoryScheduleId(scheduleHistoryDTO.getScheduleId())
+            .scheduleHistoryProjectMemberId(scheduleHistoryDTO.getScheduleHistoryProjectMemberId())
                 .build();
 
         scheduleHistoryRepository.save(scheduleHistory);
