@@ -21,12 +21,16 @@ public class ViewStakeholdersDTO {
     Long stakeholdersScheduleId;
     Long stakeholdersProjectMemberId;
     String projectMemberEmployeeId;
-    Integer projectMemberRoleName;
+    Long projectMemberRoleId;
     String projectMemberEmployeeName;
 
 
     @Builder
-    public ViewStakeholdersDTO(Long stakeholdersId, Long stakeholdersType, Boolean stakeholdersIsDeleted, LocalDateTime stakeholdersDeletedDate, Long stakeholdersScheduleId, Long stakeholdersProjectMemberId, String projectMemberEmployeeId, Integer projectMemberRoleName, String projectMemberEmployeeName) {
+
+    public ViewStakeholdersDTO(Long stakeholdersId, Long stakeholdersType, Boolean stakeholdersIsDeleted,
+                            LocalDateTime stakeholdersDeletedDate, Long stakeholdersScheduleId,
+                            Long stakeholdersProjectMemberId, String projectMemberEmployeeId,
+                            Long projectMemberRoleId, String projectMemberEmployeeName) {
         this.stakeholdersId = stakeholdersId;
         this.stakeholdersType = stakeholdersType;
         this.stakeholdersIsDeleted = stakeholdersIsDeleted;
@@ -34,7 +38,7 @@ public class ViewStakeholdersDTO {
         this.stakeholdersScheduleId = stakeholdersScheduleId;
         this.stakeholdersProjectMemberId = stakeholdersProjectMemberId;
         this.projectMemberEmployeeId = projectMemberEmployeeId;
-        this.projectMemberRoleName = projectMemberRoleName;
+        this.projectMemberRoleId = projectMemberRoleId;
         this.projectMemberEmployeeName = projectMemberEmployeeName;
     }
 }

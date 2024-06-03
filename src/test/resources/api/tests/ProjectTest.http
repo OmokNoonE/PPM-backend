@@ -9,7 +9,8 @@ Content-Type: application/json
     "projectStartDate": "2023-01-01",
     "projectEndDate": "2023-12-31",
     "projectStatus": "계획",
-    "employeeId" : "EP001"
+    "employeeId" : "EP001",
+    "employeeName": "홍길동"
 }
 
 ### 프로젝트 수정

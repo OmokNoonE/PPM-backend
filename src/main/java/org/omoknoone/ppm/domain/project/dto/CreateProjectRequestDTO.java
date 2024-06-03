@@ -13,13 +13,17 @@ public class CreateProjectRequestDTO {
     private LocalDate projectEndDate;
     private String projectStatus;
     private String employeeId;
+    private String employeeName;
 
     @Builder
-    public CreateProjectRequestDTO(String projectTitle, LocalDate projectStartDate, LocalDate projectEndDate, String projectStatus, String employeeId) {
+
+    public CreateProjectRequestDTO(String projectTitle, LocalDate projectStartDate, LocalDate projectEndDate,
+                                String projectStatus, String employeeId, String employeeName) {
         this.projectTitle = projectTitle;
         this.projectStartDate = projectStartDate;
         this.projectEndDate = projectEndDate;
         this.projectStatus = projectStatus;
         this.employeeId = employeeId;
+        this.employeeName = employeeName;
     }
 }

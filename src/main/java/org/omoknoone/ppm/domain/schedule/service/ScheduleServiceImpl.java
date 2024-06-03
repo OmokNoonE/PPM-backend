@@ -548,7 +548,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         ProjectMember projectMemberInfo = projectMemberService.viewProjectMemberInfo(employeeId, projectId.intValue());
 
         /* PA, PL의 경우*/
-        if (projectMemberInfo.getProjectMemberRoleName() > 10601) {
+        if (projectMemberInfo.getProjectMemberRoleId() > 10601) {
             List<Long> filterScheduleIdList = new ArrayList<>();
             for (StakeholdersEmployeeInfoDTO dto : stakeholdersEmployeeInfoDTOList) {
                 /* 향후 ProjectMemberId의 데이터 형 Long으로 통일 */

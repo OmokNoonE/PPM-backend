@@ -11,7 +11,7 @@ import org.omoknoone.ppm.domain.project.dto.ViewProjectResponseDTO;
 import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
 
 public interface ProjectService {
-    int createProject(CreateProjectRequestDTO createProjectRequestDTO);
+    Integer createProject(CreateProjectRequestDTO createProjectRequestDTO);
 
 	ProjectModificationResult modifyProject(ModifyProjectHistoryDTO modifyProjectRequestDTO);
 	List<LocalDate> divideWorkingDaysIntoTen(LocalDate startDate, LocalDate endDate);

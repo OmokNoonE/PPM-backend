@@ -11,7 +11,7 @@ public interface ScheduleHistoryRepository extends JpaRepository<ScheduleHistory
     @Query("SELECT new org.omoknoone.ppm.domain.schedule.dto.ViewScheduleHistoryDTO("
             + " sh.scheduleHistoryId, sh.scheduleHistoryReason, sh.scheduleHistoryModifiedDate, sh.scheduleHistoryIsDeleted, sh.scheduleHistoryDeletedDate, "
             + " sh.scheduleHistoryScheduleId, sh.scheduleHistoryProjectMemberId, "
-            + " p.projectMemberEmployeeId, p.projectMemberRoleName, p.projectMemberEmployeeName) "
+            + " p.projectMemberEmployeeId, p.projectMemberRoleId, p.projectMemberEmployeeName) "
             + "FROM ScheduleHistory sh "
             + "JOIN ProjectMember p ON sh.scheduleHistoryProjectMemberId = p.projectMemberId "
             + "WHERE sh.scheduleHistoryScheduleId = :scheduleId")
