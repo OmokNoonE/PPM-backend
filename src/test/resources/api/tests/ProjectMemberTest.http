@@ -18,7 +18,7 @@ Accept: application/json
 
 ###
 
-# View and Search Available Members (TODO. 나중에 테스트 해야함)
+# View and Search Available Members
 GET http://localhost:8888/projectMembers/available/2?query=수정
 Accept: application/json
 
