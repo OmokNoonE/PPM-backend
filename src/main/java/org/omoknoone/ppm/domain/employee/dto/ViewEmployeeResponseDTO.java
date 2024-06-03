@@ -42,5 +42,6 @@ public class ViewEmployeeResponseDTO {
         this.employeeContact = employee.getEmployeeContact();
         this.employeeCompanyName = employee.getEmployeeCompanyName();
         this.employeeIsExternalPartner = employee.getEmployeeIsExternalPartner();
+        this.employeeCreatedDate = employee.getEmployeeCreatedDate();
     }
 }
