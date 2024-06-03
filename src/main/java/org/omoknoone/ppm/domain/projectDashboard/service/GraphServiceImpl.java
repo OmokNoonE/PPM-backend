@@ -86,11 +86,11 @@ public class GraphServiceImpl implements GraphService {
         List<Map<String, Object>> lineSeries = List.of(
             Map.of(
                 "name", "예상진행률",
-                "data", new int[10]
+                "data", new int[11]
             ),
             Map.of(
                 "name", "실제진행률",
-                "data", new int[10]
+                "data", new int[11]
             )
         );
 
@@ -101,7 +101,6 @@ public class GraphServiceImpl implements GraphService {
 
         List<LocalDate> dateCategories = projectService.divideWorkingDaysIntoTen(startDate, endDate);
 
-        System.out.println("dateCategories = " + dateCategories);
 
         List<String> lineCategories = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
@@ -147,10 +146,12 @@ public class GraphServiceImpl implements GraphService {
             count += 1;
         }
 
+
         List<String> columnCategories = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             columnCategories.add("");
         }
+
 
         // 구성원들의 준비, 진행, 완료 상태 갯수
         List<Map<String, Object>> columnSeries = List.of(
@@ -264,11 +265,12 @@ public class GraphServiceImpl implements GraphService {
         // int[] datas = new int[]{10, 30, 50};
         int[] datas = scheduleService.updatePie(Long.parseLong(projectId));
 
+
         Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
 
         if(graph != null) {
 
-        for (int i = 0; i < datas.length - 1; i++) {
+        for (int i = 0; i < datas.length; i++) {
             Map<String, Object> data = new HashMap<>();
             data.put("name", graph.getSeries().get(i).get("name"));
             data.put("data", datas[i]);
@@ -338,11 +340,10 @@ public class GraphServiceImpl implements GraphService {
 
         Map<String, Object> updates = scheduleService.updateColumn(Long.parseLong(projectId));
 
-        List<String> updateCategories = (List<String>) updates.get("categories");
-        List<Map<String, Object>> updateSeries = (List<Map<String, Object>>) updates.get("series");
 
-        System.out.println("updateCategories = " + updateCategories);
-        System.out.println("updateSeries = " + updateSeries);
+        List<String> updateCategories = (List<String>) updates.get("categories");
+
+        List<Map<String, Object>> updateSeries = (List<Map<String, Object>>) updates.get("series");
 
         if (graph != null && updateCategories != null) {
             graph.getCategories().clear();
@@ -402,12 +403,8 @@ public class GraphServiceImpl implements GraphService {
 
 
         /* 예상 진행률 업데이트 */
-        int[] expectProgress = new int[10];
-        for (int i = 0; i < expectProgress.length; i++) {
-            expectProgress[i] = i;
-        }
+            int[] expectProgress = scheduleService.calculateScheduleRatios(Integer.valueOf(projectId));
 
-        System.out.println("expectProgress = " + expectProgress);
 
         if (graph != null) {
             List<Map<String, Object>> seriesList = graph.getSeries();
@@ -440,7 +437,6 @@ public class GraphServiceImpl implements GraphService {
             }
         }
 
-        System.out.println("index = " + index);
 
         // update할 section별 진행상황 (현재 진행률)
         int newdata = scheduleService.updateGauge(Long.valueOf(projectId));
