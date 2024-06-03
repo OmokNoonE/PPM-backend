@@ -274,7 +274,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         UpdateDataDTO updateDataDTO = scheduleRepository.countScheduleStatusByProjectId(projectId);
 
         return new int[]{
-                updateDataDTO.getTotalScheduleCount().intValue(),
+                // updateDataDTO.getTotalScheduleCount().intValue(),
                 updateDataDTO.getTodoScheduleCount().intValue(),
                 updateDataDTO.getInProgressScheduleCount().intValue(),
                 updateDataDTO.getDoneScheduleCount().intValue()

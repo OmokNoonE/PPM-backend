@@ -86,11 +86,11 @@ public class GraphServiceImpl implements GraphService {
         List<Map<String, Object>> lineSeries = List.of(
             Map.of(
                 "name", "예상진행률",
-                "data", new int[10]
+                "data", new int[11]
             ),
             Map.of(
                 "name", "실제진행률",
-                "data", new int[10]
+                "data", new int[11]
             )
         );
 
@@ -147,10 +147,14 @@ public class GraphServiceImpl implements GraphService {
             count += 1;
         }
 
+        log.info("컬럼 구성원 총 인원수 = {}", count);
+
         List<String> columnCategories = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             columnCategories.add("");
         }
+
+        log.info("컬럼 구성원 이름 배열 = {}", columnCategories);
 
         // 구성원들의 준비, 진행, 완료 상태 갯수
         List<Map<String, Object>> columnSeries = List.of(
@@ -264,11 +268,13 @@ public class GraphServiceImpl implements GraphService {
         // int[] datas = new int[]{10, 30, 50};
         int[] datas = scheduleService.updatePie(Long.parseLong(projectId));
 
+        log.info("업데이트 파이 데이터 = {}", datas);
+
         Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
 
         if(graph != null) {
 
-        for (int i = 0; i < datas.length - 1; i++) {
+        for (int i = 0; i < datas.length; i++) {
             Map<String, Object> data = new HashMap<>();
             data.put("name", graph.getSeries().get(i).get("name"));
             data.put("data", datas[i]);
@@ -402,10 +408,7 @@ public class GraphServiceImpl implements GraphService {
 
 
         /* 예상 진행률 업데이트 */
-        int[] expectProgress = new int[10];
-        for (int i = 0; i < expectProgress.length; i++) {
-            expectProgress[i] = i;
-        }
+            int[] expectProgress = scheduleService.calculateScheduleRatios(Integer.valueOf(projectId));
 
         System.out.println("expectProgress = " + expectProgress);
 
