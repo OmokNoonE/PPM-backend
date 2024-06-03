@@ -101,7 +101,6 @@ public class GraphServiceImpl implements GraphService {
 
         List<LocalDate> dateCategories = projectService.divideWorkingDaysIntoTen(startDate, endDate);
 
-        System.out.println("dateCategories = " + dateCategories);
 
         List<String> lineCategories = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
@@ -341,13 +340,10 @@ public class GraphServiceImpl implements GraphService {
 
         Map<String, Object> updates = scheduleService.updateColumn(Long.parseLong(projectId));
 
-        log.info("컬럼 updates = {}", updates);
 
         List<String> updateCategories = (List<String>) updates.get("categories");
-        log.info("updateCategories = {}", updateCategories);
 
         List<Map<String, Object>> updateSeries = (List<Map<String, Object>>) updates.get("series");
-        log.info("updateSeries = {}", updateSeries);
 
         if (graph != null && updateCategories != null) {
             graph.getCategories().clear();
@@ -409,7 +405,6 @@ public class GraphServiceImpl implements GraphService {
         /* 예상 진행률 업데이트 */
             int[] expectProgress = scheduleService.calculateScheduleRatios(Integer.valueOf(projectId));
 
-        System.out.println("expectProgress = " + expectProgress);
 
         if (graph != null) {
             List<Map<String, Object>> seriesList = graph.getSeries();
@@ -442,7 +437,6 @@ public class GraphServiceImpl implements GraphService {
             }
         }
 
-        System.out.println("index = " + index);
 
         // update할 section별 진행상황 (현재 진행률)
         int newdata = scheduleService.updateGauge(Long.valueOf(projectId));
