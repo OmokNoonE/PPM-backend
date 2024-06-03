@@ -43,5 +43,5 @@ Accept: application/json
 
 {
   "projectMemberId": 2,
-  "projectMemberRoleId": 10602
+  "projectMemberRoleId": 10601
 }

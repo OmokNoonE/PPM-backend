@@ -121,12 +121,17 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
             throw new EntityNotFoundException("History not found");
         }
 
-        CreateProjectMemberHistoryRequestDTO historyRequestDTO = CreateProjectMemberHistoryRequestDTO.builder()
-                .projectMemberHistoryProjectMemberId(history.getProjectMemberHistoryProjectMemberId())
-                .projectMemberHistoryReason(projectMemberHistoryReason)
-                .projectMemberHistoryExclusionDate(LocalDateTime.now())
-                .build();
-        projectMemberHistoryService.createProjectMemberHistory(historyRequestDTO);
+        ProjectMemberHistoryDTO projectMemberHistoryDTO = ProjectMemberHistoryDTO.builder()
+            .projectMemberHistoryId(history.getProjectMemberHistoryId())
+            .projectMemberHistoryReason(projectMemberHistoryReason)
+            .projectMemberHistoryIsDeleted(history.getProjectMemberHistoryIsDeleted())
+            .projectMemberHistoryDeletedDate(history.getProjectMemberHistoryDeletedDate())
+            .projectMemberHistoryCreatedDate(history.getProjectMemberHistoryCreatedDate())
+            .projectMemberHistoryExclusionDate(LocalDateTime.now())
+            .projectMemberHistoryModifiedDate(history.getProjectMemberHistoryModifiedDate())
+            .projectMemberHistoryProjectMemberId(history.getProjectMemberHistoryProjectMemberId())
+            .build();
+        projectMemberHistoryService.modifyProjectMemberHistory(projectMemberHistoryDTO);
     }
 
     @Transactional
@@ -140,11 +145,23 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
         projectMemberRepository.save(existingMember);
 
-        CreateProjectMemberHistoryRequestDTO historyRequestDTO = CreateProjectMemberHistoryRequestDTO.builder()
-                .projectMemberHistoryProjectMemberId(existingMember.getProjectMemberId())
-                .projectMemberHistoryModifiedDate(LocalDateTime.now())
-                .build();
-        projectMemberHistoryService.createProjectMemberHistory(historyRequestDTO);
+        ProjectMemberHistory history = projectMemberHistoryRepository.findFirstByProjectMemberHistoryProjectMemberIdOrderByProjectMemberHistoryIdDesc(existingMember.getProjectMemberId());
+        if (history == null) {
+            throw new EntityNotFoundException("History not found");
+        }
+
+        ProjectMemberHistoryDTO projectMemberHistoryDTO = ProjectMemberHistoryDTO.builder()
+            .projectMemberHistoryId(history.getProjectMemberHistoryId())
+            /* TODO. 향후, 수정 사유 입력을 입력 받아, DTO안에 Reason으로 넣어야함.*/
+            .projectMemberHistoryReason("구성원 수정 사유 입력됨.")
+            .projectMemberHistoryIsDeleted(history.getProjectMemberHistoryIsDeleted())
+            .projectMemberHistoryDeletedDate(history.getProjectMemberHistoryDeletedDate())
+            .projectMemberHistoryCreatedDate(history.getProjectMemberHistoryCreatedDate())
+            .projectMemberHistoryExclusionDate(history.getProjectMemberHistoryCreatedDate())
+            .projectMemberHistoryModifiedDate(LocalDateTime.now())
+            .projectMemberHistoryProjectMemberId(history.getProjectMemberHistoryProjectMemberId())
+            .build();
+        projectMemberHistoryService.modifyProjectMemberHistory(projectMemberHistoryDTO);
 
         return existingMember.getProjectMemberId();
     }
