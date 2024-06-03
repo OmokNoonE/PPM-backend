@@ -1,11 +1,12 @@
 package org.omoknoone.ppm.domain.notification.service;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCode;
 import org.omoknoone.ppm.domain.commoncode.repository.CommonCodeRepository;
@@ -27,22 +28,20 @@ import org.omoknoone.ppm.domain.project.service.ProjectServiceImpl;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
 import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceCalculator;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceImpl;
-import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
 import org.omoknoone.ppm.domain.stakeholders.dto.ViewStakeholdersDTO;
 import org.omoknoone.ppm.domain.stakeholders.service.StakeholdersServiceImpl;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -56,12 +55,12 @@ public class NotificationServiceImpl implements NotificationService {
     private final JavaMailSender javaMailSender;
     private final SlackNotificationStrategy slackNotificationStrategy;
     private final ModelMapper modelMapper;
-    private final ScheduleServiceImpl scheduleServiceImpl;
+    private final ScheduleServiceImpl scheduleService;
     private final CommonCodeRepository commonCodeRepository;
-    private final ProjectServiceImpl projectServiceImpl;
-    private final PermissionServiceImpl permissionServiceImpl;
+    private final ProjectServiceImpl projectService;
+    private final PermissionServiceImpl permissionService;
     private final ProjectMemberRepository projectMemberRepository;
-    private final StakeholdersServiceImpl stakeholdersServiceImpl;
+    private final StakeholdersServiceImpl stakeholdersService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -79,9 +78,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void checkConditionsAndSendNotifications(Integer projectId) {
-        int alarm = scheduleServiceImpl.calculateRatioThisWeek(projectId);
-        List<FindSchedulesForWeekDTO> schedules = scheduleServiceImpl.getSchedulesForThisWeek(projectId);
-        String projectTitle = projectServiceImpl.getProjectTitleById(projectId);
+        int alarm = scheduleService.calculateRatioThisWeek(projectId);
+        List<FindSchedulesForWeekDTO> schedules = scheduleService.getSchedulesForThisWeek(projectId);
+        String projectTitle = projectService.getProjectTitleById(projectId);
         List<ProjectMember> projectMembers = projectMemberRepository.findProjectMembersByProjectMemberProjectId(projectId);
 
         for (ProjectMember member : projectMembers) {
@@ -90,8 +89,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void handleNotificationsForMember(ProjectMember member, List<FindSchedulesForWeekDTO> schedules, String projectTitle, int alarm) {
-        boolean isPm = permissionServiceImpl.hasPmRole(Long.valueOf(member.getProjectMemberId()));
-        boolean isDev = stakeholdersServiceImpl.hasDevRole(Long.valueOf(member.getProjectMemberId()));
+        boolean isPm = permissionService.hasPmRole(Long.valueOf(member.getProjectMemberId()));
+        boolean isDev = stakeholdersService.hasDevRole(Long.valueOf(member.getProjectMemberId()));
 
         List<FindSchedulesForWeekDTO> incompleteSchedulesForMember = getIncompleteSchedulesForMember(schedules, member);
 
@@ -113,7 +112,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     private boolean isScheduleIncompleteForMember(FindSchedulesForWeekDTO schedule, ProjectMember member) {
-        List<ViewStakeholdersDTO> stakeholders = stakeholdersServiceImpl.findByScheduleId(schedule.getScheduleId());
+        List<ViewStakeholdersDTO> stakeholders = stakeholdersService.findByScheduleId(schedule.getScheduleId());
         return stakeholders.stream().anyMatch(stakeholder ->
             stakeholder.getStakeholdersProjectMemberId().equals(Long.valueOf(member.getProjectMemberId())) && !isCompleted(schedule, commonCodeRepository));
     }

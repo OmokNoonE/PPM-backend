@@ -77,4 +77,6 @@ public interface ScheduleService {
 
     /* 일정 시트에 사용될 데이터 수집 */
     List<ResponseScheduleSheetData> getSheetData(Long projectId, String employeeId);
+
+    int calculateRatioThisWeek(Integer projectId);
 }

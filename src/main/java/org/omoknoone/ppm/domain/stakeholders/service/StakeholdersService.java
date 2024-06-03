@@ -1,9 +1,12 @@
 package org.omoknoone.ppm.domain.stakeholders.service;
 
-import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
-import org.omoknoone.ppm.domain.stakeholders.dto.*;
-
 import java.util.List;
+
+import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
+import org.omoknoone.ppm.domain.stakeholders.dto.CreateStakeholdersDTO;
+import org.omoknoone.ppm.domain.stakeholders.dto.ModifyStakeholdersDTO;
+import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
+import org.omoknoone.ppm.domain.stakeholders.dto.ViewStakeholdersDTO;
 
 public interface StakeholdersService {
 
@@ -16,4 +19,6 @@ public interface StakeholdersService {
     Long removeStakeholder(Long stakeholdersId);
 
     List<StakeholdersEmployeeInfoDTO> viewStakeholdersEmployeeInfo(Long[] scheduleIdList);
+
+    boolean hasDevRole(Long projectMemberId);
 }
