@@ -25,6 +25,7 @@ public class ProjectMemberHistoryServiceImpl implements ProjectMemberHistoryServ
                 .projectMemberHistoryCreatedDate(requestDTO.getProjectMemberHistoryCreatedDate())
                 .projectMemberHistoryExclusionDate(requestDTO.getProjectMemberHistoryExclusionDate())
                 .projectMemberHistoryModifiedDate(requestDTO.getProjectMemberHistoryModifiedDate())
+                .projectMemberHistoryIsDeleted(false)
                 .build();
         projectMemberHistoryRepository.save(history);
     }

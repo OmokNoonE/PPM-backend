@@ -1,15 +1,3 @@
-# View Project Members By Project
-GET http://localhost:8888/projectMembers/list/2
-Accept: application/json
-
-###
-
-# View and Search Available Members
-GET http://localhost:8888/projectMembers/available/2?query=수정
-Accept: application/json
-
-###
-
 # Create Project Member
 POST http://localhost:8888/projectMembers/create
 Content-Type: application/json
@@ -23,6 +11,19 @@ Accept: application/json
 }
 
 ###
+
+# View Project Members By Project
+GET http://localhost:8888/projectMembers/list/2
+Accept: application/json
+
+###
+
+# View and Search Available Members (TODO. 나중에 테스트 해야함)
+GET http://localhost:8888/projectMembers/available/2?query=수정
+Accept: application/json
+
+###
+
 
 # Remove Project Member
 DELETE http://localhost:8888/projectMembers/remove/2

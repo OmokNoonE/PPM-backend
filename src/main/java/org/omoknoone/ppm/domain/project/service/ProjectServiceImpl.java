@@ -50,12 +50,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     @Override
     public Integer createProject(CreateProjectRequestDTO createProjectRequestDTO) {
-        log.info("여기까지 넘어 오니? {}", createProjectRequestDTO);
         // 프로젝트 상태 코드 조회
         CommonCodeResponseDTO commonCodeResponseDTO = commonCodeService.
                                                 viewCommonCodeByCodeName(createProjectRequestDTO.getProjectStatus());
         int projectStatus = Integer.parseInt(commonCodeResponseDTO.getCodeId().toString());
-        log.info("공통 코드 활용중? {}", projectStatus);
 
         // 프로젝트 생성
         Project project = Project
@@ -68,7 +66,6 @@ public class ProjectServiceImpl implements ProjectService {
         project.saveProjectStatus(projectStatus);
 
         projectRepository.save(project);
-        log.info("저장이 되었나? {}", project);
 
         // 기본 일정 생성
         Long scheduleStatus = Long.valueOf(commonCodeService.viewCommonCodeByCodeName("준비").getCodeId().toString());
