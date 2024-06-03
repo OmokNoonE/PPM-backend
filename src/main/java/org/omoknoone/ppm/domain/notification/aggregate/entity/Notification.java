@@ -26,8 +26,8 @@ public class Notification {
     @Column(name = "notification_content", nullable = false)
     private String notificationContent;
 
-    @Column(name = "read", nullable = false)
-    private boolean read;
+    @Column(name = "`mark_as_read`", nullable = false)
+    private boolean markAsRead = false;
 
     @Column(name = "notification_created_date", length = 30)
     private LocalDateTime notificationCreatedDate;
@@ -43,19 +43,23 @@ public class Notification {
 
     @Builder
     public Notification(Long notificationId, String notificationTitle, String notificationContent,
-                        boolean read, LocalDateTime notificationCreatedDate, boolean notificationIsDeleted,
+                        boolean markAsRead, LocalDateTime notificationCreatedDate, boolean notificationIsDeleted,
                         LocalDateTime notificationDeletedDate, String employeeId) {
         this.notificationId = notificationId;
         this.notificationTitle = notificationTitle;
         this.notificationContent = notificationContent;
-        this.read = read;
+        this.markAsRead = markAsRead;
         this.notificationCreatedDate = notificationCreatedDate;
         this.notificationIsDeleted = notificationIsDeleted;
         this.notificationDeletedDate = notificationDeletedDate;
         this.employeeId = employeeId;
     }
 
-    public void read() {
-        this.read = true;
+    public void markAsRead() {
+        this.markAsRead = true;
+    }
+
+    public void markAsDeleted() {
+        notificationIsDeleted = true;
     }
 }

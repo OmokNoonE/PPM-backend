@@ -47,7 +47,7 @@ public class NotificationController {
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<NotificationResponseDTO> responseDTOList = notificationService.viewRecentNotifications(employeeId);
-
+        log.info(responseDTOList.toString());
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("getRecentNotifications", responseDTOList);
 
@@ -60,7 +60,7 @@ public class NotificationController {
     /* 설명. 해당 알림을 읽음 표시 */
     @PutMapping("/read/{notificationId}")
     public ResponseEntity<ResponseMessage> markAsRead(@PathVariable Long notificationId) {
-
+        log.info("로그 확인 용: markAsRead - , employeeId: {}", notificationId);
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         NotificationResponseDTO responseDTO = notificationService.markAsRead(notificationId);

@@ -7,14 +7,12 @@ import org.omoknoone.ppm.domain.notification.dto.NotificationResponseDTO;
 import java.util.List;
 
 public interface NotificationService {
-    
+
     NotificationResponseDTO createNotification(NotificationRequestDTO requestDTO);
 
     List<NotificationResponseDTO> viewRecentNotifications(String employeeId);
 
     NotificationResponseDTO markAsRead(Long id);
 
-   void checkConditionsAndSendNotifications(Integer projectId);
-
-//    void createTestData();
+    void checkConditionsAndSendNotifications(Integer projectId);
 }
