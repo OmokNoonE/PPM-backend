@@ -147,14 +147,12 @@ public class GraphServiceImpl implements GraphService {
             count += 1;
         }
 
-        log.info("컬럼 구성원 총 인원수 = {}", count);
 
         List<String> columnCategories = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             columnCategories.add("");
         }
 
-        log.info("컬럼 구성원 이름 배열 = {}", columnCategories);
 
         // 구성원들의 준비, 진행, 완료 상태 갯수
         List<Map<String, Object>> columnSeries = List.of(
@@ -268,7 +266,6 @@ public class GraphServiceImpl implements GraphService {
         // int[] datas = new int[]{10, 30, 50};
         int[] datas = scheduleService.updatePie(Long.parseLong(projectId));
 
-        log.info("업데이트 파이 데이터 = {}", datas);
 
         Graph graph = graphRepository.findAllByProjectIdAndType(projectId, type);
 
@@ -344,11 +341,13 @@ public class GraphServiceImpl implements GraphService {
 
         Map<String, Object> updates = scheduleService.updateColumn(Long.parseLong(projectId));
 
-        List<String> updateCategories = (List<String>) updates.get("categories");
-        List<Map<String, Object>> updateSeries = (List<Map<String, Object>>) updates.get("series");
+        log.info("컬럼 updates = {}", updates);
 
-        System.out.println("updateCategories = " + updateCategories);
-        System.out.println("updateSeries = " + updateSeries);
+        List<String> updateCategories = (List<String>) updates.get("categories");
+        log.info("updateCategories = {}", updateCategories);
+
+        List<Map<String, Object>> updateSeries = (List<Map<String, Object>>) updates.get("series");
+        log.info("updateSeries = {}", updateSeries);
 
         if (graph != null && updateCategories != null) {
             graph.getCategories().clear();
