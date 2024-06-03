@@ -1,16 +1,8 @@
 package org.omoknoone.ppm.domain.projectDashboard.service;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
@@ -18,18 +10,20 @@ import org.omoknoone.ppm.domain.projectDashboard.aggregate.Graph;
 import org.omoknoone.ppm.domain.projectDashboard.dto.GraphDTO;
 import org.omoknoone.ppm.domain.projectDashboard.repository.GraphRepository;
 import org.omoknoone.ppm.domain.projectmember.dto.ProjectMemberDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
 import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -42,7 +36,6 @@ public class GraphServiceImpl implements GraphService {
     private final MongoTemplate mongoTemplate;
     private final ModelMapper modelMapper;
     private final ProjectMemberService projectMemberService;
-    private final EmployeeService employeeService;
     private final ProjectService projectService;
 
     // init

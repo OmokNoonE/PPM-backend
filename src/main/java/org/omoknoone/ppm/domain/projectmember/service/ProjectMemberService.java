@@ -20,4 +20,7 @@ public interface ProjectMemberService {
 	Integer viewProjectMemberId(String employeeId, Integer projectId);
 
 	List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId);
+
+    ProjectMember viewProjectMemberInfo(String employeeId, Integer projectId);
+
 }

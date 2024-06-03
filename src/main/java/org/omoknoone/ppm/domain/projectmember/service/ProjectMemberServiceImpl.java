@@ -151,6 +151,15 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
     @Transactional(readOnly = true)
     @Override
+    public ProjectMember viewProjectMemberInfo(String employeeId, Integer projectId) {
+        return projectMemberRepository.
+                findByProjectMemberEmployeeIdAndProjectMemberProjectId(employeeId, projectId);
+
+    }
+
+
+    @Transactional(readOnly = true)
+    @Override
     public Integer viewProjectMemberId(String employeeId, Integer projectId) {
         ProjectMember projectMember = projectMemberRepository
                 .findByProjectMemberEmployeeIdAndProjectMemberProjectId(employeeId, projectId);
