@@ -1,5 +1,15 @@
 package org.omoknoone.ppm.domain.schedule.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -8,11 +18,23 @@ import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCode;
 import org.omoknoone.ppm.domain.commoncode.repository.CommonCodeRepository;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
+import org.omoknoone.ppm.domain.project.aggregate.Project;
+import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.*;
+import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
+import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleSheetDataDTO;
+import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
+import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
+import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
 import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
@@ -21,16 +43,13 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 //@RequiredArgsConstructor
+@Slf4j
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
@@ -42,12 +61,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final StakeholdersService stakeholdersService;
     private final ProjectMemberService projectMemberService;
     private final CommonCodeRepository commonCodeRepository;
+    private final ProjectRepository projectRepository;
 
     // TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
     public ScheduleServiceImpl(@Lazy ProjectService projectService, @Lazy StakeholdersService stakeholdersService,
                                @Lazy ProjectMemberService projectMemberService, @Lazy CommonCodeRepository commonCodeRepository,
                                ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository,
-                               HolidayRepository holidayRepository, ModelMapper modelMapper) {
+                               HolidayRepository holidayRepository, ModelMapper modelMapper,
+		ProjectRepository projectRepository) {
         this.commonCodeRepository = commonCodeRepository;
         this.projectMemberService = projectMemberService;
         this.stakeholdersService = stakeholdersService;
@@ -56,7 +77,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         this.scheduleRepository = scheduleRepository;
         this.holidayRepository = holidayRepository;
         this.modelMapper = modelMapper;
-    }
+		this.projectRepository = projectRepository;
+	}
 
     @Override
     @Transactional
@@ -433,18 +455,21 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     /* 구간별 일정 예상 누적 진행률 */
-    public int[] calculateScheduleRatios(LocalDate projectStartDate, LocalDate projectEndDate) {
+    public int[] calculateScheduleRatios(Integer projectId) {
+        // 프로젝트 시작 날짜와 종료 날짜를 가져옴
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid project ID: " + projectId));
+        LocalDate projectStartDate = project.getProjectStartDate();
+        LocalDate projectEndDate = project.getProjectEndDate();
+
         // WorkingDays 10등분
         List<LocalDate> dividedDates = projectService.divideWorkingDaysIntoTen(projectStartDate, projectEndDate);
-
         // 모든 스케줄을 가져옴
         List<Schedule> schedules = scheduleRepository.findAll();
-
         // 날짜 구간별로 스케줄을 분류
         int[] scheduleRatios = new int[dividedDates.size()];
         int totalSchedules = schedules.size();
         int sumratio = 0;
-
         // 첫 번째 날짜에 대한 스케줄 비율 계산
         LocalDate firstDate = dividedDates.get(0);
         long firstCount = schedules.stream()
@@ -453,6 +478,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         int firstRatio = (int) Math.round(((double) firstCount / totalSchedules) * 100);
         sumratio += firstRatio;
         scheduleRatios[0] = sumratio;
+
 
         // 중간 구간들에 대한 스케줄 비율 계산
         for (int i = 1; i < dividedDates.size() - 1; i++) {
