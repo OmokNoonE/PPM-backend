@@ -17,6 +17,160 @@ Content-Type: application/json
   "employeeIsExternalPartner": false
 }
 
+### 회원 가입 1
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP002",
+  "employeePassword": "TestPassword123",
+  "employeeName": "김영희",
+  "employeeEmail": "younghee@email.com",
+  "employeeJoinDate": "2023-03-02",
+  "employeeEmploymentStatus": 10501,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5679",
+  "employeeCompanyName": "외부회사",
+  "employeeIsExternalPartner": true
+}
+
+### 회원 가입 2
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP003",
+  "employeePassword": "TestPassword123",
+  "employeeName": "박준수",
+  "employeeEmail": "joonsoo@email.com",
+  "employeeJoinDate": "2023-03-03",
+  "employeeEmploymentStatus": 10502,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5680",
+  "employeeCompanyName": "테스트회사",
+  "employeeIsExternalPartner": false
+}
+
+### 회원 가입 3
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP004",
+  "employeePassword": "TestPassword123",
+  "employeeName": "이민지",
+  "employeeEmail": "minji@email.com",
+  "employeeJoinDate": "2023-03-04",
+  "employeeEmploymentStatus": 10503,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5681",
+  "employeeCompanyName": "테스트회사",
+  "employeeIsExternalPartner": false
+}
+
+### 회원 가입 4
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP005",
+  "employeePassword": "TestPassword123",
+  "employeeName": "김현우",
+  "employeeEmail": "hyunwoo@email.com",
+  "employeeJoinDate": "2023-03-05",
+  "employeeEmploymentStatus": 10504,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5682",
+  "employeeCompanyName": "테스트회사",
+  "employeeIsExternalPartner": false
+}
+
+### 회원 가입 5
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP006",
+  "employeePassword": "TestPassword123",
+  "employeeName": "박지현",
+  "employeeEmail": "jihyun@email.com",
+  "employeeJoinDate": "2023-03-06",
+  "employeeEmploymentStatus": 10501,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5683",
+  "employeeCompanyName": "테스트회사",
+  "employeeIsExternalPartner": false
+}
+
+### 회원 가입 6
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP007",
+  "employeePassword": "TestPassword123",
+  "employeeName": "이준호",
+  "employeeEmail": "joonho@email.com",
+  "employeeJoinDate": "2023-03-07",
+  "employeeEmploymentStatus": 10501,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5684",
+  "employeeCompanyName": "테스트회사",
+  "employeeIsExternalPartner": false
+}
+
+### 회원 가입 7
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP008",
+  "employeePassword": "TestPassword123",
+  "employeeName": "김지수",
+  "employeeEmail": "jisoo@email.com",
+  "employeeJoinDate": "2023-03-08",
+  "employeeEmploymentStatus": 10501,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5685",
+  "employeeCompanyName": "테스트회사",
+  "employeeIsExternalPartner": false
+}
+
+### 회원 가입 8
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP009",
+  "employeePassword": "TestPassword123",
+  "employeeName": "박현진",
+  "employeeEmail": "hyunjin@email.com",
+  "employeeJoinDate": "2023-03-09",
+  "employeeEmploymentStatus": 10501,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5686",
+  "employeeCompanyName": "테스트회사",
+  "employeeIsExternalPartner": false
+}
+
+### 회원 가입 9
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP010",
+  "employeePassword": "TestPassword123",
+  "employeeName": "이현주",
+  "employeeEmail": "hyunju@email.com",
+  "employeeJoinDate": "2023-03-10",
+  "employeeEmploymentStatus": 10501,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5687",
+  "employeeCompanyName": "테스트회사",
+  "employeeIsExternalPartner": false
+}
+
+
 ### 회원 조회
 @employeeId = EP001
 GET http://localhost:8888/employees/view/{{employeeId}}
