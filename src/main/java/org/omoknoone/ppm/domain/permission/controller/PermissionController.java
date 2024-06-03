@@ -116,7 +116,8 @@ public class PermissionController {
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("removePermission", removedPermissionId);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+        return ResponseEntity
+            .ok()
             .headers(headers)
             .body(new ResponseMessage(204, "권한 삭제 성공", responseMap));
     }

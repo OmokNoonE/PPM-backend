@@ -4,11 +4,10 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Getter @Setter
 @ToString
 public class ModifyRequirementRequestDTO {
 
-	@Setter
 	private Long requirementsId;
 	private String requirementsName;
 	private String requirementsContent;

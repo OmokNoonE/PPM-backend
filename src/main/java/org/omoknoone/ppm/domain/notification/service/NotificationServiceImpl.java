@@ -1,12 +1,11 @@
 package org.omoknoone.ppm.domain.notification.service;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCode;
 import org.omoknoone.ppm.domain.commoncode.repository.CommonCodeRepository;
@@ -20,7 +19,6 @@ import org.omoknoone.ppm.domain.notification.dto.NotificationResponseDTO;
 import org.omoknoone.ppm.domain.notification.dto.NotificationSettingsResponseDTO;
 import org.omoknoone.ppm.domain.notification.dto.SentRequestDTO;
 import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
-import org.omoknoone.ppm.domain.notification.repository.SentRepository;
 import org.omoknoone.ppm.domain.notification.service.strategy.EmailNotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.NotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.SlackNotificationStrategy;
@@ -28,22 +26,24 @@ import org.omoknoone.ppm.domain.permission.service.PermissionService;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
+import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceCalculator;
 import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
 import org.omoknoone.ppm.domain.stakeholders.service.StakeholdersService;
 import org.omoknoone.ppm.domain.task.repository.TaskRepository;
+import org.omoknoone.ppm.domain.stakeholders.dto.ViewStakeholdersDTO;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.PersistenceContext;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -64,6 +64,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final ScheduleServiceCalculator scheduleServiceCalculator;
     private final ProjectService projectService;
     private final PermissionService permissionService;
+    private final CommonCodeRepository commonCodeRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final StakeholdersService stakeholdersService;
 
@@ -92,12 +93,12 @@ public class NotificationServiceImpl implements NotificationService {
             handleNotificationsForMember(member, schedules, projectTitle, alarm);
         }
     }
-
+  
     private void handleNotificationsForMember(ProjectMember member, List<ScheduleDTO> schedules, String projectTitle, int alarm) {
         boolean isPm = permissionService.hasPmRole(Long.valueOf(member.getProjectMemberId()));
         boolean isDev = stakeholdersService.hasDevRole(Long.valueOf(member.getProjectMemberId()));
 
-        List<ScheduleDTO> incompleteSchedulesForMember = getIncompleteSchedulesForMember(schedules, member);
+        List<FindSchedulesForWeekDTO> incompleteSchedulesForMember = getIncompleteSchedulesForMember(schedules, member);
 
         if (!incompleteSchedulesForMember.isEmpty()) {
             String notificationContent = createNotificationContent(incompleteSchedulesForMember, projectTitle);
@@ -109,7 +110,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private List<ScheduleDTO> getIncompleteSchedulesForMember(List<ScheduleDTO> schedules, ProjectMember member) {
+    private List<FindSchedulesForWeekDTO> getIncompleteSchedulesForMember(List<FindSchedulesForWeekDTO> schedules, ProjectMember member) {
         return schedules.stream()
             .filter(schedule -> isScheduleIncompleteForMember(schedule, member))
             .toList();
@@ -117,14 +118,15 @@ public class NotificationServiceImpl implements NotificationService {
 
     private boolean isScheduleIncompleteForMember(ScheduleDTO schedule, ProjectMember member) {
         List<Stakeholders> stakeholders = stakeholdersService.findByScheduleId(schedule.getScheduleId());
+
         return stakeholders.stream().anyMatch(stakeholder ->
-            stakeholder.getProjectMemberId().equals(Long.valueOf(member.getProjectMemberId())) && !isCompleted(schedule, commonCodeRepository));
+            stakeholder.getStakeholdersProjectMemberId().equals(Long.valueOf(member.getProjectMemberId())) && !isCompleted(schedule, commonCodeRepository));
     }
 
-    private String createNotificationContent(List<ScheduleDTO> incompleteSchedules, String projectTitle) {
+    private String createNotificationContent(List<FindSchedulesForWeekDTO> incompleteSchedules, String projectTitle) {
         StringBuilder notificationContentBuilder = new StringBuilder();
         notificationContentBuilder.append("미완료 일정 목록:\n");
-        for (ScheduleDTO schedule : incompleteSchedules) {
+        for (FindSchedulesForWeekDTO schedule : incompleteSchedules) {
             String scheduleInfo = String.format("- 프로젝트 '%s'의 일정 '%s'가 아직 완료되지 않았습니다.\n", projectTitle,
                 schedule.getScheduleTitle());
             notificationContentBuilder.append(scheduleInfo);
@@ -158,6 +160,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         return modelMapper.map(notification, NotificationResponseDTO.class);
     }
+
     @Transactional(readOnly = true)
     @Override
     public List<NotificationResponseDTO> viewRecentNotifications(String employeeId) {
@@ -190,6 +193,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         return modelMapper.map(notification, NotificationResponseDTO.class);
     }
+
 
     private void sendNotificationToEmployee(Employee employee, Notification notification) {
         log.info("알림 전송 조건 확인: 직원 ID {}", employee.getEmployeeId());
@@ -247,7 +251,7 @@ public class NotificationServiceImpl implements NotificationService {
             .replace("{notificationContent}", notification.getNotificationContent());
     }
 
-    private boolean isCompleted(ScheduleDTO schedule, CommonCodeRepository commonCodeRepository) {
+    private boolean isCompleted(FindSchedulesForWeekDTO schedule, CommonCodeRepository commonCodeRepository) {
         String status = schedule.getScheduleStatus();
         String scheduleCompleted = commonCodeRepository.findById(ScheduleServiceCalculator.schedule_completed)
             .map(CommonCode::getCodeName)

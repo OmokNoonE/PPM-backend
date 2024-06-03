@@ -19,13 +19,13 @@ import lombok.ToString;
 @Getter
 @ToString
 public class RequestCreateScheduleRequirementMapDTO{
-    Long scheduleRequirementMapId;
+    Long scheduleRequirementMapScheduleId;
     Long scheduleRequirementMapRequirementId;
 
     @Builder
-    public RequestCreateScheduleRequirementMapDTO(Long scheduleRequirementMapId,
+    public RequestCreateScheduleRequirementMapDTO(Long scheduleRequirementMapScheduleId,
         Long scheduleRequirementMapRequirementId) {
-        this.scheduleRequirementMapId = scheduleRequirementMapId;
+        this.scheduleRequirementMapScheduleId = scheduleRequirementMapScheduleId;
         this.scheduleRequirementMapRequirementId = scheduleRequirementMapRequirementId;
     }
 }

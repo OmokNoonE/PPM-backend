@@ -7,9 +7,7 @@ import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.domain.permission.dto.PermissionDTO;
 import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
-import org.omoknoone.ppm.domain.stakeholders.dto.CreateStakeholdersDTO;
-import org.omoknoone.ppm.domain.stakeholders.dto.ModifyStakeholdersDTO;
-import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersDTO;
+import org.omoknoone.ppm.domain.stakeholders.dto.*;
 import org.omoknoone.ppm.domain.stakeholders.repository.StakeholdersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,16 +40,15 @@ public class StakeholdersServiceImpl implements StakeholdersService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<StakeholdersDTO> viewStakeholders(Long scheduleId) {
+    public List<ViewStakeholdersDTO> viewStakeholders(Long scheduleId) {
 
-        List<Stakeholders> stakeholdersList = stakeholdersRepository.findStakeholdersByStakeholdersScheduleId(
+        List<ViewStakeholdersDTO> stakeholdersList = stakeholdersRepository.findStakeholdersByStakeholdersScheduleId(
             scheduleId);
         if (stakeholdersList == null || stakeholdersList.isEmpty()) {
             throw new IllegalArgumentException(scheduleId + " 스케쥴에 해당하는 이해관계자가 존재하지 않습니다.");
         }
 
-        return modelMapper.map(stakeholdersList, new TypeToken<List<StakeholdersDTO>>() {
-        }.getType());
+        return stakeholdersList;
     }
 
     @Override
@@ -89,7 +86,14 @@ public class StakeholdersServiceImpl implements StakeholdersService {
             .anyMatch(stakeholder -> stakeholder.getStakeholdersType().equals(10402L));
     }
 
-    public List<Stakeholders> findByScheduleId(Long scheduleId) {
+    public List<ViewStakeholdersDTO> findByScheduleId(Long scheduleId) {
         return stakeholdersRepository.findStakeholdersByStakeholdersScheduleId(scheduleId);
+    }
+
+    @Override
+    public List<StakeholdersEmployeeInfoDTO> viewStakeholdersEmployeeInfo(Long[] scheduleIdList) {
+
+
+        return stakeholdersRepository.findStakeholdersEmployeeInfoByScheduleIdList(scheduleIdList);
     }
 }

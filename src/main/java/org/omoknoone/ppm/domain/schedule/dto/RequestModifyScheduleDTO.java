@@ -9,10 +9,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 @NoArgsConstructor
-@Getter
+@Getter @Setter
 @ToString
 public class RequestModifyScheduleDTO {
-    @Setter
     private Long scheduleId;
     private String scheduleTitle;
     private String scheduleContent;

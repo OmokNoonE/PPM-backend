@@ -1,0 +1,15 @@
+#### 수동 알림 생성 (테스트 불필요)
+#POST http://localhost:8888/notifications/create
+#Content-Type: application/json
+#
+#{
+#  "employeeId": "EP001",
+#  "notificationTitle": "알림 제목",
+#  "notificationContent": "알림 내용"
+#}
+
+### (최근 날짜 기준) 10건의 알림 목록 조회
+GET http://localhost:8888/notifications/recent/EP001
+
+### 알림 읽음 표시
+PUT http://localhost:8888/notifications/read/1

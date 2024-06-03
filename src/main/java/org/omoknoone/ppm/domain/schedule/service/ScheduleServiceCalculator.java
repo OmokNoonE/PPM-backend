@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCode;
 import org.omoknoone.ppm.domain.commoncode.repository.CommonCodeRepository;
 import org.omoknoone.ppm.domain.notification.service.NotificationScheduler;
+import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +20,13 @@ public class ScheduleServiceCalculator {
 	private static final Long schedule_in_progress = 10302L;
 	public static final Long schedule_completed = 10303L;
 
-	public static int calculateReadyOrInProgressRatio(List<ScheduleDTO> schedules, CommonCodeRepository commonCodeRepository) {
+	public static int calculateReadyOrInProgressRatio(List<FindSchedulesForWeekDTO> schedules, CommonCodeRepository commonCodeRepository) {
 		if (schedules == null || schedules.isEmpty()) {
 			return 0;
 		}
 
 		int countReadyOrInProgress = 0;
-		for (ScheduleDTO schedule : schedules) {
+		for (FindSchedulesForWeekDTO schedule : schedules) {
 			if (isReadyOrInProgress(schedule, commonCodeRepository)) {
 				countReadyOrInProgress++;
 			}
@@ -38,7 +39,7 @@ public class ScheduleServiceCalculator {
 		return (int) Math.round(ratio);
 	}
 
-	private static boolean isReadyOrInProgress(ScheduleDTO schedule, CommonCodeRepository commonCodeRepository) {
+	private static boolean isReadyOrInProgress(FindSchedulesForWeekDTO schedule, CommonCodeRepository commonCodeRepository) {
 		String status = schedule.getScheduleStatus();
 		String scheduleReady = commonCodeRepository.findById(schedule_ready)
 			.map(CommonCode::getCodeName)

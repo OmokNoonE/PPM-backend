@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
+import org.omoknoone.ppm.domain.employee.service.EmployeeService;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
@@ -42,6 +43,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ScheduleService scheduleService;
     private final ProjectMemberService projectMemberService;
     private final CommonCodeService commonCodeService;
+    private final EmployeeService employeeService;
     private final ModelMapper modelMapper;
 
     @Transactional
@@ -81,6 +83,7 @@ public class ProjectServiceImpl implements ProjectService {
 
 
         Long scheduleId = scheduleService.createSchedule(createScheduleDTO).getScheduleId();
+        String name = employeeService.viewEmployee(createProjectRequestDTO.getEmployeeId()).getEmployeeName();
 
         // 방금 만든 프로젝트의 구성원으로 생성자의 정보를 PM으로 등록
         int pmRoleId = Integer.parseInt(commonCodeService.viewCommonCodeByCodeName("PM").getCodeId().toString());
@@ -89,7 +92,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .projectMemberEmployeeId(createProjectRequestDTO.getEmployeeId())
                 .projectMemberProjectId(project.getProjectId())
                 .projectMemberRoleId(pmRoleId)
-                .permissionScheduleId(scheduleId)
+                .projectMemberEmployeeName(name)
                 .build();
 
         projectMemberService.createProjectMember(createProjectMemberRequestDTO);

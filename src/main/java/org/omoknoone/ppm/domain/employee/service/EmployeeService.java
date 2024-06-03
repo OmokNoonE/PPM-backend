@@ -1,6 +1,5 @@
 package org.omoknoone.ppm.domain.employee.service;
 
-import org.omoknoone.ppm.domain.employee.aggregate.Employee;
 import org.omoknoone.ppm.domain.employee.dto.LoginEmployeeDTO;
 import org.omoknoone.ppm.domain.employee.dto.ModifyEmployeeRequestDTO;
 import org.omoknoone.ppm.domain.employee.dto.SignUpEmployeeRequestDTO;
@@ -8,6 +7,8 @@ import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
 import org.omoknoone.ppm.domain.employee.dto.*;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+import java.util.List;
 
 public interface EmployeeService extends UserDetailsService{
 
@@ -24,5 +25,9 @@ public interface EmployeeService extends UserDetailsService{
   
     String modifyPassword(ModifyPasswordRequestDTO modifyPasswordRequestDTO);
 
-	String getEmployeeNameByProjectMemberId(String projectMemberId);
+//	String getEmployeeNameByProjectMemberId(String projectMemberId);
+
+    List<ViewEmployeeResponseDTO> viewAvailableMembers(Integer projectId);
+
+    List<ViewEmployeeResponseDTO> viewAndSearchAvailableMembersByQuery(Integer projectIdn, String query);
 }

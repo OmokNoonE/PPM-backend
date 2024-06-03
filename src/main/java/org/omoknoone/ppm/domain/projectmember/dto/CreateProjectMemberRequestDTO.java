@@ -8,15 +8,16 @@ import lombok.*;
 public class CreateProjectMemberRequestDTO {
 
     private Integer projectMemberProjectId;
-    private Integer projectMemberRoleId;
     private String projectMemberEmployeeId;
-    private Long permissionScheduleId;
+    private Long projectMemberRoleId;
+    private String projectMemberEmployeeName;
 
     @Builder
-    public CreateProjectMemberRequestDTO(Integer projectMemberProjectId, Integer projectMemberRoleId, String projectMemberEmployeeId, Long permissionScheduleId) {
+    public CreateProjectMemberRequestDTO(Integer projectMemberProjectId, String projectMemberEmployeeId,
+                                        Long projectMemberRoleId, String projectMemberEmployeeName) {
         this.projectMemberProjectId = projectMemberProjectId;
-        this.projectMemberRoleId = projectMemberRoleId;
         this.projectMemberEmployeeId = projectMemberEmployeeId;
-        this.permissionScheduleId = permissionScheduleId;
+        this.projectMemberRoleId = projectMemberRoleId;
+        this.projectMemberEmployeeName = projectMemberEmployeeName;
     }
 }

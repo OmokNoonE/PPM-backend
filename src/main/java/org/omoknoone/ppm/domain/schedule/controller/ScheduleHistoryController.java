@@ -9,6 +9,7 @@ import org.omoknoone.ppm.domain.schedule.aggregate.ScheduleHistory;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleHistoryDTO;
 import org.omoknoone.ppm.domain.schedule.dto.RequestCreateScheduleHistoryDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ScheduleHistoryDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ViewScheduleHistoryDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleHistoryService;
 import org.omoknoone.ppm.domain.schedule.vo.RequestSchedule;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseSchedule;
@@ -56,9 +57,9 @@ public class ScheduleHistoryController {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        List<ScheduleHistoryDTO> scheduleHistoryDTOList = scheduleHistoryService.viewScheduleHistory(scheduleId);
+        List<ViewScheduleHistoryDTO> scheduleHistoryDTOList = scheduleHistoryService.viewScheduleHistory(scheduleId);
         List<ResponseScheduleHistory> responseScheduleHistoryList = modelMapper.map(scheduleHistoryDTOList,
-                new TypeToken<List<ScheduleHistoryDTO>>() {}.getType());
+                new TypeToken<List<ViewScheduleHistoryDTO>>() {}.getType());
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("viewSchedule", responseScheduleHistoryList);

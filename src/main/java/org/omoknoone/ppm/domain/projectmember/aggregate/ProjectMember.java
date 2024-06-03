@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "project_member")
 public class ProjectMember {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_member_id", nullable = false)
@@ -24,7 +24,7 @@ public class ProjectMember {
 
     @CreationTimestamp
     @Column(name = "project_member_created_date", nullable = false, length = 30)
-    private String projectMemberCreatedDate;
+    private LocalDateTime projectMemberCreatedDate;
 
     @Column(name = "project_member_modified_date", length = 30)
     private LocalDateTime projectMemberModifiedDate;
@@ -41,24 +41,30 @@ public class ProjectMember {
     @JoinColumn(name = "project_member_employee_id", nullable = false)
     private String projectMemberEmployeeId;
 
+    @Column(name = "project_member_employee_name", nullable = false)
+    private String projectMemberEmployeeName;
+
+    @Column(name = "project_member_role_id", nullable = false)
+    private Long projectMemberRoleId;
+
     @Builder
-    public ProjectMember(Integer projectMemberId, Integer projectMemberProjectId,
-                         String projectMemberEmployeeId, Boolean projectMemberIsExcluded,
-                         LocalDateTime projectMemberExclusionDate, String projectMemberCreatedDate,
-                         LocalDateTime projectMemberModifiedDate) {
+    public ProjectMember(Integer projectMemberId, Integer projectMemberProjectId, String projectMemberEmployeeId,
+                        Boolean projectMemberIsExcluded, LocalDateTime projectMemberExclusionDate,
+                        LocalDateTime projectMemberCreatedDate,
+                        LocalDateTime projectMemberModifiedDate, Long projectMemberRoleId, String projectMemberEmployeeName) {
         this.projectMemberId = projectMemberId;
         this.projectMemberProjectId = projectMemberProjectId;
         this.projectMemberEmployeeId = projectMemberEmployeeId;
-        this.projectMemberIsExcluded
-                = projectMemberIsExcluded != null ? projectMemberIsExcluded : false; // null일 경우 기본값 false
+        this.projectMemberIsExcluded = projectMemberIsExcluded != null ? projectMemberIsExcluded : false; // null일 경우 기본값 false
         this.projectMemberExclusionDate = projectMemberExclusionDate;
         this.projectMemberCreatedDate = projectMemberCreatedDate;
         this.projectMemberModifiedDate = projectMemberModifiedDate;
+        this.projectMemberRoleId = projectMemberRoleId;
+        this.projectMemberEmployeeName = projectMemberEmployeeName;
     }
 
-    public void modify(ModifyProjectMemberRequestDTO dto) {
-//        this.projectMemberRoleId = dto.getProjectMemberRoleId();
-        this.projectMemberModifiedDate = LocalDateTime.now();
+    public void modifyRole(ModifyProjectMemberRequestDTO requestDTO) {
+        this.projectMemberRoleId = requestDTO.getProjectMemberRoleId();
     }
 
     public void remove() {
@@ -66,15 +72,17 @@ public class ProjectMember {
         this.projectMemberExclusionDate = LocalDateTime.now();
     }
 
-    public void reactivate() {
-        if (!this.projectMemberIsExcluded) {
-            throw new IllegalStateException("이미 활성화된 구성원입니다. 다시 활성화할 수 없습니다.");
-        }
+    public void include() {
         this.projectMemberIsExcluded = false;
-        this.projectMemberExclusionDate = null;
+        this.projectMemberCreatedDate = LocalDateTime.now();
+    }
+
+    public void setProjectMemberRoleId(Long projectMemberRoleId) {
+        this.projectMemberRoleId = projectMemberRoleId;
     }
 
     public String getEmployeeId() {
-		return this.projectMemberEmployeeId;
+        return this.projectMemberEmployeeId;
     }
 }
+

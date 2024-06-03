@@ -1,0 +1,49 @@
+### requirements 등록
+POST http://localhost:8888/requirements/create
+Content-Type: application/json
+
+{
+  "requirementsProjectId" : 2,
+  "requirementsName": "요구사항이름",
+  "requirementsContent": "요구사항내용"
+}
+
+
+### projectId를 통한 requirements 조회
+GET http://localhost:8888/requirements/list/2
+
+### requirementsId를 통한 requirements 조회
+GET http://localhost:8888/requirements/2/1
+
+### requirements 수정
+PUT http://localhost:8888/requirements/modify/1
+Content-Type: application/json
+
+{
+  "requirementsName": "요구사항이름수정",
+  "requirementsContent": "요구사항내용수정",
+  "requirementHistoryReason": "수정이유",
+  "requirementHistoryProjectMemberId": 2
+}
+
+### requirements 삭제 (soft delete)
+DELETE http://localhost:8888/requirements/remove/1
+Content-Type: application/json
+
+{
+  "requirementHistoryReason": "삭제이유",
+  "requirementHistoryProjectMemberId": 2
+}
+
+### History - 요구사항 Id를 통한 요구사항 수정내역 조회
+GET http://localhost:8888/requirementsHistories/view/1
+
+### 페이징 처리된 요구사항 목록 조회
+@projectId = 1
+@page = 1
+@size = 10
+GET http://localhost:8888/requirements/list/{{projectId}}/{{page}}/{{size}}
+
+### 요구사항 이름으로 요구사항 검색
+@requirementsName = 요구
+GET http://localhost:8888/requirements/search/{{projectId}}/{{requirementsName}}
