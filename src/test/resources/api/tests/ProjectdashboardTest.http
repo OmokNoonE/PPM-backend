@@ -1,7 +1,7 @@
 // 완료
 
 ### View Project Dashboard By ProjectId
-GET http://localhost:8888/graphs/2/pie
+GET http://localhost:8888/graphs/1/pie
 Accept: application/json
 
 
