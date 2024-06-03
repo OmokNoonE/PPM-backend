@@ -32,17 +32,26 @@ public class Notification {
     @Column(name = "notification_created_date", length = 30)
     private LocalDateTime notificationCreatedDate;
 
+    @Column(name = "notification_is_deleted")
+    private boolean notificationIsDeleted = false;
+
+    @Column(name = "notification_deleted_date")
+    private LocalDateTime notificationDeletedDate = null;
+
     @JoinColumn(name = "employee_id", nullable = false)
     private String employeeId;
 
     @Builder
     public Notification(Long notificationId, String notificationTitle, String notificationContent,
-                        boolean read, LocalDateTime notificationCreatedDate, String employeeId) {
+                        boolean read, LocalDateTime notificationCreatedDate, boolean notificationIsDeleted,
+                        LocalDateTime notificationDeletedDate, String employeeId) {
         this.notificationId = notificationId;
         this.notificationTitle = notificationTitle;
         this.notificationContent = notificationContent;
         this.read = read;
         this.notificationCreatedDate = notificationCreatedDate;
+        this.notificationIsDeleted = notificationIsDeleted;
+        this.notificationDeletedDate = notificationDeletedDate;
         this.employeeId = employeeId;
     }
 
