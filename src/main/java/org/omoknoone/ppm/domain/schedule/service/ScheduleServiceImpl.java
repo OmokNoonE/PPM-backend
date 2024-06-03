@@ -45,9 +45,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 //@RequiredArgsConstructor
 @Slf4j
 @Service
@@ -464,12 +461,14 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         // WorkingDays 10등분
         List<LocalDate> dividedDates = projectService.divideWorkingDaysIntoTen(projectStartDate, projectEndDate);
+
         // 모든 스케줄을 가져옴
-        List<Schedule> schedules = scheduleRepository.findAll();
+        List<Schedule> schedules = scheduleRepository.findByscheduleProjectId(projectId);
         // 날짜 구간별로 스케줄을 분류
         int[] scheduleRatios = new int[dividedDates.size()];
         int totalSchedules = schedules.size();
         int sumratio = 0;
+
         // 첫 번째 날짜에 대한 스케줄 비율 계산
         LocalDate firstDate = dividedDates.get(0);
         long firstCount = schedules.stream()
