@@ -16,6 +16,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findSchedulesByScheduleProjectIdAndScheduleIsDeleted(Long projectId, boolean isDeleted);
 
+    List<Schedule> findByscheduleProjectId(Integer projectId);
+
     @Query("SELECT s "
         + "FROM Schedule s "
         + "WHERE s.scheduleProjectId = :projectId "

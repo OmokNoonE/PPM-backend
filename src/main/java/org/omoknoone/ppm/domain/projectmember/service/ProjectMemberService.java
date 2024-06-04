@@ -24,5 +24,5 @@ public interface ProjectMemberService {
 
 	List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId);
 
-    ProjectMember viewProjectMemberInfo(String employeeId, Integer projectId);
+  ProjectMember viewProjectMemberInfo(String employeeId, Integer projectId);
 }

@@ -196,13 +196,12 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Transactional
-    @Override
     public NotificationResponseDTO markAsRead(Long notificationId) {
         log.info("알림 읽음 처리 시작: 알림 ID {}", notificationId);
 
         Notification notification = notificationRepository.findById(notificationId)
             .orElseThrow(() -> new EntityNotFoundException("해당 알림 Id는 존재 하지 않습니다: " + notificationId));
-        notification.read();
+        notification.markAsRead();
 
         notificationRepository.save(notification);
 

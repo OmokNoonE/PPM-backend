@@ -1,0 +1,5 @@
+// 완료
+
+### 일정 Id를 통한 일정 수정 내역 조회
+GET http://localhost:8888/scheduleHistories/view/3
+

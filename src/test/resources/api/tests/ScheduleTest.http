@@ -71,3 +71,7 @@ GET http://localhost:8888/schedules/nextweek/2
 
 ### 구간별 일정 예상 누적 진행률 (TODO. 논리적 오류. 향후 확인)
 GET http://localhost:8888/schedules/predictionProgress?startDate=2021-07-01&endDate=2025-07-01
+
+### 일정 시트에 사용될 일정 데이터 수집
+GET http://localhost:8888/schedules/sheet/1
+employeeId: EP001

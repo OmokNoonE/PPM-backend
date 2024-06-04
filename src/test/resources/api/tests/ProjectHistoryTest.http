@@ -1,0 +1,4 @@
+// 완료
+
+### 프로젝트 수정 내역 조회
+GET http://localhost:8888/projectHistories/view/1

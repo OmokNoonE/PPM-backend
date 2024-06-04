@@ -21,7 +21,7 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, In
 
     ProjectMember findByProjectMemberEmployeeIdAndProjectMemberProjectId(String employeeId, Integer projectId);
 
-    List<ProjectMember> findByProjectMemberEmployeeId(String employeeId);
+    List<ProjectMember> findByProjectMemberEmployeeIdOrderByProjectMemberProjectIdDesc(String employeeId);
 
     List<ProjectMember> findProjectMembersByProjectMemberProjectId(Integer projectId);
 
