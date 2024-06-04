@@ -103,7 +103,7 @@ public class GraphServiceImpl implements GraphService {
 
 
         List<String> lineCategories = new ArrayList<>(10);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 11; i++) {
             lineCategories.add("");
         }
 
