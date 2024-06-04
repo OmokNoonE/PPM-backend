@@ -102,7 +102,7 @@ public class GraphServiceImpl implements GraphService {
         List<LocalDate> dateCategories = projectService.divideWorkingDaysIntoTen(startDate, endDate);
 
 
-        List<String> lineCategories = new ArrayList<>(10);
+        List<String> lineCategories = new ArrayList<>(11);
         for (int i = 0; i < 11; i++) {
             lineCategories.add("");
         }
