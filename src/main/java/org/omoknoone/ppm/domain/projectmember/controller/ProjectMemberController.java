@@ -120,4 +120,23 @@ public class ProjectMemberController {
         }
     }
 
+    // 프로젝트 ID로 프로젝트 구성원 조회
+    @GetMapping("/view/{projectId}")
+    public ResponseEntity<ResponseMessage> viewProjectMemberByProjectId(@PathVariable Integer projectId,
+                                                                        @RequestParam String employeeId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        ViewProjectMemberByProjectIdResponseDTO responseDTO
+                = projectMemberService.viewProjectMemberByProjectId(projectId, employeeId);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewProjectMemberByProjectId", responseDTO);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "프로젝트 ID로 프로젝트 구성원 조회 성공", responseMap));
+    }
+
 }

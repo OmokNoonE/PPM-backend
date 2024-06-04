@@ -29,4 +29,6 @@ public interface ProjectService {
 	ViewProjectResponseDTO viewProject(int projectId);
 
 	int removeProject(RemoveProjectRequestDTO removeProjectRequestDTO);
+
+	String viewProjectTitle(Integer projectId);
 }

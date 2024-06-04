@@ -27,6 +27,7 @@ import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +35,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
@@ -46,7 +46,20 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectMemberService projectMemberService;
     private final CommonCodeService commonCodeService;
     private final EmployeeService employeeService;
-    private final ModelMapper modelMapper;
+
+    public ProjectServiceImpl(ProjectHistoryService projectHistoryService, ProjectRepository projectRepository,
+                              HolidayRepository holidayRepository, ScheduleRepository scheduleRepository,
+                              ScheduleService scheduleService, @Lazy ProjectMemberService projectMemberService,
+                              CommonCodeService commonCodeService, EmployeeService employeeService) {
+        this.projectHistoryService = projectHistoryService;
+        this.projectRepository = projectRepository;
+        this.holidayRepository = holidayRepository;
+        this.scheduleRepository = scheduleRepository;
+        this.scheduleService = scheduleService;
+        this.projectMemberService = projectMemberService;
+        this.commonCodeService = commonCodeService;
+        this.employeeService = employeeService;
+    }
 
     @Transactional
     @Override
@@ -328,6 +341,11 @@ public class ProjectServiceImpl implements ProjectService {
         projectHistoryService.createProjectHistory(modifyProjectHistoryDTO);
 
         return removeProjectRequestDTO.getProjectId();
+    }
+
+    @Override
+    public String viewProjectTitle(Integer projectId) {
+        return projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new).getProjectTitle();
     }
 
     public String getProjectTitleById(Integer projectId) {
