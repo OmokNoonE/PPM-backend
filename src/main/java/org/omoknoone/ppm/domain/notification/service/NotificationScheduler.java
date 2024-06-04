@@ -20,7 +20,7 @@ public class NotificationScheduler {
         // if (projectId != null) {
         // notificationService.checkConditionsAndSendNotifications(projectId);
         logger.info("스케줄러 실행: 프로젝트 ID {}", projectId);
-        notificationService.checkConditionsAndSendNotifications(1); // 추후 projectId로 변경 필요
+        notificationService.checkConditionsAndSendNotifications(projectId); // 추후 projectId로 변경
         // }
     }
 }
