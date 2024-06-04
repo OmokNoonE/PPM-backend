@@ -425,18 +425,18 @@ public class GraphServiceImpl implements GraphService {
         /* 실제 진행률 업데이트 */
         int index = 0;
 
-        // 현재 날짜가 각 날짜의 범위 내에 있는 지 확인하여 index 구하기
-        LocalDate currentDate = LocalDate.now();
+            // 현재 날짜가 각 날짜의 범위 내에 있는 지 확인하여 index 구하기
+            LocalDate currentDate = LocalDate.now();
 
-        for (int i = 0; i < dateCategories.size(); i++) {
-            LocalDate start = i == 0 ? LocalDate.MIN : dateCategories.get(i - 1).plusDays(1);
-            LocalDate end = dateCategories.get(i);
+            for (int i = 0; i < dateCategories.size(); i++) {
+                LocalDate start = dateCategories.get(i);
+                LocalDate end = i < dateCategories.size() - 1 ? dateCategories.get(i + 1) : LocalDate.MAX;
 
-            if (currentDate.isAfter(start) && currentDate.isBefore(end)) {
-                index = i;                          // 해당하는 범위의 인덱스 반환
+                if (!currentDate.isBefore(start) && currentDate.isBefore(end)) {
+                    index = i;
+                    break;
+                }
             }
-        }
-
 
         // update할 section별 진행상황 (현재 진행률)
         int newdata = scheduleService.updateGauge(Long.valueOf(projectId));
