@@ -26,7 +26,7 @@ public class Notification {
     @Column(name = "notification_content", nullable = false)
     private String notificationContent;
 
-    @Column(name = "`mark_as_read`", nullable = false)
+    @Column(name = "mark_as_read", nullable = false)
     private boolean markAsRead = false;
 
     @Column(name = "notification_created_date", length = 30)
