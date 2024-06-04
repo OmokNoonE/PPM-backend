@@ -1,10 +1,9 @@
 package org.omoknoone.ppm.domain.notification.service;
 
-import org.omoknoone.ppm.domain.notification.aggregate.entity.Notification;
+import java.util.List;
+
 import org.omoknoone.ppm.domain.notification.dto.NotificationRequestDTO;
 import org.omoknoone.ppm.domain.notification.dto.NotificationResponseDTO;
-
-import java.util.List;
 
 public interface NotificationService {
     
@@ -16,5 +15,7 @@ public interface NotificationService {
 
    void checkConditionsAndSendNotifications(Integer projectId);
 
-//    void createTestData();
+    NotificationResponseDTO markAsDeleted(Long notificationId);
+
+    //    void createTestData();
 }

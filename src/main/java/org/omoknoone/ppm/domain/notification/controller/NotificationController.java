@@ -1,19 +1,28 @@
 package org.omoknoone.ppm.domain.notification.controller;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.notification.dto.NotificationRequestDTO;
 import org.omoknoone.ppm.domain.notification.dto.NotificationResponseDTO;
 import org.omoknoone.ppm.domain.notification.service.NotificationService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -73,4 +82,23 @@ public class NotificationController {
                 .headers(headers)
                 .body(new ResponseMessage(200, "알림 읽음 전환 성공", responseMap));
     }
-}
+
+        @DeleteMapping("/remove/{notificationId}")
+        public ResponseEntity<ResponseMessage> removeNotification(@PathVariable("notificationId") Long notificationId) {
+            HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+            NotificationResponseDTO removedNotification = notificationService.markAsDeleted(notificationId);
+
+            if (removedNotification == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put("removedNotification", removedNotification);
+
+            return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .headers(headers)
+                .body(new ResponseMessage(204, "알림 삭제 성공", responseMap));
+        }
+    }

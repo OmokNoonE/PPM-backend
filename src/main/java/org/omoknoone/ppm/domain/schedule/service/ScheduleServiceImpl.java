@@ -45,9 +45,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 //@RequiredArgsConstructor
 @Slf4j
 @Service
