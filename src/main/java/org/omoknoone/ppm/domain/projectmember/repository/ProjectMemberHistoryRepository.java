@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ProjectMemberHistoryRepository extends JpaRepository<ProjectMemberHistory, Long> {
 
-    ProjectMemberHistory findFirstByProjectMemberHistoryProjectMemberIdOrderByIdDesc(Integer projectMemberId);
+    ProjectMemberHistory findFirstByProjectMemberHistoryProjectMemberIdOrderByProjectMemberHistoryIdDesc(Integer projectMemberId);
 
     List<ProjectMemberHistory> findByProjectMemberHistoryProjectMemberId(Integer projectMemberId);
 

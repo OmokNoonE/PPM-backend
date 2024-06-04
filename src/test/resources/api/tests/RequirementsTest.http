@@ -20,10 +20,11 @@ PUT http://localhost:8888/requirements/modify/1
 Content-Type: application/json
 
 {
+  "requirementsId": 1,
   "requirementsName": "요구사항이름수정",
   "requirementsContent": "요구사항내용수정",
   "requirementHistoryReason": "수정이유",
-  "requirementHistoryProjectMemberId": 2
+  "requirementHistoryProjectMemberId": 3
 }
 
 ### requirements 삭제 (soft delete)
@@ -32,7 +33,7 @@ Content-Type: application/json
 
 {
   "requirementHistoryReason": "삭제이유",
-  "requirementHistoryProjectMemberId": 2
+  "requirementHistoryProjectMemberId": 3
 }
 
 ### History - 요구사항 Id를 통한 요구사항 수정내역 조회

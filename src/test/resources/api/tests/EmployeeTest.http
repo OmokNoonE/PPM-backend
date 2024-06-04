@@ -28,14 +28,14 @@ Content-Type: application/json
 
 {
   "employeeId": "EP001",
-  "employeeName": "김수정",
+  "employeeName": "홍길동",
   "employeeEmail": "kimsoojung@email.com",
   "employeeContact": "010-5678-1234"
 }
 
 
 ### 회원 검색
-@employeeName = 김수정
+@employeeName = 홍길동
 GET http://localhost:8888/employees/search/{{employeeName}}
 Accept: application/json
 

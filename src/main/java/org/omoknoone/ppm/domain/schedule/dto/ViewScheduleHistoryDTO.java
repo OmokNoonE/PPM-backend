@@ -25,12 +25,17 @@ public class ViewScheduleHistoryDTO {
 
     private String projectMemberEmployeeId;
 
-    private Integer projectMemberRoleName;
+    private Long projectMemberRoleId;
 
     private String projectMemberEmployeeName;
 
     @Builder
-    public ViewScheduleHistoryDTO(Long scheduleHistoryId, String scheduleHistoryReason, LocalDateTime scheduleHistoryModifiedDate, Boolean scheduleHistoryIsDeleted, LocalDateTime scheduleHistoryDeletedDate, Long scheduleHistoryScheduleId, Long scheduleHistoryProjectMemberId, String projectMemberEmployeeId, Integer projectMemberRoleName, String projectMemberEmployeeName) {
+
+    public ViewScheduleHistoryDTO(Long scheduleHistoryId, String scheduleHistoryReason,
+                                LocalDateTime scheduleHistoryModifiedDate, Boolean scheduleHistoryIsDeleted,
+                                LocalDateTime scheduleHistoryDeletedDate, Long scheduleHistoryScheduleId,
+                                Long scheduleHistoryProjectMemberId, String projectMemberEmployeeId,
+                                Long projectMemberRoleId, String projectMemberEmployeeName) {
         this.scheduleHistoryId = scheduleHistoryId;
         this.scheduleHistoryReason = scheduleHistoryReason;
         this.scheduleHistoryModifiedDate = scheduleHistoryModifiedDate;
@@ -39,7 +44,7 @@ public class ViewScheduleHistoryDTO {
         this.scheduleHistoryScheduleId = scheduleHistoryScheduleId;
         this.scheduleHistoryProjectMemberId = scheduleHistoryProjectMemberId;
         this.projectMemberEmployeeId = projectMemberEmployeeId;
-        this.projectMemberRoleName = projectMemberRoleName;
+        this.projectMemberRoleId = projectMemberRoleId;
         this.projectMemberEmployeeName = projectMemberEmployeeName;
     }
 }

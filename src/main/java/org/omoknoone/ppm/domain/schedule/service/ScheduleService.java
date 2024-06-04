@@ -73,7 +73,7 @@ public interface ScheduleService {
     List<FindSchedulesForWeekDTO> getSchedulesForNextWeek(Integer projectId);
 
     /* 구간별 일정 예상 누적 진행률 */
-    int[] calculateScheduleRatios(LocalDate startDate, LocalDate endDate);
+    int[] calculateScheduleRatios(Integer projectId);
 
     /* 일정 시트에 사용될 데이터 수집 */
     List<ResponseScheduleSheetData> getSheetData(Long projectId, String employeeId);

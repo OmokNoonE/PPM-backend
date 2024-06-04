@@ -3,11 +3,13 @@ package org.omoknoone.ppm.domain.stakeholders.service;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
-import org.omoknoone.ppm.domain.permission.dto.PermissionDTO;
 import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
-import org.omoknoone.ppm.domain.stakeholders.dto.*;
+import org.omoknoone.ppm.domain.stakeholders.dto.CreateStakeholdersDTO;
+import org.omoknoone.ppm.domain.stakeholders.dto.ModifyStakeholdersDTO;
+import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersDTO;
+import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
+import org.omoknoone.ppm.domain.stakeholders.dto.ViewStakeholdersDTO;
 import org.omoknoone.ppm.domain.stakeholders.repository.StakeholdersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,6 +86,13 @@ public class StakeholdersServiceImpl implements StakeholdersService {
         List<StakeholdersDTO> stakeholders = stakeholdersRepository.findByStakeholdersProjectMemberId(projectMemberId);
         return stakeholders.stream()
             .anyMatch(stakeholder -> stakeholder.getStakeholdersType().equals(10402L));
+    }
+
+    @Override
+    public boolean hasAuthorRole(Long projectMemberId) {
+        List<StakeholdersDTO> stakeholders = stakeholdersRepository.findByStakeholdersProjectMemberId(projectMemberId);
+        return stakeholders.stream()
+            .anyMatch(stakeholder -> stakeholder.getStakeholdersType().equals(10401L));
     }
 
     public List<ViewStakeholdersDTO> findByScheduleId(Long scheduleId) {

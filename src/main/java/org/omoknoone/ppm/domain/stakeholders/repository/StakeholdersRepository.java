@@ -15,7 +15,7 @@ public interface StakeholdersRepository extends JpaRepository<Stakeholders, Long
     @Query("SELECT new org.omoknoone.ppm.domain.stakeholders.dto.ViewStakeholdersDTO("
             + " st.stakeholdersId, st.stakeholdersType, st.stakeholdersIsDeleted, st.stakeholdersDeletedDate, "
             + " st.stakeholdersScheduleId, st.stakeholdersProjectMemberId, "
-            + " p.projectMemberEmployeeId, p.projectMemberRoleName, p.projectMemberEmployeeName) "
+            + " p.projectMemberEmployeeId, p.projectMemberRoleId, p.projectMemberEmployeeName) "
             + "FROM Stakeholders st "
             + "JOIN ProjectMember p ON st.stakeholdersProjectMemberId = p.projectMemberId "
             + "WHERE st.stakeholdersScheduleId = :scheduleId")

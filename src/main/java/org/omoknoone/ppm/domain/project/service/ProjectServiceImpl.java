@@ -49,8 +49,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Transactional
     @Override
-    public int createProject(CreateProjectRequestDTO createProjectRequestDTO) {
-
+    public Integer createProject(CreateProjectRequestDTO createProjectRequestDTO) {
         // 프로젝트 상태 코드 조회
         CommonCodeResponseDTO commonCodeResponseDTO = commonCodeService.
                                                 viewCommonCodeByCodeName(createProjectRequestDTO.getProjectStatus());
@@ -93,10 +92,10 @@ public class ProjectServiceImpl implements ProjectService {
                 .projectMemberEmployeeId(createProjectRequestDTO.getEmployeeId())
                 .projectMemberProjectId(project.getProjectId())
                 .projectMemberRoleId((long)pmRoleId)
-                .projectMemberEmployeeName(name)
+                .projectMemberEmployeeName(createProjectRequestDTO.getEmployeeName())
                 .build();
 
-        projectMemberService.createProjectMember(createProjectMemberRequestDTO);
+        int projectMemberId = projectMemberService.createProjectMember(createProjectMemberRequestDTO);
 
         int projectId = project.getProjectId();
 

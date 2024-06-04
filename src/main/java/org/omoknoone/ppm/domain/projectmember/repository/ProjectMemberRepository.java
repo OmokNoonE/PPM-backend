@@ -12,7 +12,7 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, In
 
 
     @Query("SELECT new org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO(" +
-            "pm.projectMemberId, pm.projectMemberEmployeeId, e.employeeName, cc.codeId, e.employeeEmail, e.employeeContact, pm.projectMemberCreatedDate) " +
+            "pm.projectMemberId, pm.projectMemberEmployeeId, e.employeeName, cc.codeId, cc.codeName, e.employeeEmail, e.employeeContact, pm.projectMemberCreatedDate) " +
             "FROM ProjectMember pm " +
             "JOIN Employee e ON pm.projectMemberEmployeeId = e.employeeId " +
             "LEFT JOIN CommonCode cc ON cc.codeId = pm.projectMemberRoleId " +
@@ -21,7 +21,7 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, In
 
     ProjectMember findByProjectMemberEmployeeIdAndProjectMemberProjectId(String employeeId, Integer projectId);
 
-    List<ProjectMember> findByProjectMemberEmployeeId(String employeeId);
+    List<ProjectMember> findByProjectMemberEmployeeIdOrderByProjectMemberProjectIdDesc(String employeeId);
 
     List<ProjectMember> findProjectMembersByProjectMemberProjectId(Integer projectId);
 

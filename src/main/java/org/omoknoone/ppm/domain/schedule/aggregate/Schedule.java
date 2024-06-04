@@ -116,6 +116,10 @@ public class Schedule {
         this.scheduleStatus = modifyScheduleProgressDTO.getScheduleStatus();
     }
 
+    public void modifyStatus(Long scheduleStatus) {
+        this.scheduleStatus = scheduleStatus;
+    }
+
     public void remove() {
         this.scheduleIsDeleted = true;
         this.scheduleDeletedDate = LocalDateTime.now();

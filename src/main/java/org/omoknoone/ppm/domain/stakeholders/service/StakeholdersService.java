@@ -21,4 +21,6 @@ public interface StakeholdersService {
     List<StakeholdersEmployeeInfoDTO> viewStakeholdersEmployeeInfo(Long[] scheduleIdList);
 
     boolean hasDevRole(Long projectMemberId);
+
+    boolean hasAuthorRole(Long projectMemberId);
 }

@@ -31,10 +31,10 @@ public class ProjectController {
 
     @PostMapping("/create")
     public ResponseEntity<ResponseMessage> createProject(@RequestBody CreateProjectRequestDTO createProjectRequestDTO) {
-        
+
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        int projectId = projectService.createProject(createProjectRequestDTO);
+        Integer projectId = projectService.createProject(createProjectRequestDTO);
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("createProject", projectId);
 
@@ -51,7 +51,7 @@ public class ProjectController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
         ProjectModificationResult result = projectService.modifyProject(modifyProjectHistoryDTO);
-      
+
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("modifyProject", result.getProjectId());
 
@@ -64,17 +64,17 @@ public class ProjectController {
     /* 프로젝트 일정 10등분 */
     @GetMapping("/workingDaysDivideTen")
     public ResponseEntity<ResponseMessage> divideWorkingDays(
-        @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
-        @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate
     ) {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
-        
+
         List<LocalDate> dividedDates = projectService.divideWorkingDaysIntoTen(startDate, endDate);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("workingDaysDivideTen", dividedDates);
-        
+
         return ResponseEntity
                 .ok()
                 .headers(headers)

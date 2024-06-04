@@ -23,15 +23,13 @@ import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
 import org.omoknoone.ppm.domain.notification.service.strategy.EmailNotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.NotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.SlackNotificationStrategy;
-import org.omoknoone.ppm.domain.permission.service.PermissionServiceImpl;
 import org.omoknoone.ppm.domain.project.service.ProjectServiceImpl;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
+import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
+import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceCalculator;
-import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceImpl;
-import org.omoknoone.ppm.domain.stakeholders.dto.ViewStakeholdersDTO;
-import org.omoknoone.ppm.domain.stakeholders.service.StakeholdersServiceImpl;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,13 +53,11 @@ public class NotificationServiceImpl implements NotificationService {
     private final JavaMailSender javaMailSender;
     private final SlackNotificationStrategy slackNotificationStrategy;
     private final ModelMapper modelMapper;
-    private final ScheduleServiceImpl scheduleService;
+    private final ScheduleService scheduleService;
     private final CommonCodeRepository commonCodeRepository;
     private final ProjectServiceImpl projectService;
-    private final PermissionServiceImpl permissionService;
     private final ProjectMemberRepository projectMemberRepository;
-    private final StakeholdersServiceImpl stakeholdersService;
-
+    private final ProjectMemberService projectMemberService;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -72,49 +68,71 @@ public class NotificationServiceImpl implements NotificationService {
         strategyMap = new HashMap<>();
         strategyMap.put(NotificationType.EMAIL, new EmailNotificationStrategy(javaMailSender));
         strategyMap.put(NotificationType.SLACK, slackNotificationStrategy);
-        log.info("알림 전략 초기화 완료: {}", strategyMap);
     }
 
     @Override
     @Transactional
     public void checkConditionsAndSendNotifications(Integer projectId) {
         int alarm = scheduleService.calculateRatioThisWeek(projectId);
+
         List<FindSchedulesForWeekDTO> schedules = scheduleService.getSchedulesForThisWeek(projectId);
+
         String projectTitle = projectService.getProjectTitleById(projectId);
         List<ProjectMember> projectMembers = projectMemberRepository.findProjectMembersByProjectMemberProjectId(projectId);
 
-        for (ProjectMember member : projectMembers) {
+        // PM/PL 역할을 가진 멤버들만 필터링
+        List<ProjectMember> pmplMembers = projectMembers.stream()
+            .filter(member -> hasPMPLRole(member.getProjectMemberId()))
+            .collect(Collectors.toList());
+
+        for (ProjectMember member : pmplMembers) {
             handleNotificationsForMember(member, schedules, projectTitle, alarm);
         }
     }
 
-    private void handleNotificationsForMember(ProjectMember member, List<FindSchedulesForWeekDTO> schedules, String projectTitle, int alarm) {
-        boolean isPm = permissionService.hasPmRole(Long.valueOf(member.getProjectMemberId()));
-        boolean isDev = stakeholdersService.hasDevRole(Long.valueOf(member.getProjectMemberId()));
+    @Transactional
+    @Override
+    public NotificationResponseDTO markAsDeleted(Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+            .orElseThrow(() -> new EntityNotFoundException("알림을 찾을 수 없습니다: " + notificationId));
 
+        // 알림을 삭제로 마크
+        notification.markAsDeleted();
+
+        notificationRepository.save(notification);
+        return modelMapper.map(notification, NotificationResponseDTO.class);
+    }
+
+    public boolean hasPMPLRole(Integer projectMemberId) {
+        return projectMemberRepository.findById(projectMemberId)
+            .map(member -> member.getProjectMemberRoleId().equals(10601L) || member.getProjectMemberRoleId().equals(10602L))
+            .orElse(false);
+    }
+
+    private void handleNotificationsForMember(ProjectMember member, List<FindSchedulesForWeekDTO> schedules, String projectTitle, int alarm) {
         List<FindSchedulesForWeekDTO> incompleteSchedulesForMember = getIncompleteSchedulesForMember(schedules, member);
 
         if (!incompleteSchedulesForMember.isEmpty()) {
-            String notificationContent = createNotificationContent(incompleteSchedulesForMember, projectTitle);
-            if (isDev) {
-                createAndSendNotification(member, "담당자에게 알립니다", notificationContent);
-            } else if (alarm < 90 && isPm) {
-                createAndSendNotification(member, "PM 에게 알립니다", notificationContent);
+            if (alarm < 90) {
+                String notificationContent = createNotificationContent(incompleteSchedulesForMember, projectTitle);
+                createAndSendNotification(member, "PM, PL에게 알립니다", notificationContent);
             }
         }
     }
 
+
+    private static final String READY_STATUS = "준비";
+    private static final String IN_PROGRESS_STATUS = "진행";
+
     private List<FindSchedulesForWeekDTO> getIncompleteSchedulesForMember(List<FindSchedulesForWeekDTO> schedules, ProjectMember member) {
         return schedules.stream()
-            .filter(schedule -> isScheduleIncompleteForMember(schedule, member))
+            .filter(this::isScheduleIncomplete)
             .toList();
     }
 
-
-    private boolean isScheduleIncompleteForMember(FindSchedulesForWeekDTO schedule, ProjectMember member) {
-        List<ViewStakeholdersDTO> stakeholders = stakeholdersService.findByScheduleId(schedule.getScheduleId());
-        return stakeholders.stream().anyMatch(stakeholder ->
-            stakeholder.getStakeholdersProjectMemberId().equals(Long.valueOf(member.getProjectMemberId())) && !isCompleted(schedule, commonCodeRepository));
+    private boolean isScheduleIncomplete(FindSchedulesForWeekDTO schedule) {
+        String status = schedule.getScheduleStatus();
+        return status.equals(READY_STATUS) || status.equals(IN_PROGRESS_STATUS);
     }
 
     private String createNotificationContent(List<FindSchedulesForWeekDTO> incompleteSchedules, String projectTitle) {
@@ -144,7 +162,7 @@ public class NotificationServiceImpl implements NotificationService {
         Notification notification = Notification.builder()
             .notificationTitle(requestDTO.getNotificationTitle())
             .notificationContent(requestDTO.getNotificationContent())
-            .read(false)
+            .markAsRead(false)
             .notificationCreatedDate(LocalDateTime.now())
             .employeeId(requestDTO.getEmployeeId())
             .build();
@@ -158,12 +176,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional(readOnly = true)
     @Override
     public List<NotificationResponseDTO> viewRecentNotifications(String employeeId) {
-        log.info("최신 알림 10개 조회 시작: 직원 ID {}", employeeId);
-
         List<Notification> notifications = notificationRepository
             .findTop10ByEmployeeIdOrderByNotificationCreatedDateDesc(employeeId);
-
-        log.info("알림 조회 완료: {}개", notifications.size());
 
         return notifications.stream()
             .map(notification -> modelMapper.map(notification, NotificationResponseDTO.class))
@@ -171,30 +185,23 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Transactional
-    @Override
     public NotificationResponseDTO markAsRead(Long notificationId) {
-        log.info("알림 읽음 처리 시작: 알림 ID {}", notificationId);
-
         Notification notification = notificationRepository.findById(notificationId)
             .orElseThrow(() -> new EntityNotFoundException("해당 알림 Id는 존재 하지 않습니다: " + notificationId));
-        notification.read();
+        notification.markAsRead();
 
         notificationRepository.save(notification);
 
         entityManager.flush();
         entityManager.clear();
-        log.info("알림 읽음 처리 완료: {}", notification);
 
         return modelMapper.map(notification, NotificationResponseDTO.class);
     }
 
 
     private void sendNotificationToEmployee(Employee employee, Notification notification) {
-        log.info("알림 전송 조건 확인: 직원 ID {}", employee.getEmployeeId());
 
         NotificationSettingsResponseDTO settings = notificationSettingService.viewNotificationSettings(employee.getEmployeeId());
-
-        log.info("알림 설정 조회 완료: {}", settings);
 
         if (settings.isEmailEnabled()) {
             sendNotificationWithStrategy(employee, notification, NotificationType.EMAIL);
@@ -206,7 +213,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void sendNotificationWithStrategy(Employee employee, Notification notification, NotificationType type) {
-        log.info("알림 전송 시작: 타입 {}, 직원 ID {}", type, employee.getEmployeeId());
 
         NotificationStrategy strategy = strategyMap.get(type);
         if (strategy != null) {
@@ -217,7 +223,6 @@ public class NotificationServiceImpl implements NotificationService {
                 NotificationSentStatus.SUCCESS, notification.getNotificationId(), employee.getEmployeeId());
 
             try {
-                log.info("어떤 타입으로 발송 했는지 확인: " + type);
                 NotificationSentStatus status = strategy.send(employee, title, content, type);
                 sentRequestDTO.setSentStatus(status);
                 log.info("알림 전송 완료: 타입 {}", type);
@@ -232,6 +237,7 @@ public class NotificationServiceImpl implements NotificationService {
             log.warn("전송 전략을 찾을 수 없습니다: 타입 {}", type);
         }
     }
+
 
     private String createTitle(Notification notification) {
         String templateTitle = "Notification: {title}";

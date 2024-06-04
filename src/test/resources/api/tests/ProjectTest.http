@@ -9,7 +9,8 @@ Content-Type: application/json
     "projectStartDate": "2023-01-01",
     "projectEndDate": "2023-12-31",
     "projectStatus": "계획",
-    "employeeId" : "EP001"
+    "employeeId" : "EP001",
+    "employeeName": "홍길동"
 }
 
 ### 프로젝트 수정
@@ -17,10 +18,10 @@ PUT http://localhost:8888/projects/modify
 Content-Type: application/json
 
 {
-  "projectId": 2,
+  "projectId": 1,
   "projectHistoryReason": "프로젝트 수정 사유 : 집에 가야해서",
-  "projectHistoryProjectMemberId" : 2,
-  "projectMemberId" : 2,
+  "projectHistoryProjectMemberId" : 1,
+  "projectMemberId" : 1,
   "projectTitle" : "수정된 프로젝트 제목입니다",
   "projectStartDate" : "2024-05-09T12:00:00Z",
   "projectEndDate" : "2024-06-14T12:00:00Z"
@@ -30,7 +31,7 @@ Content-Type: application/json
 GET http://localhost:8888/projects/workingDaysDivideTen?startDate=2023-01-01&endDate=2023-12-31
 
 ### 프로젝트 복사(프로젝트, 일정)
-POST http://localhost:8888/projects/copy/2
+POST http://localhost:8888/projects/copy/1
 
 ### 프로젝트 목록 조회
 GET http://localhost:8888/projects/list/EP001

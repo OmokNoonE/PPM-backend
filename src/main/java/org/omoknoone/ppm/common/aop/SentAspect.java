@@ -70,9 +70,8 @@ public class SentAspect {
                     notification.getNotificationId(),
                     employeeId
             );
-            log.info("SentLog 호출 전: {}", sentRequestDTO);
+
             sentService.logSentNotification(sentRequestDTO);
-            log.info("SentLog 호출 완료");
 
             if (status == NotificationSentStatus.FAILURE) {
                 log.error("알림 전송 실패 - 직원 ID: {}, 알림 ID: {}, 오류: {}", employeeId, notification.getNotificationId(), ex.getMessage());

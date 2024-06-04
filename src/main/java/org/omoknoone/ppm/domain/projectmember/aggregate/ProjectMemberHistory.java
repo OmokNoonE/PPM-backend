@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "project_member_history")
 public class ProjectMemberHistory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_member_history_id", nullable = false)

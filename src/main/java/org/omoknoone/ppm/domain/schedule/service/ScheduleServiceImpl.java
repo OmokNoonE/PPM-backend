@@ -1,5 +1,15 @@
 package org.omoknoone.ppm.domain.schedule.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -8,11 +18,23 @@ import org.omoknoone.ppm.domain.commoncode.aggregate.CommonCode;
 import org.omoknoone.ppm.domain.commoncode.repository.CommonCodeRepository;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
+import org.omoknoone.ppm.domain.project.aggregate.Project;
+import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.schedule.dto.*;
+import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
+import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleDTO;
+import org.omoknoone.ppm.domain.schedule.dto.ScheduleSheetDataDTO;
+import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
+import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
+import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
 import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
@@ -21,13 +43,10 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 //@RequiredArgsConstructor
+@Slf4j
 @Service
 public class ScheduleServiceImpl implements ScheduleService {
 
@@ -39,12 +58,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final StakeholdersService stakeholdersService;
     private final ProjectMemberService projectMemberService;
     private final CommonCodeRepository commonCodeRepository;
+    private final ProjectRepository projectRepository;
 
     // TODO. 임시로 ProjectService를 Lazy로 변경하여 순환 참조 문제 해결하였으나 설계 변경 필요
     public ScheduleServiceImpl(@Lazy ProjectService projectService, @Lazy StakeholdersService stakeholdersService,
                                @Lazy ProjectMemberService projectMemberService, @Lazy CommonCodeRepository commonCodeRepository,
                                ScheduleHistoryService scheduleHistoryService, ScheduleRepository scheduleRepository,
-                               HolidayRepository holidayRepository, ModelMapper modelMapper) {
+                               HolidayRepository holidayRepository, ModelMapper modelMapper,
+		ProjectRepository projectRepository) {
         this.commonCodeRepository = commonCodeRepository;
         this.projectMemberService = projectMemberService;
         this.stakeholdersService = stakeholdersService;
@@ -53,7 +74,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         this.scheduleRepository = scheduleRepository;
         this.holidayRepository = holidayRepository;
         this.modelMapper = modelMapper;
-    }
+		this.projectRepository = projectRepository;
+	}
 
     @Override
     @Transactional
@@ -159,8 +181,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         /* 시작일, 종료일 수정 (+공수) */
         schedule.modifyDate(modifyScheduleDate(requestModifyScheduleDTO));
 
-        /* 진행 상태 수정 (+진행률) */
-        schedule.modifyProgress(modifyScheduleProgress(requestModifyScheduleDTO));
+        /* TODO. 진행 상태 수정 (+진행률) */
+        // schedule.modifyProgress(modifyScheduleProgress(requestModifyScheduleDTO));
+        schedule.modifyStatus(requestModifyScheduleDTO.getScheduleStatus());
 
         schedule.modifyPriority(requestModifyScheduleDTO.getSchedulePriority());
 
@@ -241,7 +264,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         double doneScheduleCount = updateDataDTO.getDoneScheduleCount().doubleValue();
 
         // 결과 계산
-        double result = (doneScheduleCount / totalScheduleCount) * 100;
+        double result = (doneScheduleCount * 100 / totalScheduleCount);
 
         return (int) result;
     }
@@ -251,7 +274,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         UpdateDataDTO updateDataDTO = scheduleRepository.countScheduleStatusByProjectId(projectId);
 
         return new int[]{
-                updateDataDTO.getTotalScheduleCount().intValue(),
+                // updateDataDTO.getTotalScheduleCount().intValue(),
                 updateDataDTO.getTodoScheduleCount().intValue(),
                 updateDataDTO.getInProgressScheduleCount().intValue(),
                 updateDataDTO.getDoneScheduleCount().intValue()
@@ -374,6 +397,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         // 금주에 끝나는 일정 조회
         List<Schedule> schedules = scheduleRepository.findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(
                 monday, sunday);
+
         Long[] scheduleIdList = schedules.stream().map(Schedule::getScheduleId).toArray(Long[]::new);
 
         // 일정의 이해관계자 정보 조회
@@ -385,6 +409,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 }.getType());
 
         for (FindSchedulesForWeekDTO findSchedulesForWeekDTO : findSchedulesForWeekDTOList) {
+
             for (StakeholdersEmployeeInfoDTO stakeholdersEmployeeInfoDTO : stakeholdersEmployeeInfoDTOList) {
 
                 if (stakeholdersEmployeeInfoDTO.getStakeholdersScheduleId().equals(findSchedulesForWeekDTO.getScheduleId())) {
@@ -425,13 +450,18 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     /* 구간별 일정 예상 누적 진행률 */
-    public int[] calculateScheduleRatios(LocalDate projectStartDate, LocalDate projectEndDate) {
+    public int[] calculateScheduleRatios(Integer projectId) {
+        // 프로젝트 시작 날짜와 종료 날짜를 가져옴
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid project ID: " + projectId));
+        LocalDate projectStartDate = project.getProjectStartDate();
+        LocalDate projectEndDate = project.getProjectEndDate();
+
         // WorkingDays 10등분
         List<LocalDate> dividedDates = projectService.divideWorkingDaysIntoTen(projectStartDate, projectEndDate);
 
         // 모든 스케줄을 가져옴
-        List<Schedule> schedules = scheduleRepository.findAll();
-
+        List<Schedule> schedules = scheduleRepository.findByscheduleProjectId(projectId);
         // 날짜 구간별로 스케줄을 분류
         int[] scheduleRatios = new int[dividedDates.size()];
         int totalSchedules = schedules.size();
@@ -445,6 +475,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         int firstRatio = (int) Math.round(((double) firstCount / totalSchedules) * 100);
         sumratio += firstRatio;
         scheduleRatios[0] = sumratio;
+
 
         // 중간 구간들에 대한 스케줄 비율 계산
         for (int i = 1; i < dividedDates.size() - 1; i++) {
@@ -548,7 +579,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         ProjectMember projectMemberInfo = projectMemberService.viewProjectMemberInfo(employeeId, projectId.intValue());
 
         /* PA, PL의 경우*/
-        if (projectMemberInfo.getProjectMemberRoleName() > 10601) {
+        if (projectMemberInfo.getProjectMemberRoleId() > 10601) {
             List<Long> filterScheduleIdList = new ArrayList<>();
             for (StakeholdersEmployeeInfoDTO dto : stakeholdersEmployeeInfoDTOList) {
                 /* 향후 ProjectMemberId의 데이터 형 Long으로 통일 */

@@ -31,12 +31,12 @@ public class ScheduleHistoryServiceImpl implements ScheduleHistoryService {
     public void createScheduleHistory(RequestModifyScheduleDTO scheduleHistoryDTO) {
 
         ScheduleHistory scheduleHistory = ScheduleHistory
-                .builder()
-                .scheduleHistoryReason(scheduleHistoryDTO.getScheduleHistoryReason())
-                .scheduleHistoryScheduleId(scheduleHistoryDTO.getScheduleId())
-                .scheduleHistoryProjectMemberId(scheduleHistoryDTO.getScheduleHistoryProjectMemberId())
-                .scheduleHistoryIsDeleted(false)
-                .build();
+            .builder()
+            .scheduleHistoryReason(scheduleHistoryDTO.getScheduleHistoryReason())
+            .scheduleHistoryIsDeleted(false)
+            .scheduleHistoryScheduleId(scheduleHistoryDTO.getScheduleId())
+            .scheduleHistoryProjectMemberId(scheduleHistoryDTO.getScheduleHistoryProjectMemberId())
+            .build();
 
         scheduleHistoryRepository.save(scheduleHistory);
     }
@@ -46,7 +46,7 @@ public class ScheduleHistoryServiceImpl implements ScheduleHistoryService {
     public List<ViewScheduleHistoryDTO> viewScheduleHistory(Long scheduleId) {
 
         List<ViewScheduleHistoryDTO> scheduleHistoryList = scheduleHistoryRepository.
-                findScheduleHistoryByScheduleHistoryScheduleId(scheduleId);
+            findScheduleHistoryByScheduleHistoryScheduleId(scheduleId);
         if (scheduleHistoryList == null || scheduleHistoryList.isEmpty()) {
             throw new IllegalArgumentException(scheduleId + " 스케쥴에 해당하는 수정 내역이 존재하지 않습니다.");
         }
