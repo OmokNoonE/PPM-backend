@@ -2,6 +2,7 @@ package org.omoknoone.ppm.domain.project.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
+import org.omoknoone.ppm.domain.project.dto.RemoveProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ViewProjectResponseDTO;
 import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
 import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
@@ -305,6 +307,28 @@ public class ProjectServiceImpl implements ProjectService {
                 .projectStatus(projectStatusName) // Set the code_name as projectStatus
                 .projectModifiedDate(project.getProjectModifiedDate())
                 .build();
+    }
+
+    @Override
+    public int removeProject(RemoveProjectRequestDTO removeProjectRequestDTO) {
+        Project project = projectRepository.findById(removeProjectRequestDTO.getProjectId())
+                .orElseThrow(IllegalArgumentException::new);
+
+        project.deleteProject();
+
+        projectRepository.save(project);
+
+        // 수정내역 관리 DTO 생성
+        ModifyProjectHistoryDTO modifyProjectHistoryDTO = ModifyProjectHistoryDTO.builder()
+                .projectId(project.getProjectId())
+                .projectMemberId(removeProjectRequestDTO.getProjectMemberId())
+                .projectHistoryReason(removeProjectRequestDTO.getProjectHistoryReason())
+                .build();
+
+        // 수정 로그 작성
+        projectHistoryService.createProjectHistory(modifyProjectHistoryDTO);
+
+        return removeProjectRequestDTO.getProjectId();
     }
 
     public String getProjectTitleById(Integer projectId) {

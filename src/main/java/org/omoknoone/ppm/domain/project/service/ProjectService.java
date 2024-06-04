@@ -7,6 +7,7 @@ import java.util.List;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
+import org.omoknoone.ppm.domain.project.dto.RemoveProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ViewProjectResponseDTO;
 import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
 
@@ -26,4 +27,6 @@ public interface ProjectService {
     List<ViewProjectResponseDTO> viewProjectList(String employeeId);
 
 	ViewProjectResponseDTO viewProject(int projectId);
+
+	int removeProject(RemoveProjectRequestDTO removeProjectRequestDTO);
 }
