@@ -81,13 +81,20 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String employeeId = loginEmployeeDetails.getEmployeeId();
         String employeeName = loginEmployeeDetails.getEmployeeName();
         String encodedEmployeeName = Base64.getEncoder().encodeToString(employeeName.getBytes(StandardCharsets.UTF_8));
+        String projectId = "";
+        String projectMemberId = "";
+        String roleId = "";
 
         List<ProjectMember> projectMemberList = projectMemberService.viewProjectMemberListByEmployeeId(employeeId);
-
-        // projectMemberList에서 가장 최근에 만들어진 프로젝트의 ID를 가져온다
-        String projectId = String.valueOf(projectMemberList.get(0).getProjectMemberProjectId());
-        String projectMemberId = String.valueOf(projectMemberList.get(0).getProjectMemberId());
-        String roleId = String.valueOf(projectMemberList.get(0).getProjectMemberRoleId());
+        
+        if (projectMemberList.isEmpty()) {
+            log.info("소속된 프로젝트가 없습니다.");
+        } else {
+            // projectMemberList에서 가장 최근에 만들어진 프로젝트의 ID를 가져온다
+            projectId = String.valueOf(projectMemberList.get(0).getProjectMemberProjectId());
+            projectMemberId = String.valueOf(projectMemberList.get(0).getProjectMemberId());
+            roleId = String.valueOf(projectMemberList.get(0).getProjectMemberRoleId());
+        }
 
         Claims claims = Jwts.claims().setSubject(employeeId);
 //        claims.put("role", roleName);
