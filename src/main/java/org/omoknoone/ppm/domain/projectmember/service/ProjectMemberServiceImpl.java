@@ -72,7 +72,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Override
     public Integer createProjectMember(CreateProjectMemberRequestDTO requestDTO) {
         validateProjectMemberRoleId(requestDTO.getProjectMemberRoleId());
-        log.info("프로젝트 구성원 생성 dto 확인 {}", requestDTO);
+
         ProjectMember projectMember = projectMemberRepository
             .findByProjectMemberEmployeeIdAndProjectMemberProjectId(
                 requestDTO.getProjectMemberEmployeeId(), requestDTO.getProjectMemberProjectId());
@@ -197,12 +197,11 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     private void validateProjectMemberRoleId(Long projectMemberRoleId) {
-        log.info("알려줘 니번호 {}", projectMemberRoleId);
         Long codeGroupId = 106L; // 권한 역할명 그룹 ID
         List<CommonCodeResponseDTO> commonCodes = commonCodeService.viewCommonCodesByGroup(codeGroupId);
         boolean isValid = commonCodes.stream().anyMatch(code -> code.getCodeId().equals(projectMemberRoleId));
         if (!isValid) {
-            throw new IllegalArgumentException("롤 ID 틀린듯?");
+            throw new IllegalArgumentException("권한 역할 ID가 올바르지 않습니다.");
         }
     }
 }
