@@ -2,7 +2,6 @@ package org.omoknoone.ppm.domain.project.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -276,7 +275,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<ProjectMember> projectMemberList = projectMemberService.viewProjectMemberListByEmployeeId(employeeId);
 
-        List<Project> projectList = projectRepository.findAllByProjectIdInOrderByProjectIdDesc(
+        List<Project> projectList = projectRepository.findAllByProjectIdInAndProjectIsDeletedFalseOrderByProjectIdDesc(
             projectMemberList.stream()
                 .map(ProjectMember::getProjectMemberProjectId)
                 .toList()
