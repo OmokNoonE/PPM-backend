@@ -14,6 +14,8 @@ import org.omoknoone.ppm.domain.employee.dto.LoginEmployeeDTO;
 import org.omoknoone.ppm.domain.employee.dto.RequestLoginDTO;
 import org.omoknoone.ppm.domain.employee.service.AuthService;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
+import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
+import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,7 +25,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 
 @Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -32,14 +37,16 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthService authService;
     private final Environment environment;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ProjectMemberService projectMemberService;
 
     @Builder
-    public AuthenticationFilter(AuthenticationManager authenticationManager, EmployeeService employeeService, AuthService authService, Environment environment, JwtTokenProvider jwtTokenProvider) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager, EmployeeService employeeService, AuthService authService, Environment environment, JwtTokenProvider jwtTokenProvider, ProjectMemberService projectMemberService) {
         super(authenticationManager);
         this.employeeService = employeeService;
         this.authService = authService;
         this.environment = environment;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.projectMemberService = projectMemberService;
     }
 
     /* 설명. 로그인 시도 시 동작하는 기능(POST 방식의 /login 요청) -> request body에 담겨온다. */
@@ -73,7 +80,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         LoginEmployeeDTO loginEmployeeDetails = employeeService.getLoginEmployeeDetailsByEmployeeId(id);
         String employeeId = loginEmployeeDetails.getEmployeeId();
         String employeeName = loginEmployeeDetails.getEmployeeName();
-//        String roleName = memberDetails.getRoleName();
+        String encodedEmployeeName = Base64.getEncoder().encodeToString(employeeName.getBytes(StandardCharsets.UTF_8));
+
+        List<ProjectMember> projectMemberList = projectMemberService.viewProjectMemberListByEmployeeId(employeeId);
+
+        // projectMemberList에서 가장 최근에 만들어진 프로젝트의 ID를 가져온다
+        String projectId = String.valueOf(projectMemberList.get(0).getProjectMemberProjectId());
+        String projectMemberId = String.valueOf(projectMemberList.get(0).getProjectMemberId());
+        String roleId = String.valueOf(projectMemberList.get(0).getProjectMemberRoleId());
 
         Claims claims = Jwts.claims().setSubject(employeeId);
 //        claims.put("role", roleName);
@@ -89,7 +103,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         response.addHeader("accessToken", accessToken);
         response.addHeader("employeeId", employeeId);
-        response.addHeader("employeeName", employeeName);
+        response.addHeader("employeeName", encodedEmployeeName);
+        response.addHeader("projectId", projectId);
+        response.addHeader("projectMemberId", projectMemberId);
+        response.addHeader("roleId", roleId);
 
         /* 설명. refreshToken이 아닌 token의 Id를 전달, refreshToken은 서버만 가지고 있음 */
         Cookie cookie = new Cookie("refreshTokenId", refreshTokenId);

@@ -186,7 +186,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     @Transactional(readOnly = true)
     @Override
     public List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId) {
-        return projectMemberRepository.findByProjectMemberEmployeeId(employeeId);
+        return projectMemberRepository.findByProjectMemberEmployeeIdOrderByProjectMemberProjectIdDesc(employeeId);
     }
 
     private void validateProjectMemberRoleId(Long projectMemberRoleId) {
