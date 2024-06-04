@@ -1,28 +1,23 @@
 package org.omoknoone.ppm.domain.schedule.controller;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
-import org.modelmapper.convention.MatchingStrategies;
-import org.omoknoone.ppm.common.HttpHeadersCreator;
-import org.omoknoone.ppm.common.ResponseMessage;
-import org.omoknoone.ppm.domain.schedule.aggregate.ScheduleHistory;
-import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleHistoryDTO;
-import org.omoknoone.ppm.domain.schedule.dto.RequestCreateScheduleHistoryDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ScheduleHistoryDTO;
-import org.omoknoone.ppm.domain.schedule.dto.ViewScheduleHistoryDTO;
-import org.omoknoone.ppm.domain.schedule.service.ScheduleHistoryService;
-import org.omoknoone.ppm.domain.schedule.vo.RequestSchedule;
-import org.omoknoone.ppm.domain.schedule.vo.ResponseSchedule;
-import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleHistory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.omoknoone.ppm.common.HttpHeadersCreator;
+import org.omoknoone.ppm.common.ResponseMessage;
+import org.omoknoone.ppm.domain.schedule.dto.ViewScheduleHistoryDTO;
+import org.omoknoone.ppm.domain.schedule.service.ScheduleHistoryService;
+import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleHistory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/scheduleHistories")

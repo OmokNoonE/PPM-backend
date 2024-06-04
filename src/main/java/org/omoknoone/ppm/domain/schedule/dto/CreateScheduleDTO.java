@@ -36,13 +36,14 @@ public class CreateScheduleDTO {
     private Boolean scheduleIsDeleted;
     private LocalDateTime scheduleDeletedDate;
     private Long scheduleProjectId;
+    private Long projectMemberId;
 
     @Builder
     public CreateScheduleDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate,
         LocalDate scheduleEndDate, Integer scheduleDepth, Integer schedulePriority, Integer scheduleProgress,
         Long scheduleStatus, Integer scheduleManHours, Long scheduleParentScheduleId, Long schedulePrecedingScheduleId,
         LocalDateTime scheduleCreatedDate, LocalDateTime scheduleModifiedDate, Boolean scheduleIsDeleted,
-        LocalDateTime scheduleDeletedDate, Long scheduleProjectId) {
+        LocalDateTime scheduleDeletedDate, Long scheduleProjectId, Long projectMemberId) {
         this.scheduleId = scheduleId;
         this.scheduleTitle = scheduleTitle;
         this.scheduleContent = scheduleContent;
@@ -60,7 +61,10 @@ public class CreateScheduleDTO {
         this.scheduleIsDeleted = scheduleIsDeleted;
         this.scheduleDeletedDate = scheduleDeletedDate;
         this.scheduleProjectId = scheduleProjectId;
+        this.projectMemberId = projectMemberId;
     }
+
+
 
     public void newScheduleDefaultValueSet(){
         this.scheduleProgress = scheduleProgress != null ? scheduleProgress : 0;

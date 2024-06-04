@@ -67,35 +67,36 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectRepository.save(project);
 
-        // 기본 일정 생성
-        Long scheduleStatus = Long.valueOf(commonCodeService.viewCommonCodeByCodeName("준비").getCodeId().toString());
-
-        CreateScheduleDTO createScheduleDTO = CreateScheduleDTO.builder()
-                .scheduleProjectId(Long.valueOf(project.getProjectId()))
-                .scheduleTitle("프로젝트 시작")
-                .scheduleContent("기본 일정")
-                .scheduleDepth(1)
-                .scheduleStatus(scheduleStatus)
-                .scheduleStartDate(project.getProjectStartDate())
-                .scheduleEndDate(project.getProjectStartDate())
-                .scheduleIsDeleted(false)
-                .build();
-
-
-        Long scheduleId = scheduleService.createSchedule(createScheduleDTO).getScheduleId();
-        String name = employeeService.viewEmployee(createProjectRequestDTO.getEmployeeId()).getEmployeeName();
-
         // 방금 만든 프로젝트의 구성원으로 생성자의 정보를 PM으로 등록
         int pmRoleId = Integer.parseInt(commonCodeService.viewCommonCodeByCodeName("PM").getCodeId().toString());
 
         CreateProjectMemberRequestDTO createProjectMemberRequestDTO = CreateProjectMemberRequestDTO.builder()
-                .projectMemberEmployeeId(createProjectRequestDTO.getEmployeeId())
-                .projectMemberProjectId(project.getProjectId())
-                .projectMemberRoleId((long)pmRoleId)
-                .projectMemberEmployeeName(createProjectRequestDTO.getEmployeeName())
-                .build();
+            .projectMemberEmployeeId(createProjectRequestDTO.getEmployeeId())
+            .projectMemberProjectId(project.getProjectId())
+            .projectMemberRoleId((long)pmRoleId)
+            .projectMemberEmployeeName(createProjectRequestDTO.getEmployeeName())
+            .build();
 
         int projectMemberId = projectMemberService.createProjectMember(createProjectMemberRequestDTO);
+
+        // 기본 일정 생성
+        Long scheduleStatus = commonCodeService.viewCommonCodeByCodeName("준비").getCodeId();
+
+        CreateScheduleDTO createScheduleDTO = CreateScheduleDTO.builder()
+            .scheduleTitle("프로젝트 시작")
+            .scheduleContent("기본 일정")
+            .scheduleStartDate(project.getProjectStartDate())
+            .scheduleEndDate(project.getProjectStartDate())
+            .scheduleDepth(1)
+            .scheduleProgress(0)
+            .scheduleStatus(scheduleStatus)
+            .scheduleIsDeleted(false)
+            .scheduleProjectId(Long.valueOf(project.getProjectId()))
+            .projectMemberId((long)projectMemberId)
+            .build();
+
+        Long scheduleId = scheduleService.createSchedule(createScheduleDTO).getScheduleId();
+        String name = employeeService.viewEmployee(createProjectRequestDTO.getEmployeeId()).getEmployeeName();
 
         int projectId = project.getProjectId();
 
