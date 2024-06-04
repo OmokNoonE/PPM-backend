@@ -33,7 +33,7 @@ public class ProjectController {
     public ResponseEntity<ResponseMessage> createProject(@RequestBody CreateProjectRequestDTO createProjectRequestDTO) {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
-        log.info("프로젝트 생성: {}", createProjectRequestDTO);
+
         Integer projectId = projectService.createProject(createProjectRequestDTO);
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("createProject", projectId);

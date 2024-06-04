@@ -68,28 +68,22 @@ public class NotificationServiceImpl implements NotificationService {
         strategyMap = new HashMap<>();
         strategyMap.put(NotificationType.EMAIL, new EmailNotificationStrategy(javaMailSender));
         strategyMap.put(NotificationType.SLACK, slackNotificationStrategy);
-        log.info("알림 전략 초기화 완료: {}", strategyMap);
     }
 
     @Override
     @Transactional
     public void checkConditionsAndSendNotifications(Integer projectId) {
         int alarm = scheduleService.calculateRatioThisWeek(projectId);
-        log.info("알림 전송 조건 확인: 프로젝트 ID {}, 알람 {}", projectId, alarm);
 
         List<FindSchedulesForWeekDTO> schedules = scheduleService.getSchedulesForThisWeek(projectId);
-        log.info("일정 목록 : {}", schedules);
-        log.info("이번 주 일정 조회 완료: {}개", schedules.size());
+
         String projectTitle = projectService.getProjectTitleById(projectId);
         List<ProjectMember> projectMembers = projectMemberRepository.findProjectMembersByProjectMemberProjectId(projectId);
-        log.info("프로젝트 멤버 조회 완료: {}명", projectMembers.size());
-        log.info("프로젝트 멤버 : {}", projectMembers);
 
         // PM/PL 역할을 가진 멤버들만 필터링
         List<ProjectMember> pmplMembers = projectMembers.stream()
             .filter(member -> hasPMPLRole(member.getProjectMemberId()))
             .collect(Collectors.toList());
-        log.info("PM/PL 멤버 수: {}", pmplMembers.size());
 
         for (ProjectMember member : pmplMembers) {
             handleNotificationsForMember(member, schedules, projectTitle, alarm);
@@ -118,7 +112,6 @@ public class NotificationServiceImpl implements NotificationService {
     private void handleNotificationsForMember(ProjectMember member, List<FindSchedulesForWeekDTO> schedules, String projectTitle, int alarm) {
         List<FindSchedulesForWeekDTO> incompleteSchedulesForMember = getIncompleteSchedulesForMember(schedules, member);
 
-        log.info("미완료 일정 목록: {}", incompleteSchedulesForMember);
         if (!incompleteSchedulesForMember.isEmpty()) {
             if (alarm < 90) {
                 String notificationContent = createNotificationContent(incompleteSchedulesForMember, projectTitle);
@@ -183,12 +176,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional(readOnly = true)
     @Override
     public List<NotificationResponseDTO> viewRecentNotifications(String employeeId) {
-        log.info("최신 알림 10개 조회 시작: 직원 ID {}", employeeId);
-
         List<Notification> notifications = notificationRepository
             .findTop10ByEmployeeIdOrderByNotificationCreatedDateDesc(employeeId);
-
-        log.info("알림 조회 완료: {}개", notifications.size());
 
         return notifications.stream()
             .map(notification -> modelMapper.map(notification, NotificationResponseDTO.class))
@@ -197,8 +186,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional
     public NotificationResponseDTO markAsRead(Long notificationId) {
-        log.info("알림 읽음 처리 시작: 알림 ID {}", notificationId);
-
         Notification notification = notificationRepository.findById(notificationId)
             .orElseThrow(() -> new EntityNotFoundException("해당 알림 Id는 존재 하지 않습니다: " + notificationId));
         notification.markAsRead();
@@ -207,18 +194,14 @@ public class NotificationServiceImpl implements NotificationService {
 
         entityManager.flush();
         entityManager.clear();
-        log.info("알림 읽음 처리 완료: {}", notification);
 
         return modelMapper.map(notification, NotificationResponseDTO.class);
     }
 
 
     private void sendNotificationToEmployee(Employee employee, Notification notification) {
-        log.info("알림 전송 조건 확인: 직원 ID {}", employee.getEmployeeId());
 
         NotificationSettingsResponseDTO settings = notificationSettingService.viewNotificationSettings(employee.getEmployeeId());
-
-        log.info("알림 설정 조회 완료: {}", settings);
 
         if (settings.isEmailEnabled()) {
             sendNotificationWithStrategy(employee, notification, NotificationType.EMAIL);
@@ -230,7 +213,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void sendNotificationWithStrategy(Employee employee, Notification notification, NotificationType type) {
-        log.info("알림 전송 시작: 타입 {}, 직원 ID {}", type, employee.getEmployeeId());
 
         NotificationStrategy strategy = strategyMap.get(type);
         if (strategy != null) {
@@ -241,7 +223,6 @@ public class NotificationServiceImpl implements NotificationService {
                 NotificationSentStatus.SUCCESS, notification.getNotificationId(), employee.getEmployeeId());
 
             try {
-                log.info("어떤 타입으로 발송 했는지 확인: " + type);
                 NotificationSentStatus status = strategy.send(employee, title, content, type);
                 sentRequestDTO.setSentStatus(status);
                 log.info("알림 전송 완료: 타입 {}", type);

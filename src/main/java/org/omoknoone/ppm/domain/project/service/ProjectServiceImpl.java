@@ -96,7 +96,6 @@ public class ProjectServiceImpl implements ProjectService {
                 .build();
 
         int projectMemberId = projectMemberService.createProjectMember(createProjectMemberRequestDTO);
-        log.info("성공? {}", projectMemberId);
 
         int projectId = project.getProjectId();
 

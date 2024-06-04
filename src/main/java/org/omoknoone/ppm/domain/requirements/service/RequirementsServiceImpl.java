@@ -74,14 +74,11 @@ public class RequirementsServiceImpl implements RequirementsService {
 
 	@Override
 	public List<RequirementsListByProjectDTO> searchRequirementsByName(Long projectId, String requirementsName) {
-		log.info("searchRequirementsByName");
-		log.info("projectId : " + projectId);
-		log.info("requirementsName : " + requirementsName);
 
 		List<Requirements> requirements =
 				requirementsRepository.findRequirementsByRequirementsNameContainingAndRequirementsProjectId(
 						requirementsName, projectId);
-		log.info("requirements : " + requirements);
+
 		return requirements.stream()
 				.map(requirement -> modelMapper.map(requirement, RequirementsListByProjectDTO.class))
 				.toList();

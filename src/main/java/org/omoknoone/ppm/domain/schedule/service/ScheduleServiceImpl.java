@@ -393,26 +393,24 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @NotNull
     private List<FindSchedulesForWeekDTO> getFindSchedulesForWeekDTOList(LocalDate monday, LocalDate sunday) {
-        log.info("monday : " + monday);
-        log.info("sunday : " + sunday);
+
         // 금주에 끝나는 일정 조회
         List<Schedule> schedules = scheduleRepository.findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(
                 monday, sunday);
-        log.info("schedules : " + schedules);
+
         Long[] scheduleIdList = schedules.stream().map(Schedule::getScheduleId).toArray(Long[]::new);
 
         // 일정의 이해관계자 정보 조회
         List<StakeholdersEmployeeInfoDTO> stakeholdersEmployeeInfoDTOList = stakeholdersService.viewStakeholdersEmployeeInfo(
                 scheduleIdList);
-        log.info("stakeholdersEmployeeInfoDTOList : " + stakeholdersEmployeeInfoDTOList);
+
         List<FindSchedulesForWeekDTO> findSchedulesForWeekDTOList = modelMapper
                 .map(schedules, new TypeToken<List<FindSchedulesForWeekDTO>>() {
                 }.getType());
-        log.info("findSchedulesForWeekDTOList : " + findSchedulesForWeekDTOList);
+
         for (FindSchedulesForWeekDTO findSchedulesForWeekDTO : findSchedulesForWeekDTOList) {
-            log.info("findSchedulesForWeekDTO : " + findSchedulesForWeekDTO);
+
             for (StakeholdersEmployeeInfoDTO stakeholdersEmployeeInfoDTO : stakeholdersEmployeeInfoDTOList) {
-                log.info("stakeholdersEmployeeInfoDTO : " + stakeholdersEmployeeInfoDTO);
 
                 if (stakeholdersEmployeeInfoDTO.getStakeholdersScheduleId().equals(findSchedulesForWeekDTO.getScheduleId())) {
 
