@@ -5,20 +5,90 @@ POST http://localhost:8888/employees/signup
 Content-Type: application/json
 
 {
-  "employeeId": "EP001",
+  "employeeId": "EP019",
   "employeePassword": "TestPassword123",
-  "employeeName": "이철수",
-  "employeeEmail": "chulsoo@email.com",
-  "employeeJoinDate": "2023-03-01",
+  "employeeName": "이재원",
+  "employeeEmail": "jlee38266@gmail.com",
+  "employeeJoinDate": "2023-12-18",
   "employeeEmploymentStatus": 10501,
   "employeeDepartment": "개발",
   "employeeContact": "010-1234-5678",
-  "employeeCompanyName": "테스트회사",
+  "employeeCompanyName": "오목눈이",
   "employeeIsExternalPartner": false
 }
 
+### 회원 가입
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP023",
+  "employeePassword": "TestPassword123",
+  "employeeName": "장민석",
+  "employeeEmail": "wkdalstjr94@gmail.com",
+  "employeeJoinDate": "2023-12-18",
+  "employeeEmploymentStatus": 10501,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5678",
+  "employeeCompanyName": "오목눈이",
+  "employeeIsExternalPartner": false
+}
+
+### 회원 가입
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP027",
+  "employeePassword": "TestPassword123",
+  "employeeName": "조예린",
+  "employeeEmail": "yerincho06@gmail.com",
+  "employeeJoinDate": "2023-12-18",
+  "employeeEmploymentStatus": 10501,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5678",
+  "employeeCompanyName": "오목눈이",
+  "employeeIsExternalPartner": false
+}
+
+### 회원 가입
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP028",
+  "employeePassword": "TestPassword123",
+  "employeeName": "지현근",
+  "employeeEmail": "hyeongeun0924@gmail.com",
+  "employeeJoinDate": "2023-12-18",
+  "employeeEmploymentStatus": 10501,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5678",
+  "employeeCompanyName": "오목눈이",
+  "employeeIsExternalPartner": false
+}
+
+### 회원 가입
+POST http://localhost:8888/employees/signup
+Content-Type: application/json
+
+{
+  "employeeId": "EP029",
+  "employeePassword": "TestPassword123",
+  "employeeName": "최종찬",
+  "employeeEmail": "ehdchs2006@gmail.com",
+  "employeeJoinDate": "2023-12-18",
+  "employeeEmploymentStatus": 10501,
+  "employeeDepartment": "개발",
+  "employeeContact": "010-1234-5678",
+  "employeeCompanyName": "오목눈이",
+  "employeeIsExternalPartner": false
+}
+
+
+
 ### 회원 조회
-@employeeId = EP001
+@employeeId = EP019
 GET http://localhost:8888/employees/view/{{employeeId}}
 Accept: application/json
 
@@ -27,15 +97,15 @@ PUT http://localhost:8888/employees/modify
 Content-Type: application/json
 
 {
-  "employeeId": "EP001",
-  "employeeName": "홍길동",
-  "employeeEmail": "kimsoojung@email.com",
+  "employeeId": "EP019",
+  "employeeName": "이재원",
+  "employeeEmail": "jlee38266@gmail.com",
   "employeeContact": "010-5678-1234"
 }
 
 
 ### 회원 검색
-@employeeName = 홍길동
+@employeeName = 이재원
 GET http://localhost:8888/employees/search/{{employeeName}}
 Accept: application/json
 

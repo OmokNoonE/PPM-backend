@@ -5,13 +5,15 @@ POST http://localhost:8888/projects/create
 Content-Type: application/json
 
 {
-    "projectTitle": "New Project",
-    "projectStartDate": "2023-01-01",
-    "projectEndDate": "2023-12-31",
-    "projectStatus": "계획",
-    "employeeId" : "EP001",
-    "employeeName": "홍길동"
+    "projectTitle": "오목눈이 프로젝트",
+    "projectStartDate": "2024-05-01",
+    "projectEndDate": "2024-06-14",
+    "projectStatus": "진행",
+    "employeeId" : "EP023",
+    "employeeName": "장민석"
 }
+
+
 
 ### 프로젝트 수정
 PUT http://localhost:8888/projects/modify

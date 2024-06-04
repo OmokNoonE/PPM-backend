@@ -5,14 +5,177 @@ POST http://localhost:8888/schedules/create
 Content-Type: application/json
 
 {
-  "scheduleTitle": "일정 등록 테스트",
-  "scheduleContent": "일정 등록 테스트 내용",
-  "scheduleStartDate": "2024-07-04",
-  "scheduleEndDate": "2024-08-01",
+  "scheduleTitle": "삐엠 기획",
+  "scheduleContent": "삐엠 기획 내용",
+  "scheduleStartDate": "2024-05-01",
+  "scheduleEndDate": "2024-05-03",
   "scheduleDepth": 1,
   "schedulePriority": 1,
-  "scheduleProjectId": 2
+  "scheduleProjectId": 1,
+  "projectMemberId" : 1
+
 }
+
+### 일정 등록
+POST http://localhost:8888/schedules/create
+Content-Type: application/json
+
+{
+  "scheduleTitle": "삐엠 기획2",
+  "scheduleContent": "삐엠 기획 내용",
+  "scheduleStartDate": "2024-05-02",
+  "scheduleEndDate": "2024-05-06",
+  "scheduleDepth": 1,
+  "schedulePriority": 1,
+  "scheduleProjectId": 1,
+  "projectMemberId" : 1
+
+}
+
+### 일정 등록
+POST http://localhost:8888/schedules/create
+Content-Type: application/json
+
+{
+  "scheduleTitle": "삐엠 백엔드 개발",
+  "scheduleContent": "백엔드 개발 일정 내용",
+  "scheduleStartDate": "2024-05-04",
+  "scheduleEndDate": "2024-05-17",
+  "scheduleDepth": 1,
+  "schedulePriority": 1,
+  "scheduleProjectId": 1,
+  "schedulePrecedingScheduleId": 3,
+  "projectMemberId" : 1
+}
+
+### 일정 등록
+POST http://localhost:8888/schedules/create
+Content-Type: application/json
+
+{
+  "scheduleTitle": "삐엠 프론트 개발",
+  "scheduleContent": "프론트 개발 일정 내용",
+  "scheduleStartDate": "2024-05-04",
+  "scheduleEndDate": "2024-05-22",
+  "scheduleDepth": 1,
+  "schedulePriority": 1,
+  "scheduleProjectId": 1,
+  "schedulePrecedingScheduleId": 3,
+  "projectMemberId" : 1
+}
+
+### 일정 등록
+POST http://localhost:8888/schedules/create
+Content-Type: application/json
+
+{
+  "scheduleTitle": "삐엠 CI/CD 인프라 구축",
+  "scheduleContent": "인프라 개발 일정 내용",
+  "scheduleStartDate": "2024-05-14",
+  "scheduleEndDate": "2024-05-25",
+  "scheduleDepth": 1,
+  "schedulePriority": 1,
+  "scheduleProjectId": 1,
+  "projectMemberId" : 1
+}
+
+### 일정 등록
+POST http://localhost:8888/schedules/create
+Content-Type: application/json
+
+{
+  "scheduleTitle": "멘토링 일정",
+  "scheduleContent": "멘토링 일정 내용",
+  "scheduleStartDate": "2024-05-20",
+  "scheduleEndDate": "2024-06-10",
+  "scheduleDepth": 1,
+  "schedulePriority": 1,
+  "scheduleProjectId": 1,
+  "projectMemberId" : 1
+}
+
+### 일정 등록
+POST http://localhost:8888/schedules/create
+Content-Type: application/json
+
+{
+  "scheduleTitle": "프로젝트 중간 검토 및 회의",
+  "scheduleContent": "1차 발표 전 중간 검토 및 방향성 재고 필요함",
+  "scheduleStartDate": "2024-05-14",
+  "scheduleEndDate": "2024-05-14",
+  "scheduleDepth": 1,
+  "schedulePriority": 1,
+  "scheduleProjectId": 1,
+  "projectMemberId" : 1
+}
+
+### 일정 등록
+POST http://localhost:8888/schedules/create
+Content-Type: application/json
+
+{
+  "scheduleTitle": "문서 검토",
+  "scheduleContent": "기획 단계에서 작성한 문서 재검토",
+  "scheduleStartDate": "2024-05-14",
+  "scheduleEndDate": "2024-05-15",
+  "scheduleDepth": 1,
+  "schedulePriority": 1,
+  "scheduleProjectId": 1,
+  "projectMemberId" : 1
+}
+
+### 일정 등록
+POST http://localhost:8888/schedules/create
+Content-Type: application/json
+
+{
+  "scheduleTitle": "일정 수립하기",
+  "scheduleContent": "자세한 세부 일정 계획",
+  "scheduleStartDate": "2024-05-17",
+  "scheduleEndDate": "2024-05-18",
+  "scheduleDepth": 1,
+  "schedulePriority": 1,
+  "scheduleProjectId": 1,
+  "projectMemberId" : 1
+}
+
+### 일정 등록
+POST http://localhost:8888/schedules/create
+Content-Type: application/json
+
+{
+  "scheduleTitle": "QA 및 테스트",
+  "scheduleContent": "QA 및 테스트 일정 수립 및 진행",
+  "scheduleStartDate": "2024-05-17",
+  "scheduleEndDate": "2024-05-28",
+  "scheduleDepth": 1,
+  "schedulePriority": 1,
+  "scheduleProjectId": 1,
+  "projectMemberId" : 1
+}
+
+### 일정 등록
+POST http://localhost:8888/schedules/create
+Content-Type: application/json
+
+{
+  "scheduleTitle": "발표 준비",
+  "scheduleContent": "발표 셋팅 기획 계획 등",
+  "scheduleStartDate": "2024-06-11",
+  "scheduleEndDate": "2024-06-13",
+  "scheduleDepth": 1,
+  "schedulePriority": 1,
+  "scheduleProjectId": 1,
+  "projectMemberId" : 1
+}
+
+
+
+
+
+
+
+
 
 ### 일정 상세 조회
 GET http://localhost:8888/schedules/view/1
@@ -35,23 +198,23 @@ Content-Type: application/json
 
 {
   "scheduleId": 3,
-  "scheduleTitle": "일정 수정 테스트 수정",
-  "scheduleContent": "일정 수정 테스트 내용",
-  "scheduleStartDate": "2024-07-01",
-  "scheduleEndDate": "2024-07-01",
+  "scheduleTitle": "삐엠 기획",
+  "scheduleContent": "프론트 기획 일정 내용",
+  "scheduleStartDate": "2024-05-01",
+  "scheduleEndDate": "2024-05-12",
   "schedulePriority": 1,
-  "scheduleStatus" : 10301,
+  "scheduleStatus" : 10302,
   "scheduleHistoryReason": "일정 수정 사유",
-  "scheduleHistoryProjectMemberId" : 3
+  "scheduleHistoryProjectMemberId" : 4
 }
 
 ### 일정 제거 (soft delete)
-DELETE http://localhost:8888/schedules/remove/2
+DELETE http://localhost:8888/schedules/remove/12
 Content-Type: application/json
 
 {
-  "scheduleHistoryReason": "일정 삭제 사유",
-  "scheduleHistoryProjectMemberId" : 3
+  "scheduleHistoryReason": "일정 삭제 사유 : 초코파이 그만만듦",
+  "scheduleHistoryProjectMemberId" : 1
 }
 
 ### Title을 통한 일정 검색

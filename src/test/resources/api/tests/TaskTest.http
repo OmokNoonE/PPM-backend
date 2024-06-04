@@ -3,9 +3,210 @@ POST http://localhost:8888/tasks/create
 Content-Type: application/json
 
 {
-  "taskTitle": "task제목",
+  "taskTitle": "API 명세서 작성",
+  "taskScheduleId": 3
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "WBS 작성",
+  "taskScheduleId": 3
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "요구사항 정의서 작성",
+  "taskScheduleId": 3
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "단어사전 작성",
+  "taskScheduleId": 3
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "기능명세서 작성",
+  "taskScheduleId": 3
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "화면설계서 작성",
+  "taskScheduleId": 3
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "테스트 계획서 작성",
+  "taskScheduleId": 3
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "이슈 및 PR 서식 작성",
+  "taskScheduleId": 3
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "DDD 설계",
+  "taskScheduleId": 7
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "도메인 분류",
+  "taskScheduleId": 7
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "Employee 개발",
+  "taskScheduleId": 7
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "Notification 개발",
+  "taskScheduleId": 7
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "Dashboard 개발",
+  "taskScheduleId": 7
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "project history 개발",
+  "taskScheduleId": 7
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "project member 개발",
+  "taskScheduleId": 7
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "Requirement 개발",
+  "taskScheduleId": 7
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "Schedule 개발",
+  "taskScheduleId": 7
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "Stakeholders 개발",
+  "taskScheduleId": 7
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "Task 개발",
+  "taskScheduleId": 7
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "로그인 화면 구현",
+  "taskScheduleId": 8
+}
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "각종 화면 구현",
+  "taskScheduleId": 8
+}
+
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "젠킨스 연동",
   "taskScheduleId": 9
 }
+
+### 업무 등록
+POST http://localhost:8888/tasks/create
+Content-Type: application/json
+
+{
+  "taskTitle": "발표 내용 준비",
+  "taskScheduleId": 17
+}
+
+
 
 ### 업무 조회
 GET http://localhost:8888/tasks/view/1

@@ -1,18 +1,54 @@
-# Create Project Member
+### Create Project Member
 POST http://localhost:8888/projectMembers/create
 Content-Type: application/json
 Accept: application/json
 
 {
-  "projectMemberProjectId": 2,
-  "projectMemberEmployeeId": "EP001",
-  "projectMemberRoleId": 10601,
-  "projectMemberEmployeeName": "김수정"
+  "projectMemberProjectId": 1,
+  "projectMemberEmployeeId": "EP019",
+  "projectMemberRoleId": 10603,
+  "projectMemberEmployeeName": "이재원"
 }
 
-###
+### Create Project Member
+POST http://localhost:8888/projectMembers/create
+Content-Type: application/json
+Accept: application/json
 
-# View Project Members By Project
+{
+  "projectMemberProjectId": 1,
+  "projectMemberEmployeeId": "EP027",
+  "projectMemberRoleId": 10603,
+  "projectMemberEmployeeName": "조예린"
+}
+
+### Create Project Member
+POST http://localhost:8888/projectMembers/create
+Content-Type: application/json
+Accept: application/json
+
+{
+  "projectMemberProjectId": 1,
+  "projectMemberEmployeeId": "EP028",
+  "projectMemberRoleId": 10603,
+  "projectMemberEmployeeName": "지현근"
+}
+
+### Create Project Member
+POST http://localhost:8888/projectMembers/create
+Content-Type: application/json
+Accept: application/json
+
+{
+  "projectMemberProjectId": 1,
+  "projectMemberEmployeeId": "EP029",
+  "projectMemberRoleId": 10603,
+  "projectMemberEmployeeName": "최종찬"
+}
+
+
+
+### View Project Members By Project
 GET http://localhost:8888/projectMembers/list/2
 Accept: application/json
 
