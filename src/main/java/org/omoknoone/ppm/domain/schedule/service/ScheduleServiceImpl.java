@@ -397,7 +397,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate thisSunday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-        return getFindSchedulesForWeekDTOList(thisMonday, thisSunday);
+        List<FindSchedulesForWeekDTO> findSchedulesForWeekDTOList = getFindSchedulesForWeekDTOList(thisMonday, thisSunday);
+
+        return findSchedulesForWeekDTOList.stream()
+            .filter(dto -> dto.getScheduleProjectId().equals(Long.valueOf(projectId)))
+            .collect(Collectors.toList());
+
+        // return getFindSchedulesForWeekDTOList(thisMonday, thisSunday);
     }
 
     /* 해당 일자 기준으로 차주에 끝나야할 일정 목록 조회 */
@@ -407,7 +413,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         LocalDate nextMonday = today.with(TemporalAdjusters.next(DayOfWeek.MONDAY));
         LocalDate nextSunday = nextMonday.plusDays(6);
 
-        return getFindSchedulesForWeekDTOList(nextMonday, nextSunday);
+        List<FindSchedulesForWeekDTO> findSchedulesForWeekDTOList = getFindSchedulesForWeekDTOList(nextMonday, nextSunday);
+
+        return findSchedulesForWeekDTOList.stream()
+            .filter(dto -> dto.getScheduleProjectId().equals(Long.valueOf(projectId)))
+            .collect(Collectors.toList());
+
+        // return getFindSchedulesForWeekDTOList(nextMonday, nextSunday);
     }
 
     @NotNull
