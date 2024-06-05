@@ -215,12 +215,13 @@ public class ScheduleController {
     }
 
     /* Title을 통한 일정 검색 */
-    @GetMapping("/search/{scheduleTitle}")
-    public ResponseEntity<ResponseMessage> searchScheduleByTitle(@PathVariable String scheduleTitle){
+    @GetMapping("/search/{scheduleTitle}/{projectId}")
+    public ResponseEntity<ResponseMessage> searchScheduleByTitle(@PathVariable String scheduleTitle,
+        @PathVariable Integer projectId){
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        List<SearchScheduleListDTO> searchScheduleListDTO = scheduleService.searchSchedulesByTitle(scheduleTitle);
+        List<SearchScheduleListDTO> searchScheduleListDTO = scheduleService.searchSchedulesByTitle(scheduleTitle, projectId);
         // ResponseSearchScheduleList searchResult = new ResponseSearchScheduleList(searchScheduleListDTO);
 
         Map<String, Object> responseMap = new HashMap<>();

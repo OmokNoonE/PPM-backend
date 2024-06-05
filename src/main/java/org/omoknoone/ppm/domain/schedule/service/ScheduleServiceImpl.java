@@ -269,9 +269,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     /* Title을 통한 일정 검색 */
     @Override
     @Transactional(readOnly = true)
-    public List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle) {
+    public List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle, Integer projectId) {
 
-        return scheduleRepository.searchScheduleByScheduleTitle(scheduleTitle);
+        return scheduleRepository.searchScheduleByScheduleTitle(scheduleTitle, projectId);
     }
 
     /* 전체 진행률 제공 메소드 (대시보드) */

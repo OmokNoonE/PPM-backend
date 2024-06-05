@@ -48,12 +48,13 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findSchedulesByScheduleParentScheduleId(Long scheduleId);
 
     /* Title을 통한 일정 검색 */
-    @Query("SELECT" + " new org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO" +
-        "(a.scheduleId, a.scheduleTitle, a.scheduleContent, a.scheduleStartDate"
-        + ", a.scheduleEndDate, a.scheduleProgress, a.scheduleStatus) " +
-        "FROM Schedule a " +
-        "WHERE a.scheduleTitle LIKE %:scheduleTitle%")
-    List<SearchScheduleListDTO> searchScheduleByScheduleTitle(String scheduleTitle);
+    @Query("SELECT" + " new org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO"
+        + "(a.scheduleId, a.scheduleTitle, a.scheduleContent, a.scheduleStartDate"
+        + ", a.scheduleEndDate, a.scheduleProgress, a.scheduleStatus) "
+        + "FROM Schedule a "
+        + "WHERE a.scheduleTitle LIKE %:scheduleTitle% "
+        + "AND a.scheduleProjectId = :projectId")
+    List<SearchScheduleListDTO> searchScheduleByScheduleTitle(String scheduleTitle, Integer projectId);
 
     @Query("SELECT new org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO (" +
         "COUNT(s) as totalScheduleCount, " +
@@ -105,5 +106,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         @Param("endDate") LocalDate endDate);
 
     /* 해당 일자가 포함된 주에 끝나야 할 일정 목록 조회 */
-    List<Schedule> findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(@Param("monday") LocalDate monday, @Param("sunday") LocalDate sunday);
+    List<Schedule> findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(@Param("monday") LocalDate monday,
+        @Param("sunday") LocalDate sunday);
 }

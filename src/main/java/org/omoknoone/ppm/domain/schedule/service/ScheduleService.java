@@ -42,7 +42,7 @@ public interface ScheduleService {
     boolean isTaskSchedule(Long scheduleId);
 
     /* Title을 통한 일정 검색 */
-    List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle);
+    List<SearchScheduleListDTO> searchSchedulesByTitle(String scheduleTitle, Integer projectId);
 
     /* 설명. 대시보드 게이지 제공 데이터 추출 */
     int updateGauge(Long projectId);
