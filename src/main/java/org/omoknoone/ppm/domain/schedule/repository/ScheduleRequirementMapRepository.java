@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ScheduleRequirementMapRepository extends JpaRepository<ScheduleRequirementMap, Long> {
 
-    List<ScheduleRequirementMap> findAllByScheduleRequirementMapScheduleId(Long scheduleId);
+    List<ScheduleRequirementMap> findAllByScheduleRequirementMapScheduleIdAndScheduleRequirementMapIsDeletedFalse(Long scheduleId);
+
 }
