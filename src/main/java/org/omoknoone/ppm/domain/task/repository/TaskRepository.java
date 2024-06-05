@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    List<Task> findTasksByTaskScheduleId(Long scheduleId);
+    List<Task> findTasksByTaskScheduleIdAndTaskIsDeletedFalse(Long scheduleId);
 }
