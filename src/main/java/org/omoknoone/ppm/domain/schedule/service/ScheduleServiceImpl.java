@@ -489,6 +489,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         return modelMapper.map(schedule, ResponseSchedule.class);
     }
 
+    @Override
+    public String getScheduleTitle(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findSchedulesByScheduleId(scheduleId);
+
+        return schedule.getScheduleTitle();
+    }
+
     /* 차주 일정 진행률 계산 */
     public int calculateRatioNextWeek(Integer projectId) {
         List<FindSchedulesForWeekDTO> schedulesNextWeek = getSchedulesForNextWeek(projectId);

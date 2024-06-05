@@ -326,7 +326,7 @@ public class ScheduleController {
 
     /* 일정 시트에 사용될 데이터 수집 */
     @GetMapping("/sheet/{projectId}")
-    public ResponseEntity<ResponseMessage> getSheetData(@PathVariable Long projectId, @RequestHeader String employeeId){
+    public ResponseEntity<ResponseMessage> getSheetData(@PathVariable("projectId") Long projectId, @RequestHeader String employeeId){
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
@@ -342,7 +342,7 @@ public class ScheduleController {
     }
 
     @PutMapping("/connect/{scheduleId}")
-    public ResponseEntity<ResponseMessage> connectSchedule(@PathVariable Long scheduleId, @RequestBody
+    public ResponseEntity<ResponseMessage> connectSchedule(@PathVariable("scheduleId") Long scheduleId, @RequestBody
         ConnectScheduleDTO connectScheduleDTO){
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
@@ -358,5 +358,21 @@ public class ScheduleController {
             .status(HttpStatus.OK)
             .headers(headers)
             .body(new ResponseMessage(200, "일정 연결 성공", responseMap));
+    }
+
+    @GetMapping("/get/title/{scheduleId}")
+    public ResponseEntity<ResponseMessage> getScheduleTitle(@PathVariable("scheduleId") Long scheduleId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        String scheduleTitle = scheduleService.getScheduleTitle(scheduleId);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("scheduleTitle", scheduleTitle);
+
+        return ResponseEntity
+            .ok()
+            .headers(headers)
+            .body(new ResponseMessage(200, "일정 제목 조회 성공", responseMap));
     }
 }

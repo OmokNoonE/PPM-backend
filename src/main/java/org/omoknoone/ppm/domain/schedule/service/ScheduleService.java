@@ -82,4 +82,6 @@ public interface ScheduleService {
     int calculateRatioThisWeek(Integer projectId);
 
     ResponseSchedule connectSchedule(ConnectScheduleDTO connectScheduleDTO);
+
+    String getScheduleTitle(Long scheduleId);
 }

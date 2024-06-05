@@ -53,7 +53,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         + ", a.scheduleEndDate, a.scheduleProgress, a.scheduleStatus) "
         + "FROM Schedule a "
         + "WHERE a.scheduleTitle LIKE %:scheduleTitle% "
-        + "AND a.scheduleProjectId = :projectId")
+        + "AND a.scheduleProjectId = :projectId "
+        + "AND a.scheduleIsDeleted = false")
     List<SearchScheduleListDTO> searchScheduleByScheduleTitle(String scheduleTitle, Integer projectId);
 
     @Query("SELECT new org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO (" +
@@ -108,4 +109,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     /* 해당 일자가 포함된 주에 끝나야 할 일정 목록 조회 */
     List<Schedule> findByScheduleEndDateBetweenAndScheduleIsDeletedFalse(@Param("monday") LocalDate monday,
         @Param("sunday") LocalDate sunday);
+
+    Schedule findSchedulesByScheduleId(Long scheduleId);
 }
