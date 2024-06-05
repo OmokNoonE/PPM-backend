@@ -19,15 +19,17 @@ public class ViewProjectResponseDTO {
     private String projectEndDate;
     private String projectStatus;
     private String projectModifiedDate;
+    private Long roleId;
 
     @Builder
-    public ViewProjectResponseDTO(int projectId, String projectTitle, String projectStartDate, String projectEndDate, String projectStatus, String projectModifiedDate) {
+    public ViewProjectResponseDTO(int projectId, String projectTitle, String projectStartDate, String projectEndDate, String projectStatus, String projectModifiedDate, Long roleId) {
         this.projectId = projectId;
         this.projectTitle = projectTitle;
         this.projectStartDate = projectStartDate;
         this.projectEndDate = projectEndDate;
         this.projectStatus = projectStatus;
         this.projectModifiedDate = projectModifiedDate;
+        this.roleId = roleId;
     }
 
     public static ViewProjectResponseDTO fromProject(Project project, String projectStatusName) {

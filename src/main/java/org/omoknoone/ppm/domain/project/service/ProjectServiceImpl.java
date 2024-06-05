@@ -294,13 +294,30 @@ public class ProjectServiceImpl implements ProjectService {
                 .toList()
         );
 
-        return projectList.stream()
+        // projectList의 projectId와 projectMemberList의 projectId가 일치하는 경우 projectMemberList의 roleId를 가져와서 ViewProjectResponseDTO로 변환
+        List<ViewProjectResponseDTO> viewProjectResponseDTOList = projectList.stream()
                 .map(project -> {
+                    ProjectMember matchingMember = projectMemberList.stream()
+                            .filter(member -> Objects.equals(member.getProjectMemberProjectId(), project.getProjectId()))
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalArgumentException("No matching project member found"));
+
                     String projectStatusName = String.valueOf(commonCodeService.viewCommonCodeById(
                             (long) project.getProjectStatus()).getCodeName());
-                    return ViewProjectResponseDTO.fromProject(project, projectStatusName);
+
+                    return ViewProjectResponseDTO.builder()
+                            .projectId(project.getProjectId())
+                            .projectTitle(project.getProjectTitle())
+                            .projectStartDate(String.valueOf(project.getProjectStartDate()))
+                            .projectEndDate(String.valueOf(project.getProjectEndDate()))
+                            .projectModifiedDate(project.getProjectModifiedDate().substring(0, 19))
+                            .projectStatus(projectStatusName)
+                            .roleId(matchingMember.getProjectMemberRoleId())
+                            .build();
                 })
                 .toList();
+
+        return viewProjectResponseDTOList;
     }
 
     @Override
