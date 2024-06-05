@@ -30,6 +30,9 @@ import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceCalculator;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -176,14 +179,13 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional(readOnly = true)
     @Override
     public List<NotificationResponseDTO> viewRecentNotifications(String employeeId) {
-        List<Notification> notifications = notificationRepository
-            .findTop10ByEmployeeIdOrderByNotificationCreatedDateDesc(employeeId);
+        Pageable pageable = PageRequest.of(0, 10); // 상위 10개 항목
+        Page<Notification> notificationPage = notificationRepository.findTop10ByEmployeeIdOrderByNotificationCreatedDateDesc(employeeId, pageable);
 
-        return notifications.stream()
+        return notificationPage.stream()
             .map(notification -> modelMapper.map(notification, NotificationResponseDTO.class))
             .collect(Collectors.toList());
     }
-
     @Transactional
     public NotificationResponseDTO markAsRead(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
