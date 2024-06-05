@@ -25,6 +25,7 @@ import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.schedule.dto.ConnectScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
@@ -37,6 +38,7 @@ import org.omoknoone.ppm.domain.schedule.dto.SearchScheduleListDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateDataDTO;
 import org.omoknoone.ppm.domain.schedule.dto.UpdateTableDataDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
+import org.omoknoone.ppm.domain.schedule.vo.ResponseSchedule;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
 import org.omoknoone.ppm.domain.stakeholders.dto.CreateStakeholdersDTO;
 import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
@@ -472,6 +474,19 @@ public class ScheduleServiceImpl implements ScheduleService {
     public int calculateRatioThisWeek(Integer projectId) {
         List<FindSchedulesForWeekDTO> schedulesThisWeek = getSchedulesForThisWeek(projectId);
         return ScheduleServiceCalculator.calculateReadyOrInProgressRatio(schedulesThisWeek, commonCodeRepository);
+    }
+
+    @Override
+    public ResponseSchedule connectSchedule(ConnectScheduleDTO connectScheduleDTO) {
+
+        Schedule schedule = scheduleRepository.findById(connectScheduleDTO.getScheduleId())
+            .orElseThrow(IllegalArgumentException::new);
+
+        schedule.connectSchedule(connectScheduleDTO);
+
+        scheduleRepository.save(schedule);
+
+        return modelMapper.map(schedule, ResponseSchedule.class);
     }
 
     /* 차주 일정 진행률 계산 */

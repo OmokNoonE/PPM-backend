@@ -12,6 +12,7 @@ import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.schedule.dto.ConnectScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
 import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
@@ -338,5 +339,24 @@ public class ScheduleController {
             .ok()
             .headers(headers)
             .body(new ResponseMessage(200, "시트에 삽입될 데이터 조회 완료", responseMap));
+    }
+
+    @PutMapping("/connect/{scheduleId}")
+    public ResponseEntity<ResponseMessage> connectSchedule(@PathVariable Long scheduleId, @RequestBody
+        ConnectScheduleDTO connectScheduleDTO){
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        connectScheduleDTO.setScheduleId(scheduleId);
+
+        ResponseSchedule responseSchedule = scheduleService.connectSchedule(connectScheduleDTO);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("responseSchedule", responseSchedule);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .headers(headers)
+            .body(new ResponseMessage(200, "일정 연결 성공", responseMap));
     }
 }

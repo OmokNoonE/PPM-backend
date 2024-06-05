@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.*;
+import org.omoknoone.ppm.domain.schedule.vo.ResponseSchedule;
 import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
 
 public interface ScheduleService {
@@ -79,4 +80,6 @@ public interface ScheduleService {
     List<ResponseScheduleSheetData> getSheetData(Long projectId, String employeeId);
 
     int calculateRatioThisWeek(Integer projectId);
+
+    ResponseSchedule connectSchedule(ConnectScheduleDTO connectScheduleDTO);
 }
