@@ -18,7 +18,8 @@ public interface StakeholdersRepository extends JpaRepository<Stakeholders, Long
             + " p.projectMemberEmployeeId, p.projectMemberRoleId, p.projectMemberEmployeeName) "
             + "FROM Stakeholders st "
             + "JOIN ProjectMember p ON st.stakeholdersProjectMemberId = p.projectMemberId "
-            + "WHERE st.stakeholdersScheduleId = :scheduleId")
+            + "WHERE st.stakeholdersScheduleId = :scheduleId "
+            + "AND st.stakeholdersIsDeleted = false")
     List<ViewStakeholdersDTO> findStakeholdersByStakeholdersScheduleId(Long scheduleId);
 
 
@@ -33,7 +34,8 @@ public interface StakeholdersRepository extends JpaRepository<Stakeholders, Long
             + "FROM Stakeholders st "
             + "JOIN ProjectMember p ON st.stakeholdersProjectMemberId = p.projectMemberId "
             + "JOIN Employee e ON p.projectMemberEmployeeId = e.employeeId "
-            + "WHERE st.stakeholdersScheduleId IN :scheduleIdList")
+            + "WHERE st.stakeholdersScheduleId IN :scheduleIdList "
+            + "AND st.stakeholdersIsDeleted = false")
     List<StakeholdersEmployeeInfoDTO> findStakeholdersEmployeeInfoByScheduleIdList(Long[] scheduleIdList);
 }
 

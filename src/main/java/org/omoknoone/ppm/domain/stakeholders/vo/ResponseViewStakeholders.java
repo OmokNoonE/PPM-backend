@@ -19,7 +19,7 @@ public class ResponseViewStakeholders {
     private Long stakeholdersScheduleId;
     private Long stakeholdersProjectMemberId;
     private String projectMemberEmployeeId;
-    private Integer projectMemberRoleName;
+    private Integer projectMemberRoleId;
     private String projectMemberEmployeeName;
 
 }
