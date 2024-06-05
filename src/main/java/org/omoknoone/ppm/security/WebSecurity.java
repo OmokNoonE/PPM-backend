@@ -4,6 +4,7 @@ import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.omoknoone.ppm.domain.employee.service.AuthService;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
+import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +33,7 @@ public class WebSecurity {
     private final CorsConfig corsConfig;
     private final AuthService authService;
     private final ProjectMemberService projectMemberService;
+    private final ProjectService projectService;
 
     /* 설명. 인가(Authorization)용 메소드 */
     @Bean
@@ -87,6 +89,7 @@ public class WebSecurity {
                 .environment(environment)
                 .jwtTokenProvider(jwtTokenProvider)
                 .projectMemberService(projectMemberService)
+                .projectService(projectService)
                 .build();
     }
 

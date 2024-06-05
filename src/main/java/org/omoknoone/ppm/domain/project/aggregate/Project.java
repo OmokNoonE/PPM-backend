@@ -91,4 +91,9 @@ public class Project {
     public void saveProjectStatus(int projectStatus) {
         this.projectStatus = projectStatus;
     }
+
+    public void deleteProject() {
+        this.projectIsDeleted = true;
+        this.projectModifiedDate = LocalDateTime.now().toString();
+    }
 }

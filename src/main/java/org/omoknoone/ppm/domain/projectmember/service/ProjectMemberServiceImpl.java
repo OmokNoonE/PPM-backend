@@ -9,14 +9,10 @@ import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
 import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
+import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMemberHistory;
-import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberHistoryRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ProjectMemberHistoryDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewAvailableMembersResponseDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.*;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberHistoryRepository;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
 import org.springframework.core.env.Environment;
@@ -38,6 +34,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     private final EmployeeService employeeService;
     private final CommonCodeService commonCodeService;
     private final Environment environment;
+    private final ProjectService projectService;
     private final ModelMapper modelMapper;
 
     @Transactional(readOnly = true)
@@ -203,5 +200,24 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
         if (!isValid) {
             throw new IllegalArgumentException("권한 역할 ID가 올바르지 않습니다.");
         }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ViewProjectMemberByProjectIdResponseDTO viewProjectMemberByProjectId(Integer projectId, String employeeId) {
+
+        ProjectMember projectMember = projectMemberRepository.findByProjectMemberProjectIdAndProjectMemberEmployeeIdAndProjectMemberIsExcludedIsFalse(projectId, employeeId);
+
+        String projectTitle = projectService.viewProjectTitle(projectId);
+
+        ViewProjectMemberByProjectIdResponseDTO responseDTO = ViewProjectMemberByProjectIdResponseDTO
+                .builder()
+                .projectId(Long.valueOf(projectMember.getProjectMemberProjectId()))
+                .projectTitle(projectTitle)
+                .projectMemberId(Long.valueOf(projectMember.getProjectMemberId()))
+                .roleId(projectMember.getProjectMemberRoleId())
+                .build();
+
+        return responseDTO;
     }
 }

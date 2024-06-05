@@ -6,6 +6,7 @@ import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
+import org.omoknoone.ppm.domain.project.dto.RemoveProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ViewProjectResponseDTO;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
@@ -130,5 +131,27 @@ public class ProjectController {
                 .ok()
                 .headers(headers)
                 .body(new ResponseMessage(200, "프로젝트 상세 조회 성공", responseMap));
+    }
+
+    // 프로젝트 삭제
+    @DeleteMapping("/remove/{projectId}")
+    // 프로젝트 수정
+    public ResponseEntity<ResponseMessage> removeProject(
+            @PathVariable int projectId,
+            @RequestBody RemoveProjectRequestDTO removeProjectRequestDTO) {
+        log.info("removeProjectRequestDTO: {}", removeProjectRequestDTO);
+        removeProjectRequestDTO.setProjectId(projectId);
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        int removedProjectId = projectService.removeProject(removeProjectRequestDTO);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("removeProject", removedProjectId);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(204, "프로젝트 삭제 성공", responseMap));
     }
 }

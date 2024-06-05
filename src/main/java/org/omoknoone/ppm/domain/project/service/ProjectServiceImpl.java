@@ -16,6 +16,7 @@ import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
 import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
+import org.omoknoone.ppm.domain.project.dto.RemoveProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.dto.ViewProjectResponseDTO;
 import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
 import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
@@ -26,6 +27,7 @@ import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.repository.ScheduleRepository;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +35,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
@@ -45,7 +46,20 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectMemberService projectMemberService;
     private final CommonCodeService commonCodeService;
     private final EmployeeService employeeService;
-    private final ModelMapper modelMapper;
+
+    public ProjectServiceImpl(ProjectHistoryService projectHistoryService, ProjectRepository projectRepository,
+                              HolidayRepository holidayRepository, ScheduleRepository scheduleRepository,
+                              ScheduleService scheduleService, @Lazy ProjectMemberService projectMemberService,
+                              CommonCodeService commonCodeService, EmployeeService employeeService) {
+        this.projectHistoryService = projectHistoryService;
+        this.projectRepository = projectRepository;
+        this.holidayRepository = holidayRepository;
+        this.scheduleRepository = scheduleRepository;
+        this.scheduleService = scheduleService;
+        this.projectMemberService = projectMemberService;
+        this.commonCodeService = commonCodeService;
+        this.employeeService = employeeService;
+    }
 
     @Transactional
     @Override
@@ -67,35 +81,36 @@ public class ProjectServiceImpl implements ProjectService {
 
         projectRepository.save(project);
 
-        // 기본 일정 생성
-        Long scheduleStatus = Long.valueOf(commonCodeService.viewCommonCodeByCodeName("준비").getCodeId().toString());
-
-        CreateScheduleDTO createScheduleDTO = CreateScheduleDTO.builder()
-                .scheduleProjectId(Long.valueOf(project.getProjectId()))
-                .scheduleTitle("프로젝트 시작")
-                .scheduleContent("기본 일정")
-                .scheduleDepth(1)
-                .scheduleStatus(scheduleStatus)
-                .scheduleStartDate(project.getProjectStartDate())
-                .scheduleEndDate(project.getProjectStartDate())
-                .scheduleIsDeleted(false)
-                .build();
-
-
-        Long scheduleId = scheduleService.createSchedule(createScheduleDTO).getScheduleId();
-        String name = employeeService.viewEmployee(createProjectRequestDTO.getEmployeeId()).getEmployeeName();
-
         // 방금 만든 프로젝트의 구성원으로 생성자의 정보를 PM으로 등록
         int pmRoleId = Integer.parseInt(commonCodeService.viewCommonCodeByCodeName("PM").getCodeId().toString());
 
         CreateProjectMemberRequestDTO createProjectMemberRequestDTO = CreateProjectMemberRequestDTO.builder()
-                .projectMemberEmployeeId(createProjectRequestDTO.getEmployeeId())
-                .projectMemberProjectId(project.getProjectId())
-                .projectMemberRoleId((long)pmRoleId)
-                .projectMemberEmployeeName(createProjectRequestDTO.getEmployeeName())
-                .build();
+            .projectMemberEmployeeId(createProjectRequestDTO.getEmployeeId())
+            .projectMemberProjectId(project.getProjectId())
+            .projectMemberRoleId((long)pmRoleId)
+            .projectMemberEmployeeName(createProjectRequestDTO.getEmployeeName())
+            .build();
 
         int projectMemberId = projectMemberService.createProjectMember(createProjectMemberRequestDTO);
+
+        // 기본 일정 생성
+        Long scheduleStatus = commonCodeService.viewCommonCodeByCodeName("준비").getCodeId();
+
+        CreateScheduleDTO createScheduleDTO = CreateScheduleDTO.builder()
+            .scheduleTitle("프로젝트 시작")
+            .scheduleContent("기본 일정")
+            .scheduleStartDate(project.getProjectStartDate())
+            .scheduleEndDate(project.getProjectStartDate())
+            .scheduleDepth(1)
+            .scheduleProgress(0)
+            .scheduleStatus(scheduleStatus)
+            .scheduleIsDeleted(false)
+            .scheduleProjectId(Long.valueOf(project.getProjectId()))
+            .projectMemberId((long)projectMemberId)
+            .build();
+
+        Long scheduleId = scheduleService.createSchedule(createScheduleDTO).getScheduleId();
+        String name = employeeService.viewEmployee(createProjectRequestDTO.getEmployeeId()).getEmployeeName();
 
         int projectId = project.getProjectId();
 
@@ -273,19 +288,36 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<ProjectMember> projectMemberList = projectMemberService.viewProjectMemberListByEmployeeId(employeeId);
 
-        List<Project> projectList = projectRepository.findAllByProjectIdInOrderByProjectIdDesc(
+        List<Project> projectList = projectRepository.findAllByProjectIdInAndProjectIsDeletedFalseOrderByProjectIdDesc(
             projectMemberList.stream()
                 .map(ProjectMember::getProjectMemberProjectId)
                 .toList()
         );
 
-        return projectList.stream()
+        // projectList의 projectId와 projectMemberList의 projectId가 일치하는 경우 projectMemberList의 roleId를 가져와서 ViewProjectResponseDTO로 변환
+        List<ViewProjectResponseDTO> viewProjectResponseDTOList = projectList.stream()
                 .map(project -> {
+                    ProjectMember matchingMember = projectMemberList.stream()
+                            .filter(member -> Objects.equals(member.getProjectMemberProjectId(), project.getProjectId()))
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalArgumentException("No matching project member found"));
+
                     String projectStatusName = String.valueOf(commonCodeService.viewCommonCodeById(
                             (long) project.getProjectStatus()).getCodeName());
-                    return ViewProjectResponseDTO.fromProject(project, projectStatusName);
+
+                    return ViewProjectResponseDTO.builder()
+                            .projectId(project.getProjectId())
+                            .projectTitle(project.getProjectTitle())
+                            .projectStartDate(String.valueOf(project.getProjectStartDate()))
+                            .projectEndDate(String.valueOf(project.getProjectEndDate()))
+                            .projectModifiedDate(project.getProjectModifiedDate().substring(0, 19))
+                            .projectStatus(projectStatusName)
+                            .roleId(matchingMember.getProjectMemberRoleId())
+                            .build();
                 })
                 .toList();
+
+        return viewProjectResponseDTOList;
     }
 
     @Override
@@ -304,6 +336,33 @@ public class ProjectServiceImpl implements ProjectService {
                 .projectStatus(projectStatusName) // Set the code_name as projectStatus
                 .projectModifiedDate(project.getProjectModifiedDate())
                 .build();
+    }
+
+    @Override
+    public int removeProject(RemoveProjectRequestDTO removeProjectRequestDTO) {
+        Project project = projectRepository.findById(removeProjectRequestDTO.getProjectId())
+                .orElseThrow(IllegalArgumentException::new);
+
+        project.deleteProject();
+
+        projectRepository.save(project);
+
+        // 수정내역 관리 DTO 생성
+        ModifyProjectHistoryDTO modifyProjectHistoryDTO = ModifyProjectHistoryDTO.builder()
+                .projectId(project.getProjectId())
+                .projectMemberId(removeProjectRequestDTO.getProjectMemberId())
+                .projectHistoryReason(removeProjectRequestDTO.getProjectHistoryReason())
+                .build();
+
+        // 수정 로그 작성
+        projectHistoryService.createProjectHistory(modifyProjectHistoryDTO);
+
+        return removeProjectRequestDTO.getProjectId();
+    }
+
+    @Override
+    public String viewProjectTitle(Integer projectId) {
+        return projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new).getProjectTitle();
     }
 
     public String getProjectTitleById(Integer projectId) {

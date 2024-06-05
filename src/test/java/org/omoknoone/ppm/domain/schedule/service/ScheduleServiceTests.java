@@ -412,13 +412,14 @@ class ScheduleServiceTests {
         // createScheduleDTO를 사용하여 일정을 생성합니다.
         // 일정의 제목은 "테스트 일정"으로 설정합니다.
         createScheduleDTO.setScheduleTitle("테스트 일정");
+        createScheduleDTO.setScheduleProjectId(1L);
         Schedule createdSchedule1 = scheduleService.createSchedule(createScheduleDTO);
         Schedule createdSchedule2 = scheduleService.createSchedule(createScheduleDTO);
         Schedule createdSchedule3 = scheduleService.createSchedule(createScheduleDTO);
 
         // When
         // "테스트 일정"이라는 제목으로 일정을 검색합니다.
-        List<SearchScheduleListDTO> searchedSchedules = scheduleService.searchSchedulesByTitle("테스트 일정");
+        List<SearchScheduleListDTO> searchedSchedules = scheduleService.searchSchedulesByTitle("테스트 일정", 1);
 
         // Then
         // 반환된 일정 목록이 null이 아니며, 생성한 일정의 수와 일치하는지 확인합니다.

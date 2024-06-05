@@ -32,7 +32,7 @@ public class RequirementsServiceImpl implements RequirementsService {
 	@Override
 	public List<RequirementsListByProjectDTO> viewRequirementsByProjectId(Long projectId, Boolean isDeleted) {
 
-		List<Requirements> requirements = requirementsRepository.findByRequirementsProjectIdAndRequirementsIsDeleted(projectId, Boolean.valueOf(isDeleted));
+		List<Requirements> requirements = requirementsRepository.findByRequirementsProjectIdAndRequirementsIsDeleted(projectId, isDeleted);
 
 		return requirements.stream()
 				.map(requirement -> modelMapper.map(requirement, RequirementsListByProjectDTO.class))

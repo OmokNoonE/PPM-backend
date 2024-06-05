@@ -54,7 +54,7 @@ public class TaskServiceImpl implements TaskService{
     @Transactional(readOnly = true)
     public List<TaskDTO> viewScheduleTask(Long scheduleId) {
 
-        List<Task> taskList = taskRepository.findTasksByTaskScheduleId(scheduleId);
+        List<Task> taskList = taskRepository.findTasksByTaskScheduleIdAndTaskIsDeletedFalse(scheduleId);
         if(taskList == null || taskList.isEmpty()){
             throw new IllegalArgumentException(scheduleId + " 스케쥴에 해당하는 업무가 존재하지 않습니다.");
         }

@@ -12,6 +12,7 @@ import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.schedule.dto.ConnectScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.CreateScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
 import org.omoknoone.ppm.domain.schedule.dto.RequestModifyScheduleDTO;
@@ -215,12 +216,13 @@ public class ScheduleController {
     }
 
     /* Title을 통한 일정 검색 */
-    @GetMapping("/search/{scheduleTitle}")
-    public ResponseEntity<ResponseMessage> searchScheduleByTitle(@PathVariable String scheduleTitle){
+    @GetMapping("/search/{scheduleTitle}/{projectId}")
+    public ResponseEntity<ResponseMessage> searchScheduleByTitle(@PathVariable String scheduleTitle,
+        @PathVariable Integer projectId){
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        List<SearchScheduleListDTO> searchScheduleListDTO = scheduleService.searchSchedulesByTitle(scheduleTitle);
+        List<SearchScheduleListDTO> searchScheduleListDTO = scheduleService.searchSchedulesByTitle(scheduleTitle, projectId);
         // ResponseSearchScheduleList searchResult = new ResponseSearchScheduleList(searchScheduleListDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
@@ -324,7 +326,7 @@ public class ScheduleController {
 
     /* 일정 시트에 사용될 데이터 수집 */
     @GetMapping("/sheet/{projectId}")
-    public ResponseEntity<ResponseMessage> getSheetData(@PathVariable Long projectId, @RequestHeader String employeeId){
+    public ResponseEntity<ResponseMessage> getSheetData(@PathVariable("projectId") Long projectId, @RequestHeader String employeeId){
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
@@ -337,5 +339,40 @@ public class ScheduleController {
             .ok()
             .headers(headers)
             .body(new ResponseMessage(200, "시트에 삽입될 데이터 조회 완료", responseMap));
+    }
+
+    @PutMapping("/connect/{scheduleId}")
+    public ResponseEntity<ResponseMessage> connectSchedule(@PathVariable("scheduleId") Long scheduleId, @RequestBody
+        ConnectScheduleDTO connectScheduleDTO){
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        connectScheduleDTO.setScheduleId(scheduleId);
+
+        ResponseSchedule responseSchedule = scheduleService.connectSchedule(connectScheduleDTO);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("responseSchedule", responseSchedule);
+
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .headers(headers)
+            .body(new ResponseMessage(200, "일정 연결 성공", responseMap));
+    }
+
+    @GetMapping("/get/title/{scheduleId}")
+    public ResponseEntity<ResponseMessage> getScheduleTitle(@PathVariable("scheduleId") Long scheduleId) {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        String scheduleTitle = scheduleService.getScheduleTitle(scheduleId);
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("scheduleTitle", scheduleTitle);
+
+        return ResponseEntity
+            .ok()
+            .headers(headers)
+            .body(new ResponseMessage(200, "일정 제목 조회 성공", responseMap));
     }
 }

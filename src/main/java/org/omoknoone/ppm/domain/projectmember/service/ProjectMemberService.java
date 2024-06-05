@@ -3,10 +3,7 @@ package org.omoknoone.ppm.domain.projectmember.service;
 import java.util.List;
 
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
-import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewAvailableMembersResponseDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.*;
 
 public interface ProjectMemberService {
 
@@ -24,5 +21,7 @@ public interface ProjectMemberService {
 
 	List<ProjectMember> viewProjectMemberListByEmployeeId(String employeeId);
 
-  ProjectMember viewProjectMemberInfo(String employeeId, Integer projectId);
+	ProjectMember viewProjectMemberInfo(String employeeId, Integer projectId);
+
+	ViewProjectMemberByProjectIdResponseDTO viewProjectMemberByProjectId(Integer projectId, String employeeId);
 }

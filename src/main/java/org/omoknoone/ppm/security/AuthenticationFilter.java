@@ -14,6 +14,7 @@ import org.omoknoone.ppm.domain.employee.dto.LoginEmployeeDTO;
 import org.omoknoone.ppm.domain.employee.dto.RequestLoginDTO;
 import org.omoknoone.ppm.domain.employee.service.AuthService;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
+import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.springframework.core.env.Environment;
@@ -38,15 +39,17 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final Environment environment;
     private final JwtTokenProvider jwtTokenProvider;
     private final ProjectMemberService projectMemberService;
+    private final ProjectService projectService;
 
     @Builder
-    public AuthenticationFilter(AuthenticationManager authenticationManager, EmployeeService employeeService, AuthService authService, Environment environment, JwtTokenProvider jwtTokenProvider, ProjectMemberService projectMemberService) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager, EmployeeService employeeService, AuthService authService, Environment environment, JwtTokenProvider jwtTokenProvider, ProjectMemberService projectMemberService, ProjectService projectService) {
         super(authenticationManager);
         this.employeeService = employeeService;
         this.authService = authService;
         this.environment = environment;
         this.jwtTokenProvider = jwtTokenProvider;
         this.projectMemberService = projectMemberService;
+        this.projectService = projectService;
     }
 
     /* 설명. 로그인 시도 시 동작하는 기능(POST 방식의 /login 요청) -> request body에 담겨온다. */
@@ -81,13 +84,22 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String employeeId = loginEmployeeDetails.getEmployeeId();
         String employeeName = loginEmployeeDetails.getEmployeeName();
         String encodedEmployeeName = Base64.getEncoder().encodeToString(employeeName.getBytes(StandardCharsets.UTF_8));
+        String projectId = "";
+        String projectTitle = "";
+        String projectMemberId = "";
+        String roleId = "";
 
         List<ProjectMember> projectMemberList = projectMemberService.viewProjectMemberListByEmployeeId(employeeId);
 
-        // projectMemberList에서 가장 최근에 만들어진 프로젝트의 ID를 가져온다
-        String projectId = String.valueOf(projectMemberList.get(0).getProjectMemberProjectId());
-        String projectMemberId = String.valueOf(projectMemberList.get(0).getProjectMemberId());
-        String roleId = String.valueOf(projectMemberList.get(0).getProjectMemberRoleId());
+        if (projectMemberList.isEmpty()) {
+            log.info("소속된 프로젝트가 없습니다.");
+        } else {
+            // projectMemberList에서 가장 최근에 만들어진 프로젝트의 ID를 가져온다
+            projectId = String.valueOf(projectMemberList.get(0).getProjectMemberProjectId());
+            projectTitle = Base64.getEncoder().encodeToString(projectService.viewProject(projectMemberList.get(0).getProjectMemberProjectId()).getProjectTitle().getBytes(StandardCharsets.UTF_8));
+            projectMemberId =String.valueOf(projectMemberList.get(0).getProjectMemberId());
+            roleId = String.valueOf(projectMemberList.get(0).getProjectMemberRoleId());
+        }
 
         Claims claims = Jwts.claims().setSubject(employeeId);
 //        claims.put("role", roleName);
@@ -105,6 +117,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         response.addHeader("employeeId", employeeId);
         response.addHeader("employeeName", encodedEmployeeName);
         response.addHeader("projectId", projectId);
+        response.addHeader("projectTitle", projectTitle);
         response.addHeader("projectMemberId", projectMemberId);
         response.addHeader("roleId", roleId);
 

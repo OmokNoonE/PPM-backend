@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.omoknoone.ppm.domain.schedule.dto.ConnectScheduleDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleDateDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleProgressDTO;
 import org.omoknoone.ppm.domain.schedule.dto.ModifyScheduleTitleAndContentDTO;
@@ -118,6 +119,11 @@ public class Schedule {
 
     public void modifyStatus(Long scheduleStatus) {
         this.scheduleStatus = scheduleStatus;
+    }
+
+    public void connectSchedule(ConnectScheduleDTO connectScheduleDTO){
+        this.scheduleParentScheduleId = connectScheduleDTO.getScheduleParentScheduleId();
+        this.schedulePrecedingScheduleId = connectScheduleDTO.getSchedulePrecedingScheduleId();
     }
 
     public void remove() {

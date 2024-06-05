@@ -45,7 +45,8 @@ public class ScheduleRequirementMapServiceImpl implements ScheduleRequirementMap
     @Transactional(readOnly = true)
     public List<ScheduleRequirementMapDTO> viewScheduleRequirementsMap(Long scheduleId) {
 
-        List<ScheduleRequirementMap> scheduleRequirementMapList = scheduleRequirementMapRepository.findAllByScheduleRequirementMapScheduleId(
+        List<ScheduleRequirementMap> scheduleRequirementMapList
+            = scheduleRequirementMapRepository.findAllByScheduleRequirementMapScheduleIdAndScheduleRequirementMapIsDeletedFalse(
             scheduleId);
         if (scheduleRequirementMapList == null || scheduleRequirementMapList.isEmpty()) {
             throw new IllegalArgumentException(scheduleId + " 스케쥴에 해당하는 요구사항이 존재하지 않습니다.");
