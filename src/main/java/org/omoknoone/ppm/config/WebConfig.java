@@ -15,7 +15,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://ppmppm.site/",
-                        "*",
                         "http://www.ppmppm.site/",
                         "https://api.nepcha.com/",
                         "https://www.api.nepcha.com/",
