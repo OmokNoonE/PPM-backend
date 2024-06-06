@@ -14,7 +14,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "http://ppmppm.site:80"
+                        "http://ppmppm.site/",
+                        "https://api.nepcha.com/",
+                        "http://a8237ef3f9cb34681a23bbeb7ecb13c1-632214019.ap-northeast-2.elb.amazonaws.com/"
                 )
                 .allowCredentials(true)
                 .allowedMethods("GET", "POST", "PUT", "DELETE");
