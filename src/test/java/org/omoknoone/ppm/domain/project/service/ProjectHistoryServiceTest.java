@@ -16,7 +16,7 @@ import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
 import org.omoknoone.ppm.domain.project.dto.RemoveProjectRequestDTO;
 import org.omoknoone.ppm.domain.project.repository.ProjectHistoryRepository;
 import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
-import org.omoknoone.ppm.domain.projectDashboard.service.GraphServiceImpl;
+import org.omoknoone.ppm.domain.projectdashboard.service.GraphServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
