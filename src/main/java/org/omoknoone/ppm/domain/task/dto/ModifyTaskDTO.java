@@ -1,12 +1,10 @@
 package org.omoknoone.ppm.domain.task.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @NoArgsConstructor
 @Getter
+@Setter
 @ToString
 public class ModifyTaskDTO {
 
