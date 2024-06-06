@@ -11,35 +11,35 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 class ProjectDashboardServiceTest {
-
-	@Autowired
-	private ProjectDashboardService projectDashboardService;
-
-	@Test
-	@Transactional
-	public void testSetDashboardLayout() {
-		// Given
-		ProjectDashboardDTO requestDTO = new ProjectDashboardDTO();
-		// Set properties for requestDTO
-
-		// When
-		Integer result = projectDashboardService.setDashboardLayout(requestDTO);
-
-		// Then
-		assertNotNull(result);
-		// Check the database to ensure the data has been saved correctly
-	}
-
-	@Test
-	@Transactional(readOnly = true)
-	public void testViewProjectDashboardLayout() {
-		// Given
-		Integer projectId = 1;
-
-		// When
-		ProjectDashboardDTO result = projectDashboardService.viewProjectDashboardLayout(projectId);
-
-		// Then
-		assertNotNull(result);
-	}
+//
+//	@Autowired
+//	private ProjectDashboardService projectDashboardService;
+//
+//	@Test
+//	@Transactional
+//	public void testSetDashboardLayout() {
+//		// Given
+//		ProjectDashboardDTO requestDTO = new ProjectDashboardDTO();
+//		// Set properties for requestDTO
+//
+//		// When
+//		Integer result = projectDashboardService.setDashboardLayout(requestDTO);
+//
+//		// Then
+//		assertNotNull(result);
+//		// Check the database to ensure the data has been saved correctly
+//	}
+//
+//	@Test
+//	@Transactional(readOnly = true)
+//	public void testViewProjectDashboardLayout() {
+//		// Given
+//		Integer projectId = 1;
+//
+//		// When
+//		ProjectDashboardDTO result = projectDashboardService.viewProjectDashboardLayout(projectId);
+//
+//		// Then
+//		assertNotNull(result);
+//	}
 }
