@@ -27,6 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     testImplementation 'io.projectreactor:reactor-test'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -51,8 +52,26 @@ dependencies {
     // mongoDB
     implementation ('org.springframework.boot:spring-boot-starter-data-mongodb')
 
+    // slack api
+    implementation("com.slack.api:bolt:1.18.0")
+    implementation("com.slack.api:bolt-servlet:1.18.0")
+    implementation("com.slack.api:bolt-jetty:1.18.0")
+
+    // JSONObject
+    // 데이터를 json화 시키거나 json화된 데이터를 String으로 변경하여 추출하기 편한 라이브러리
+    implementation 'org.json:json:20190722'
+
+// springboot actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // prometheus
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
     // Jasypt
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+
+
+
 
 }
 

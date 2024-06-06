@@ -13,6 +13,7 @@ import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.core.env.Environment;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -47,7 +48,8 @@ public class GlobalExceptionHandler {
             ConstraintViolationException.class, OptimisticLockException.class, HttpMessageNotWritableException.class,
             BeanCreationException.class, NoSuchBeanDefinitionException.class, BeanInitializationException.class,
             BeanInstantiationException.class, UnsupportedPointcutPrimitiveException.class, TransactionSystemException.class,
-            CannotCreateTransactionException.class, TransactionException.class, Exception.class
+            CannotCreateTransactionException.class, TransactionException.class, Exception.class,
+            DataAccessException.class
     })
     public ResponseEntity<Map<Integer, String>> handleException(Exception ex) {
         logger.error("Exception: {}", ex.getMessage());
@@ -119,6 +121,9 @@ public class GlobalExceptionHandler {
         } else if (ex instanceof TransactionException) {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             propertyKey = environment.getProperty("exception.system.transactionError");
+        } else if (ex instanceof DataAccessException) {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            propertyKey = environment.getProperty("exception.data.databaseAccessError");
         } else {
             status = HttpStatus.INTERNAL_SERVER_ERROR;
             propertyKey = environment.getProperty("exception.system.generalError");

@@ -1,0 +1,20 @@
+// 완료
+
+### 권한 create (DTO에서 permissionScheduleId의 p만 대문자였음)
+POST http://localhost:8888/permissions/create
+Content-Type: application/json
+
+{
+    "permissionRoleName": 10601,
+    "permissionProjectMemberId": 2,
+    "permissionScheduleId": 9
+}
+
+### view Member Permission
+GET http://localhost:8888/permissions/member/2
+
+### view Schedule Permission
+GET http://localhost:8888/permissions/schedule/9
+
+### remove Permission
+DELETE http://localhost:8888/permissions/remove/1

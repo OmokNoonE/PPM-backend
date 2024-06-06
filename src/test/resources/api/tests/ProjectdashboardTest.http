@@ -1,0 +1,13 @@
+// 완료
+
+### View Project Dashboard By ProjectId
+GET http://localhost:8888/graphs/1/pie
+Accept: application/json
+
+
+### Delete Graph By ProjectId
+DELETE http://localhost:8888/graphs/delete/3
+Accept: application/json
+
+### Delete All Graph
+DELETE http://localhost:8888/graphs/delete/all

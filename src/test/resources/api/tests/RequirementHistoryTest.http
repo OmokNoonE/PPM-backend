@@ -1,0 +1,4 @@
+// 완료
+
+### 요구사항Id를 통한 요구사항 수정내역 조회
+GET http://localhost:8888/requirementsHistories/view/1
