@@ -5,4 +5,4 @@ resources:
 - ppmser.yml
 images:
 - name: orlzll/ppm-back
-  newTag: "0.9"
+  newTag: 1.0.0
