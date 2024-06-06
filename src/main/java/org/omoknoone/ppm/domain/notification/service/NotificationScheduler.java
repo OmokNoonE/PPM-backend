@@ -15,7 +15,7 @@ public class NotificationScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationScheduler.class);
 
-    @Scheduled(cron = "0 0 16 ? * FRI") // 매주 금요일 오후 4시 실행
+//    @Scheduled(cron = "0 0 16 ? * FRI") // 매주 금요일 오후 4시 실행
     public void scheduleNotificationCheck() {
         // if (projectId != null) {
         // notificationService.checkConditionsAndSendNotifications(projectId);
