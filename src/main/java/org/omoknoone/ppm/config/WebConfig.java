@@ -15,6 +15,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:8887",
+                        "http://a8237ef3f9cb34681a23bbeb7ecb13c1-632214019.ap-northeast-2.elb.amazonaws.com:8887",
 
                         /* 설명. kubernetes 환경에서 프론트의 워커노드는 30000번이고 백엔드 입장에서는 프론트의 워커노드를 CORS 처리 해 주어야 한다. */
                         "http://localhost:30000"
