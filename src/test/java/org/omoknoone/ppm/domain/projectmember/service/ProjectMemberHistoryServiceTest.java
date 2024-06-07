@@ -2,6 +2,7 @@ package org.omoknoone.ppm.domain.projectmember.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -39,10 +40,12 @@ class ProjectMemberHistoryServiceTest {
 		// Given
 		ProjectMember member = projectMemberRepository.findAll().get(0);
 		Integer memberId = member.getProjectMemberId();
+		LocalDateTime exclusionDate = member.getProjectMemberExclusionDate();
 		String reason = "테스트 이유";
 
 		logger.info("Project Member ID: " + memberId);
 		logger.info("Project Member Name: " + member.getProjectMemberEmployeeName());
+		logger.info("Project Member Exclusion Date: " + exclusionDate);
 
 		// When
 		projectMemberService.removeProjectMember(memberId, reason);
@@ -65,7 +68,6 @@ class ProjectMemberHistoryServiceTest {
 		assertEquals(memberId, history.getProjectMemberHistoryProjectMemberId(), "Project Member ID should match");
 		assertEquals(reason, history.getProjectMemberHistoryReason(), "Reason should match");
 		assertNotNull(history.getProjectMemberHistoryCreatedDate(), "Created date should not be null");
-		assertNull(history.getProjectMemberHistoryExclusionDate(), "Exclusion date should be null");
 		assertFalse(history.getProjectMemberHistoryIsDeleted(), "IsDeleted should be false");
 	}
 

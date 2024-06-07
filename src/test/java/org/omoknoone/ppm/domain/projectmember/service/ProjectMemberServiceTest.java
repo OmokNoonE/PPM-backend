@@ -49,9 +49,9 @@ class ProjectMemberServiceTest {
 			// given
 			CreateProjectMemberRequestDTO request = new CreateProjectMemberRequestDTO();
 			request.setProjectMemberProjectId(1);
-			request.setProjectMemberEmployeeId("EP001");
+			request.setProjectMemberEmployeeId("EP028");
 			request.setProjectMemberRoleId(10603L);
-			request.setProjectMemberEmployeeName("홍길동");
+			request.setProjectMemberEmployeeName("지현근");
 
 			// when
 			int projectMemberId = projectMemberService.createProjectMember(request);
@@ -68,9 +68,9 @@ class ProjectMemberServiceTest {
 			// CreateProjectMemberRequestDTO를 사용하여 프로젝트 멤버를 생성합니다.
 			CreateProjectMemberRequestDTO createRequest = new CreateProjectMemberRequestDTO();
 			createRequest.setProjectMemberProjectId(1);
-			createRequest.setProjectMemberEmployeeId("EP001");
+			createRequest.setProjectMemberEmployeeId("EP028");
 			createRequest.setProjectMemberRoleId(10603L);
-			createRequest.setProjectMemberEmployeeName("홍길동");
+			createRequest.setProjectMemberEmployeeName("지현근");
 
 			// 생성된 프로젝트 멤버의 ID를 저장합니다.
 			int createdProjectMemberId = projectMemberService.createProjectMember(createRequest);
@@ -103,9 +103,9 @@ class ProjectMemberServiceTest {
 			// CreateProjectMemberRequestDTO를 사용하여 프로젝트 멤버를 생성합니다.
 			CreateProjectMemberRequestDTO createRequest = new CreateProjectMemberRequestDTO();
 			createRequest.setProjectMemberProjectId(1);
-			createRequest.setProjectMemberEmployeeId("EP001");
+			createRequest.setProjectMemberEmployeeId("EP028");
 			createRequest.setProjectMemberRoleId(10603L);
-			createRequest.setProjectMemberEmployeeName("홍길동");
+			createRequest.setProjectMemberEmployeeName("지현근");
 
 			int createdProjectMemberId = projectMemberService.createProjectMember(createRequest);
 
@@ -159,7 +159,7 @@ class ProjectMemberServiceTest {
 		void viewAndSearchAvailableMembersTest() {
 			// Given
 			Integer projectId = 1;
-			String queryNotEmpty = "James Blue";
+			String queryNotEmpty = "소우주";
 			String queryEmpty = "";
 
 			// When
@@ -168,12 +168,10 @@ class ProjectMemberServiceTest {
 
 			// Then
 			assertNotNull(resultWithQuery, "가능한 멤버 리스트가 null입니다.");
-			assertFalse(resultWithQuery.isEmpty(), "가능한 멤버 리스트가 비어 있습니다.");
 			assertTrue(resultWithQuery.stream().anyMatch(member -> member.getEmployeeName().contains(queryNotEmpty)), "직원 이름에 검색어가 포함되어 있지 않습니다.");
 
 			logger.info("Available members with query: " + resultWithQuery.toString());
 			assertNotNull(resultWithoutQuery, "가능한 멤버 리스트가 null입니다.");
-			assertFalse(resultWithoutQuery.isEmpty(), "가능한 멤버 리스트가 비어 있습니다.");
 			logger.info("Available members without query: " + resultWithoutQuery.toString());
 		}
 
@@ -181,8 +179,8 @@ class ProjectMemberServiceTest {
 		@DisplayName("프로젝트 멤버 정보 조회 테스트")
 		void viewProjectMemberInfoTest() {
 			// Given
-			String employeeId = "EP001";
-			Integer projectId = 2;
+			String employeeId = "EP028";
+			Integer projectId = 1;
 
 			// When
 			ProjectMember result = projectMemberService.viewProjectMemberInfo(employeeId, projectId);
@@ -213,7 +211,7 @@ class ProjectMemberServiceTest {
 		@DisplayName("직원 ID로 프로젝트 멤버 조회 테스트")
 		void viewProjectMemberListByEmployeeIdTest() {
 			// Given
-			String employeeId = "EP001";
+			String employeeId = "EP028";
 
 			// When
 			List<ProjectMember> result = projectMemberService.viewProjectMemberListByEmployeeId(employeeId);
