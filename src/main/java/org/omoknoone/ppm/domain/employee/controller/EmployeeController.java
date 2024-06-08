@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.employee.aggregate.Employee;
-import org.omoknoone.ppm.domain.employee.dto.ModifyEmployeeRequestDTO;
-import org.omoknoone.ppm.domain.employee.dto.ModifyPasswordRequestDTO;
-import org.omoknoone.ppm.domain.employee.dto.SignUpEmployeeRequestDTO;
-import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
+import org.omoknoone.ppm.domain.employee.dto.*;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -109,5 +107,21 @@ public class EmployeeController {
                 .ok()
                 .headers(headers)
                 .body(new ResponseMessage(200, "비밀번호 변경 성공", responseMap));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<ResponseMessage> viewEmployeeList() {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        List<ViewEmployeeListResponseDTO> viewEmployeeList = employeeService.viewEmployeeList();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewEmployeeList", viewEmployeeList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "회원 목록 조회 성공", responseMap));
     }
 }
