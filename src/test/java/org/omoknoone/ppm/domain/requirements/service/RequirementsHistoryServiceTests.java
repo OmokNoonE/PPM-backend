@@ -1,6 +1,9 @@
 package org.omoknoone.ppm.domain.requirements.service;
 
-import jakarta.transaction.Transactional;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import jakarta.transaction.Transactional;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -28,10 +29,10 @@ class RequirementsHistoryServiceTests {
 
         // Given
         ModifyRequirementRequestDTO modifyRequirementRequestDTO = new ModifyRequirementRequestDTO();
-        modifyRequirementRequestDTO.setRequirementsId(1L);
-        modifyRequirementRequestDTO.setRequirementsName("요구사항 수정 테스트 제목");
-        modifyRequirementRequestDTO.setRequirementsContent("요구사항 수정 테스트 내용");
-        modifyRequirementRequestDTO.setRequirementHistoryReason("요구사항 수정 테스트 내역");
+        modifyRequirementRequestDTO.setRequirementsId(24L);
+        modifyRequirementRequestDTO.setRequirementsName("Requirement 1");
+        modifyRequirementRequestDTO.setRequirementsContent("Content for Requirement 1");
+        modifyRequirementRequestDTO.setRequirementHistoryReason("삭제하고 싶어서");
         modifyRequirementRequestDTO.setRequirementHistoryProjectMemberId(1L);
 
         // When

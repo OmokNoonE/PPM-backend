@@ -28,7 +28,7 @@ class NotificationSettingsServiceTest {
 	@Transactional
 	public void testViewNotificationSettings() {
 		// Given
-		String employeeId = "EP001";
+		String employeeId = "EP009";
 
 		// When
 		NotificationSettingsResponseDTO result = notificationSettingsService.viewNotificationSettings(employeeId);
@@ -38,7 +38,7 @@ class NotificationSettingsServiceTest {
 
 		// 필드 값 검증
 		assertTrue(result.isEmailEnabled(), "Email notifications should be enabled");
-		assertFalse(result.isSlackEnabled(), "Slack notifications should not be enabled");
+		assertTrue(result.isSlackEnabled(), "Slack notifications should be enabled");
 	}
 
 
@@ -48,7 +48,7 @@ class NotificationSettingsServiceTest {
 	@Transactional
 	public void testUpdateNotificationSettings() {
 		// Given
-		String employeeId = "EP001";
+		String employeeId = "EP009";
 		NotificationSettingsRequestDTO requestDTO = new NotificationSettingsRequestDTO();
 		requestDTO.setEmployeeId(employeeId);
 		requestDTO.setEmailEnabled(false);
