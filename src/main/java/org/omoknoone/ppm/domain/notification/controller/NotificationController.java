@@ -82,22 +82,35 @@ public class NotificationController {
                 .body(new ResponseMessage(200, "알림 읽음 전환 성공", responseMap));
     }
 
-        @DeleteMapping("/remove/{notificationId}")
-        public ResponseEntity<ResponseMessage> removeNotification(@PathVariable("notificationId") Long notificationId) {
-            HttpHeaders headers = HttpHeadersCreator.createHeaders();
+    @DeleteMapping("/remove/{notificationId}")
+    public ResponseEntity<ResponseMessage> removeNotification(@PathVariable("notificationId") Long notificationId) {
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-            NotificationResponseDTO removedNotification = notificationService.markAsDeleted(notificationId);
+        NotificationResponseDTO removedNotification = notificationService.markAsDeleted(notificationId);
 
-            if (removedNotification == null) {
-                return ResponseEntity.notFound().build();
-            }
-
-            Map<String, Object> responseMap = new HashMap<>();
-            responseMap.put("removedNotification", removedNotification);
-
-            return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .headers(headers)
-                .body(new ResponseMessage(204, "알림 삭제 성공", responseMap));
+        if (removedNotification == null) {
+            return ResponseEntity.notFound().build();
         }
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("removedNotification", removedNotification);
+
+        return ResponseEntity
+            .status(HttpStatus.NO_CONTENT)
+            .headers(headers)
+            .body(new ResponseMessage(204, "알림 삭제 성공", responseMap));
     }
+
+    @GetMapping("/send/{projectId}")
+    public ResponseEntity<ResponseMessage> sendNotifications(@PathVariable("projectId") Integer projectId) {
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        notificationService.checkConditionsAndSendNotifications(projectId);
+
+        return ResponseEntity
+            .ok()
+            .headers(headers)
+            .body(new ResponseMessage(200, "알림 전송 성공"));
+    }
+
+}

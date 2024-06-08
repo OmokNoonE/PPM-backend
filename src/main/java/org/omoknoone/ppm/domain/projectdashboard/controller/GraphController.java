@@ -75,6 +75,20 @@ public class GraphController {
 			.body(new ResponseMessage(204, "mongodb 초기화 성공"));
 	}
 
+	@GetMapping("/refresh")
+	public ResponseEntity<ResponseMessage> refreshGraph() {
 
+		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
+		/* TODO. 개인별로 작동하도록 변경 */
+		graphService.updateGaugeAll();
+		graphService.updateColumnAll();
+		graphService.updateLineAll();
+		graphService.updatePieAll();
+
+		return ResponseEntity
+			.ok()
+			.headers(headers)
+			.body(new ResponseMessage(200, "그래프 업데이트 성공"));
+	}
 }
