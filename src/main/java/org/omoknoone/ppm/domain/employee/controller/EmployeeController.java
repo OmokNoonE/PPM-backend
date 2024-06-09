@@ -109,7 +109,7 @@ public class EmployeeController {
                 .body(new ResponseMessage(200, "비밀번호 변경 성공", responseMap));
     }
 
-    @GetMapping("/list")
+    @GetMapping("/admin/list")
     public ResponseEntity<ResponseMessage> viewEmployeeList() {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
