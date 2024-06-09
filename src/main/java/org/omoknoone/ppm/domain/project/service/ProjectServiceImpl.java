@@ -288,6 +288,10 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<ProjectMember> projectMemberList = projectMemberService.viewProjectMemberListByEmployeeId(employeeId);
 
+        projectMemberList = projectMemberList.stream()
+                .filter(member -> !member.getProjectMemberIsExcluded())
+                .toList();
+
         List<Project> projectList = projectRepository.findAllByProjectIdInAndProjectIsDeletedFalseOrderByProjectIdDesc(
             projectMemberList.stream()
                 .map(ProjectMember::getProjectMemberProjectId)
