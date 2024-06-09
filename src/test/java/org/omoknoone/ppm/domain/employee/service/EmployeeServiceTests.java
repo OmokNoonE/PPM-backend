@@ -3,14 +3,12 @@ package org.omoknoone.ppm.domain.employee.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.omoknoone.ppm.domain.employee.dto.LoginEmployeeDTO;
-import org.omoknoone.ppm.domain.employee.dto.ModifyEmployeeRequestDTO;
-import org.omoknoone.ppm.domain.employee.dto.ModifyPasswordRequestDTO;
-import org.omoknoone.ppm.domain.employee.dto.SignUpEmployeeRequestDTO;
-import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
+import org.omoknoone.ppm.domain.employee.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -118,5 +116,18 @@ class EmployeeServiceTests {
 
         // then
         assertEquals("EP028", result);
+    }
+
+    @DisplayName("관리자용 사원 목록 조회 테스트")
+    @Transactional
+    @Test
+    void viewAvailableMembers() {
+
+        // when
+        List<ViewEmployeeListResponseDTO> employeeList = employeeService.viewEmployeeList();
+
+        // then
+        assertNotNull(employeeList);
+        assertFalse(employeeList.isEmpty());
     }
 }
