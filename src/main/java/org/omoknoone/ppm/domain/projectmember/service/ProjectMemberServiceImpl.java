@@ -9,10 +9,18 @@ import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
 import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
+import org.omoknoone.ppm.domain.notification.dto.NotificationRequestDTO;
+import org.omoknoone.ppm.domain.notification.service.NotificationService;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMemberHistory;
-import org.omoknoone.ppm.domain.projectmember.dto.*;
+import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberHistoryRequestDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ProjectMemberHistoryDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ViewAvailableMembersResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMemberByProjectIdResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberHistoryRepository;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
 import org.springframework.core.env.Environment;
@@ -36,6 +44,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     private final Environment environment;
     private final ProjectService projectService;
     private final ModelMapper modelMapper;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     @Override
@@ -107,7 +116,35 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
             projectMemberHistoryService.createProjectMemberHistory(historyRequestDTO);
         }
 
+        // 알림 전송
+        sendNotificationToNewProjectMember(projectMember);
+
         return projectMember.getProjectMemberId();
+    }
+
+    private void sendNotificationToNewProjectMember(ProjectMember projectMember) {
+        String projectTitle = projectService.viewProjectTitle(projectMember.getProjectMemberProjectId());
+        String roleName = getRoleNameById(projectMember.getProjectMemberRoleId());
+
+        NotificationRequestDTO notificationRequest = new NotificationRequestDTO();
+        notificationRequest.setEmployeeId(projectMember.getProjectMemberEmployeeId());
+        notificationRequest.setNotificationTitle("프로젝트 구성원 추가 알림");
+        notificationRequest.setNotificationContent(
+            String.format("'%s' 프로젝트에 '%s' 역할로 추가되었습니다.", projectTitle, roleName)
+        );
+
+        notificationService.createAndSendNotification(notificationRequest);
+    }
+
+    private String getRoleNameById(Long roleId) {
+        if (roleId == 10601L) {
+            return "PM";
+        } else if (roleId == 10602L) {
+            return "PL";
+        } else if (roleId == 10603L) {
+            return "PA";
+        }
+        return "Unknown Role";
     }
 
     @Transactional

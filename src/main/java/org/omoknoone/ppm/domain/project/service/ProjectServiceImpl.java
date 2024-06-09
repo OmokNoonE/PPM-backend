@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
@@ -29,7 +28,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -363,6 +361,10 @@ public class ProjectServiceImpl implements ProjectService {
     public String viewProjectTitle(Integer projectId) {
         return projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new).getProjectTitle();
     }
+
+    @Override
+    public List<Integer> getAllProjectIds() {
+        return projectRepository.findAllProjectIds();
 
     @Override
     public List<ViewAllProjectResponseDTO> viewAllProjectList() {
