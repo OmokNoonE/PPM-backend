@@ -24,7 +24,7 @@ public class CorsConfig {
                 "https://www.api.nepcha.com/"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of("accessToken", "employeeId", "employeeName",
+        config.setExposedHeaders(List.of("accessToken", "employeeId", "employeeName", "employeeRole",
                                         "projectId", "projectTitle", "projectMemberId", "roleId"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

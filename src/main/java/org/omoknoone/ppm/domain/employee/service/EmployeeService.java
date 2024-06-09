@@ -30,4 +30,6 @@ public interface EmployeeService extends UserDetailsService{
     List<ViewEmployeeResponseDTO> viewAvailableMembers(Integer projectId);
 
     List<ViewEmployeeResponseDTO> viewAndSearchAvailableMembersByQuery(Integer projectIdn, String query);
+
+    List<ViewEmployeeListResponseDTO> viewEmployeeList();
 }
