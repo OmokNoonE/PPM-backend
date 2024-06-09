@@ -1,16 +1,17 @@
 package org.omoknoone.ppm.domain.project.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.time.LocalDate;
-import java.util.List;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.omoknoone.ppm.domain.project.dto.ViewAllProjectResponseDTO;
 import org.omoknoone.ppm.domain.project.dto.ViewProjectResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ProjectServiceTest {
@@ -205,5 +206,18 @@ class ProjectServiceTest {
         assertEquals(expectedProjectStartDate, project.getProjectStartDate());
         assertEquals(expectedProjectEndDate, project.getProjectEndDate());
         assertEquals(expectedProjectStatus, project.getProjectStatus());
+    }
+    
+    @DisplayName("관리자용 프로젝트 목록 조회 테스트")
+    @Transactional
+    @Test
+    void viewAllProjectList() {
+
+        // when
+        List<ViewAllProjectResponseDTO> projectList = projectService.viewAllProjectList();
+
+        // then
+        assertNotNull(projectList);
+        assertFalse(projectList.isEmpty());
     }
 }

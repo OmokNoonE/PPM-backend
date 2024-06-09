@@ -83,6 +83,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         LoginEmployeeDTO loginEmployeeDetails = employeeService.getLoginEmployeeDetailsByEmployeeId(id);
         String employeeId = loginEmployeeDetails.getEmployeeId();
         String employeeName = loginEmployeeDetails.getEmployeeName();
+        String employeeRole = loginEmployeeDetails.getEmployeeRole().substring(5);  // "ROLE_" 제거
         String encodedEmployeeName = Base64.getEncoder().encodeToString(employeeName.getBytes(StandardCharsets.UTF_8));
         String projectId = "";
         String projectTitle = "";
@@ -116,6 +117,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         response.addHeader("accessToken", accessToken);
         response.addHeader("employeeId", employeeId);
         response.addHeader("employeeName", encodedEmployeeName);
+        response.addHeader("employeeRole", employeeRole);
         response.addHeader("projectId", projectId);
         response.addHeader("projectTitle", projectTitle);
         response.addHeader("projectMemberId", projectMemberId);

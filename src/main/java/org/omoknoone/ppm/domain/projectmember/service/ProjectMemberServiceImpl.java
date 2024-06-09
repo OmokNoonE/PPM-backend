@@ -257,4 +257,16 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
 
         return responseDTO;
     }
+
+    @Override
+    public ProjectMemberEmployeeDTO viewProjectMemberEmployeeInfo(Integer projectMemberId) {
+
+        ProjectMember projectMember = projectMemberRepository.findByProjectMemberId(projectMemberId);
+
+        return ProjectMemberEmployeeDTO.builder()
+                .projectMemberId(projectMember.getProjectMemberId())
+                .projectMemberEmployeeId(projectMember.getProjectMemberEmployeeId())
+                .projectMemberEmployeeName(projectMember.getProjectMemberEmployeeName())
+                .build();
+    }
 }
