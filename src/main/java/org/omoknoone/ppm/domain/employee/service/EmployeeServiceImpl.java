@@ -140,10 +140,7 @@ public class EmployeeServiceImpl implements EmployeeService{
                                                         .viewCommonCodesByGroupName("재직 상태");
 
         List<Employee> employeeList = employeeRepository.findAll();
-//        List<ViewEmployeeListResponseDTO> viewEmployeeListResponseDTOList =
-//                employeeList.stream()
-//                        .map(employee -> modelMapper.map(employee, ViewEmployeeListResponseDTO.class))
-//                        .collect(Collectors.toList());
+
         List<ViewEmployeeListResponseDTO> viewEmployeeListResponseDTOList =
                 employeeList.stream()
                         .map(employee -> ViewEmployeeListResponseDTO.builder()
