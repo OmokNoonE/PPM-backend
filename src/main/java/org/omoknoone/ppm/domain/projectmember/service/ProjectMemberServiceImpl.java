@@ -116,7 +116,7 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
             projectMemberHistoryService.createProjectMemberHistory(historyRequestDTO);
         }
 
-        // 알림 전송 로직 추가
+        // 알림 전송
         sendNotificationToNewProjectMember(projectMember);
 
         return projectMember.getProjectMemberId();
@@ -137,8 +137,6 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     }
 
     private String getRoleNameById(Long roleId) {
-        // 역할 ID를 기반으로 역할 이름을 반환하는 로직을 구현합니다.
-        // 예: 10601L -> "PM", 10602L -> "PL", 10603L -> "PA"
         if (roleId == 10601L) {
             return "PM";
         } else if (roleId == 10602L) {
