@@ -288,14 +288,11 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<ProjectMember> projectMemberList = projectMemberService.viewProjectMemberListByEmployeeId(employeeId);
 
-        projectMemberList = projectMemberList.stream()
-                .filter(member -> !member.getProjectMemberIsExcluded())
-                .toList();
-
         List<Project> projectList = projectRepository.findAllByProjectIdInAndProjectIsDeletedFalseOrderByProjectIdDesc(
             projectMemberList.stream()
-                .map(ProjectMember::getProjectMemberProjectId)
-                .toList()
+                    .filter(member -> !member.getProjectMemberIsExcluded())
+                    .map(ProjectMember::getProjectMemberProjectId)
+                    .toList()
         );
 
         // projectList의 projectId와 projectMemberList의 projectId가 일치하는 경우 projectMemberList의 roleId를 가져와서 ViewProjectResponseDTO로 변환
