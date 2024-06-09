@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
-import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
-import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
-import org.omoknoone.ppm.domain.project.dto.RemoveProjectRequestDTO;
-import org.omoknoone.ppm.domain.project.dto.ViewProjectResponseDTO;
+import org.omoknoone.ppm.domain.project.dto.*;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -135,7 +132,6 @@ public class ProjectController {
 
     // 프로젝트 삭제
     @DeleteMapping("/remove/{projectId}")
-    // 프로젝트 수정
     public ResponseEntity<ResponseMessage> removeProject(
             @PathVariable int projectId,
             @RequestBody RemoveProjectRequestDTO removeProjectRequestDTO) {
@@ -153,5 +149,22 @@ public class ProjectController {
                 .ok()
                 .headers(headers)
                 .body(new ResponseMessage(204, "프로젝트 삭제 성공", responseMap));
+    }
+
+    // (관리자용)프로젝트 목록 조회
+    @GetMapping("/admin/list")
+    public ResponseEntity<ResponseMessage> viewAllProjectList() {
+
+        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+
+        List<ViewAllProjectResponseDTO> projectList = projectService.viewAllProjectList();
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("viewAllProjectList", projectList);
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(new ResponseMessage(200, "프로젝트 목록 조회 성공", responseMap));
     }
 }
