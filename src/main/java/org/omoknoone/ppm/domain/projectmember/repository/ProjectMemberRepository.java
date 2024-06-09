@@ -1,12 +1,12 @@
 package org.omoknoone.ppm.domain.projectmember.repository;
 
+import java.util.List;
+
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 public interface ProjectMemberRepository extends JpaRepository<ProjectMember, Integer> {
 
@@ -27,4 +27,9 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, In
     List<ProjectMember> findProjectMembersByProjectMemberProjectId(Integer projectId);
 
     ProjectMember findByProjectMemberProjectIdAndProjectMemberEmployeeIdAndProjectMemberIsExcludedIsFalse(Integer projectId, String employeeId);
+
+	List<ProjectMember> findProjectMembersByProjectMemberRoleId(long roleId);
+
+    List<ProjectMember> findAllByProjectMemberIsExcludedIsFalse();
+    List<ProjectMember> findProjectMembersByProjectMemberProjectIdAndProjectMemberIsExcludedIsFalse(Integer projectId);
 }

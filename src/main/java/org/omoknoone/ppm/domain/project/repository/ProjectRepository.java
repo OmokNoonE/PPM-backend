@@ -13,4 +13,7 @@ public interface ProjectRepository extends JpaRepository<Project, Integer> {
 	List<Project> findAllByProjectStatusIs10202();
 
 	List<Project> findAllByProjectIdInAndProjectIsDeletedFalseOrderByProjectIdDesc(List<Integer> projectIds);
+
+	@Query("SELECT p.projectId FROM Project p")
+	List<Integer> findAllProjectIds();
 }

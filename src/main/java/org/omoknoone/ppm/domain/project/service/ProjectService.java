@@ -1,7 +1,6 @@
 package org.omoknoone.ppm.domain.project.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.omoknoone.ppm.domain.project.aggregate.Project;
@@ -31,4 +30,6 @@ public interface ProjectService {
 	int removeProject(RemoveProjectRequestDTO removeProjectRequestDTO);
 
 	String viewProjectTitle(Integer projectId);
+
+	List<Integer> getAllProjectIds();
 }
