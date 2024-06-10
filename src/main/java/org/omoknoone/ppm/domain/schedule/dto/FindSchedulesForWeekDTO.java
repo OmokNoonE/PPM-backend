@@ -1,12 +1,16 @@
 package org.omoknoone.ppm.domain.schedule.dto;
 
-import lombok.*;
-import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
-import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersDTO;
-import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
-
 import java.time.LocalDate;
 import java.util.List;
+
+import org.omoknoone.ppm.domain.schedule.aggregate.Schedule;
+import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * DTO for {@link Schedule}
@@ -24,6 +28,7 @@ public class FindSchedulesForWeekDTO {
     private String scheduleStatus;
     private Boolean scheduleIsDeleted;
     private Long scheduleProjectId;
+    private Long stakeholdersType;
 
     // 작성자
     private String authorId;
@@ -33,7 +38,7 @@ public class FindSchedulesForWeekDTO {
     private List<StakeholdersEmployeeInfoDTO> assigneeList;
 
     @Builder
-    public FindSchedulesForWeekDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate, LocalDate scheduleEndDate, String scheduleStatus, Boolean scheduleIsDeleted, Long scheduleProjectId, String authorId, String authorName, List<StakeholdersEmployeeInfoDTO> assigneeList) {
+    public FindSchedulesForWeekDTO(Long scheduleId, String scheduleTitle, String scheduleContent, LocalDate scheduleStartDate, LocalDate scheduleEndDate, String scheduleStatus, Boolean scheduleIsDeleted, Long scheduleProjectId, String authorId, String authorName, List<StakeholdersEmployeeInfoDTO> assigneeList, Long stakeholdersType) {
         this.scheduleId = scheduleId;
         this.scheduleTitle = scheduleTitle;
         this.scheduleContent = scheduleContent;
@@ -45,5 +50,6 @@ public class FindSchedulesForWeekDTO {
         this.authorId = authorId;
         this.authorName = authorName;
         this.assigneeList = assigneeList;
+        this.stakeholdersType = stakeholdersType;
     }
 }
