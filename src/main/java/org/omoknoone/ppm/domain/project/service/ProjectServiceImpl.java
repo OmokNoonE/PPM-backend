@@ -365,6 +365,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<Integer> getAllProjectIds() {
         return projectRepository.findAllProjectIds();
+    }
 
     @Override
     public List<ViewAllProjectResponseDTO> viewAllProjectList() {
