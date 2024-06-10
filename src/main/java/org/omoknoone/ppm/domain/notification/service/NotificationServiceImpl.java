@@ -65,18 +65,22 @@ public class NotificationServiceImpl implements NotificationService {
         log.info("NotificationService 초기화 완료");
     }
 
+
     @Override
     public String createNotificationContent(List<FindSchedulesForWeekDTO> incompleteSchedules, String projectTitle) {
-        StringBuilder notificationContentBuilder = new StringBuilder();
-        notificationContentBuilder.append("미완료 일정 목록:\n");
-        for (FindSchedulesForWeekDTO schedule : incompleteSchedules) {
-            String scheduleInfo = String.format("- 프로젝트 '%s'의 일정 '%s'(이)가 아직 완료되지 않았습니다.\n", projectTitle,
-                schedule.getScheduleTitle());
-            notificationContentBuilder.append(scheduleInfo);
+        if (incompleteSchedules == null || incompleteSchedules.isEmpty()) {
+            return projectTitle + " 프로젝트에 미완료 일정이 없습니다.";
         }
-        String content = notificationContentBuilder.toString();
-        log.debug("생성된 알림 내용: {}", content);
-        return content;
+
+        StringBuilder content = new StringBuilder();
+        content.append(projectTitle).append(" 프로젝트의 미완료 일정 목록:\n");
+
+        for (FindSchedulesForWeekDTO schedule : incompleteSchedules) {
+            content.append("- ").append(schedule.getScheduleTitle())
+                .append(" (상태: ").append(schedule.getScheduleStatus()).append(")\n");
+        }
+
+        return content.toString();
     }
 
     @Override
