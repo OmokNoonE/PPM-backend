@@ -25,10 +25,10 @@ public class NotificationSettings {
 	private String notificationSettingsEmployeeId;
 
 	@Column(name = "email_enabled", nullable = false)
-	private boolean emailEnabled = false;
+	private boolean emailEnabled = true;
 
 	@Column(name = "slack_enabled", nullable = false)
-	private boolean slackEnabled = false;
+	private boolean slackEnabled = true;
 
 	@Builder
 	public NotificationSettings(Long notificationSettingsId, String notificationSettingsEmployeeId, boolean emailEnabled,
