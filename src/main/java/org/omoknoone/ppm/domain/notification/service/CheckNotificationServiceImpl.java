@@ -1,12 +1,14 @@
 package org.omoknoone.ppm.domain.notification.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
 import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
+import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,10 +112,12 @@ public class CheckNotificationServiceImpl implements CheckNotificationService {
 		}
 	}
 
-	private List<FindSchedulesForWeekDTO> getIncompleteSchedulesForMember(List<FindSchedulesForWeekDTO> schedules, ProjectMember member) {
+	public List<FindSchedulesForWeekDTO> getIncompleteSchedulesForMember(List<FindSchedulesForWeekDTO> schedules, ProjectMember member) {
 		List<FindSchedulesForWeekDTO> incompleteSchedules = schedules.stream()
-			.filter(schedule -> isScheduleIncomplete(schedule) && isStakeholderType10402(schedule))
-			.toList();
+				.filter(schedule -> isScheduleIncomplete(schedule)
+						&& isStakeholderType10402(schedule)
+						&& isScheduleForMember(schedule, member))
+				.collect(Collectors.toList());
 		log.debug("멤버 {}의 미완료 일정 목록: {}", member.getProjectMemberId(), incompleteSchedules);
 		return incompleteSchedules;
 	}
@@ -128,8 +132,16 @@ public class CheckNotificationServiceImpl implements CheckNotificationService {
 	private static final String IN_PROGRESS_STATUS = "진행";
 	private boolean isScheduleIncomplete(FindSchedulesForWeekDTO schedule) {
 		String status = schedule.getScheduleStatus();
-		boolean isIncomplete = status.equals(READY_STATUS) || status.equals(IN_PROGRESS_STATUS);
+		boolean isIncomplete = READY_STATUS.equals(status) || IN_PROGRESS_STATUS.equals(status);
 		log.debug("일정 '{}'의 미완료 여부: {}", schedule.getScheduleTitle(), isIncomplete);
 		return isIncomplete;
+	}
+
+	private boolean isScheduleForMember(FindSchedulesForWeekDTO schedule, ProjectMember member) {
+		List<StakeholdersEmployeeInfoDTO> assignees = schedule.getAssigneeList();
+		boolean isForMember = assignees.stream()
+				.anyMatch(assignee -> assignee.getEmployeeId().equals(member.getEmployeeId()));
+		log.debug("일정 '{}'가 멤버 {}와 관련 있는지 여부: {}", schedule.getScheduleTitle(), member.getProjectMemberId(), isForMember);
+		return isForMember;
 	}
 }
