@@ -17,6 +17,7 @@ import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMemberHistory;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberHistoryRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.ProjectMemberEmployeeDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ProjectMemberHistoryDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ViewAvailableMembersResponseDTO;
 import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMemberByProjectIdResponseDTO;
