@@ -112,11 +112,18 @@ public class CheckNotificationServiceImpl implements CheckNotificationService {
 
 	private List<FindSchedulesForWeekDTO> getIncompleteSchedulesForMember(List<FindSchedulesForWeekDTO> schedules, ProjectMember member) {
 		List<FindSchedulesForWeekDTO> incompleteSchedules = schedules.stream()
-			.filter(this::isScheduleIncomplete)
+			.filter(schedule -> isScheduleIncomplete(schedule) && isStakeholderType10402(schedule))
 			.toList();
 		log.debug("멤버 {}의 미완료 일정 목록: {}", member.getProjectMemberId(), incompleteSchedules);
 		return incompleteSchedules;
 	}
+
+	private boolean isStakeholderType10402(FindSchedulesForWeekDTO schedule) {
+		boolean isType10402 = schedule.getStakeholdersType() == 10402;
+		log.debug("일정 '{}'의 stakeholdersType이 10402 여부: {}", schedule.getScheduleTitle(), isType10402);
+		return isType10402;
+	}
+
 	private static final String READY_STATUS = "준비";
 	private static final String IN_PROGRESS_STATUS = "진행";
 	private boolean isScheduleIncomplete(FindSchedulesForWeekDTO schedule) {
