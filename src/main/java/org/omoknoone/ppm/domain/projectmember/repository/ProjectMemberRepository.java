@@ -17,7 +17,9 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, In
             "JOIN Employee e ON pm.projectMemberEmployeeId = e.employeeId " +
             "LEFT JOIN CommonCode cc ON cc.codeId = pm.projectMemberRoleId " +
             "WHERE pm.projectMemberProjectId = :projectId" +
-            " AND pm.projectMemberIsExcluded = false")
+            " AND pm.projectMemberIsExcluded = false" +
+            " AND e.employeeRole <> 'ROLE_ADMIN'")
+    
     List<ViewProjectMembersByProjectResponseDTO> findByProjectMembersProjectId(@Param("projectId") Integer projectId);
 
     ProjectMember findByProjectMemberEmployeeIdAndProjectMemberProjectId(String employeeId, Integer projectId);
