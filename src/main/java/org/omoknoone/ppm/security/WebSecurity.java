@@ -51,8 +51,10 @@ public class WebSecurity {
 
         http.cors(corsConfig -> corsConfig.getClass());
 
-        // TODO. 기능개발 끝난 후에 역할별 메소드 권한 부여해야 함
         http.authorizeHttpRequests((auth) -> auth
+                        .requestMatchers(new AntPathRequestMatcher(
+                                "/employees/admin/list",
+                                "/projects/admin/list")).hasRole("ADMIN")       // ADMIN 권한이 있는 경우에만 접근 가능
                         .requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
                         .anyRequest().authenticated()
                 )

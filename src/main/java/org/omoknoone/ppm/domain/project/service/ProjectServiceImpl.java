@@ -2,22 +2,19 @@ package org.omoknoone.ppm.domain.project.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.modelmapper.ModelMapper;
 import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
 import org.omoknoone.ppm.domain.holiday.aggregate.Holiday;
 import org.omoknoone.ppm.domain.holiday.repository.HolidayRepository;
 import org.omoknoone.ppm.domain.project.aggregate.Project;
-import org.omoknoone.ppm.domain.project.dto.CreateProjectRequestDTO;
-import org.omoknoone.ppm.domain.project.dto.ModifyProjectHistoryDTO;
-import org.omoknoone.ppm.domain.project.dto.RemoveProjectRequestDTO;
-import org.omoknoone.ppm.domain.project.dto.ViewProjectResponseDTO;
+import org.omoknoone.ppm.domain.project.dto.*;
 import org.omoknoone.ppm.domain.project.repository.ProjectRepository;
 import org.omoknoone.ppm.domain.project.vo.ProjectModificationResult;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
@@ -31,7 +28,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -290,8 +286,9 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<Project> projectList = projectRepository.findAllByProjectIdInAndProjectIsDeletedFalseOrderByProjectIdDesc(
             projectMemberList.stream()
-                .map(ProjectMember::getProjectMemberProjectId)
-                .toList()
+                    .filter(member -> !member.getProjectMemberIsExcluded())
+                    .map(ProjectMember::getProjectMemberProjectId)
+                    .toList()
         );
 
         // projectList의 projectId와 projectMemberList의 projectId가 일치하는 경우 projectMemberList의 roleId를 가져와서 ViewProjectResponseDTO로 변환
@@ -363,6 +360,41 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public String viewProjectTitle(Integer projectId) {
         return projectRepository.findById(projectId).orElseThrow(IllegalArgumentException::new).getProjectTitle();
+    }
+
+    @Override
+    public List<Integer> getAllProjectIds() {
+        return projectRepository.findAllProjectIds();
+    }
+
+    @Override
+    public List<ViewAllProjectResponseDTO> viewAllProjectList() {
+
+        List<CommonCodeResponseDTO> projectStatusList = commonCodeService
+                .viewCommonCodesByGroupName("프로젝트 상태");
+
+        List<Project> projectList = projectRepository.findAll();
+
+        List<ViewAllProjectResponseDTO> viewProjectDTOList =
+                projectList.stream()
+                        .map(project -> ViewAllProjectResponseDTO.builder()
+                                .projectId(project.getProjectId())
+                                .projectTitle(project.getProjectTitle())
+                                .projectStartDate(String.valueOf(project.getProjectStartDate()))
+                                .projectEndDate(String.valueOf(project.getProjectEndDate()))
+                                .projectStatus(projectStatusList.stream()
+                                        .filter(commonCode -> commonCode.getCodeId() == project.getProjectStatus())
+                                        .findFirst()
+                                        .orElseThrow(IllegalArgumentException::new)
+                                        .getCodeName())
+                                .projectCreatedDate(project.getProjectCreatedDate().substring(0, 19))
+                                .projectModifiedDate(project.getProjectModifiedDate().substring(0, 19))
+                                .projectIsDeleted(project.getProjectIsDeleted())
+                                .projectDeletedDate(project.getProjectDeletedDate() == null ? null : project.getProjectDeletedDate().substring(0, 19))
+                                .build())
+                        .toList();
+
+        return viewProjectDTOList;
     }
 
     public String getProjectTitleById(Integer projectId) {

@@ -13,4 +13,5 @@ public class LoginEmployeeDTO {
 
     private String employeeId;
     private String employeeName;
+    private String employeeRole;
 }

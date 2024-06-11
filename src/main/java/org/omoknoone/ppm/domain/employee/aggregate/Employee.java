@@ -63,8 +63,11 @@ public class Employee {
     @Column(name = "employee_modified_date", length = 30)
     private LocalDateTime employeeModifiedDate;
 
+    @Column(name = "employee_role", nullable = false, length = 50)
+    private String employeeRole;
+
     @Builder
-    public Employee(String employeeId, String employeeName, String employeePassword, String employeeEmail, LocalDate employeeJoinDate, Integer employeeEmploymentStatus, String employeeDepartment, String employeeContact, String employeeCompanyName, Boolean employeeIsExternalPartner, LocalDateTime employeeWithdrawalDate, Boolean employeeIsWithdrawn, LocalDateTime employeeCreatedDate, LocalDateTime employeeModifiedDate) {
+    public Employee(String employeeId, String employeeName, String employeePassword, String employeeEmail, LocalDate employeeJoinDate, Integer employeeEmploymentStatus, String employeeDepartment, String employeeContact, String employeeCompanyName, Boolean employeeIsExternalPartner, LocalDateTime employeeWithdrawalDate, Boolean employeeIsWithdrawn, LocalDateTime employeeCreatedDate, LocalDateTime employeeModifiedDate, String employeeRole) {
         this.employeeId = employeeId;
         this.employeeName = employeeName;
         this.employeePassword = employeePassword;
@@ -79,6 +82,7 @@ public class Employee {
         this.employeeIsWithdrawn = employeeIsWithdrawn;
         this.employeeCreatedDate = employeeCreatedDate;
         this.employeeModifiedDate = employeeModifiedDate;
+        this.employeeRole = employeeRole;
     }
 
     public void modify(ModifyEmployeeRequestDTO modifyEmployeeRequestDTO) {

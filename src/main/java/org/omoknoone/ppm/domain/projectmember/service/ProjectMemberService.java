@@ -24,4 +24,6 @@ public interface ProjectMemberService {
 	ProjectMember viewProjectMemberInfo(String employeeId, Integer projectId);
 
 	ViewProjectMemberByProjectIdResponseDTO viewProjectMemberByProjectId(Integer projectId, String employeeId);
+
+	ProjectMemberEmployeeDTO viewProjectMemberEmployeeInfo(Integer projectMemberId);
 }

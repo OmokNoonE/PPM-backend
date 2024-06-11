@@ -8,6 +8,7 @@ import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
 import org.omoknoone.ppm.domain.notification.dto.NotificationRequestDTO;
 import org.omoknoone.ppm.domain.notification.dto.NotificationResponseDTO;
+import org.omoknoone.ppm.domain.notification.service.CheckNotificationService;
 import org.omoknoone.ppm.domain.notification.service.NotificationService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final CheckNotificationService checkNotificationService;
 
     /* 필기. 수동으로 알림을 생성 하는 경우 */
     @PostMapping("create")
@@ -38,7 +40,7 @@ public class NotificationController {
 
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        NotificationResponseDTO responseDTO = notificationService.createNotification(requestDTO);
+        NotificationResponseDTO responseDTO = notificationService.createAndSendNotification(requestDTO);
 
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put("createNotification", responseDTO);
@@ -101,11 +103,23 @@ public class NotificationController {
             .body(new ResponseMessage(204, "알림 삭제 성공", responseMap));
     }
 
-    @GetMapping("/send/{projectId}")
-    public ResponseEntity<ResponseMessage> sendNotifications(@PathVariable("projectId") Integer projectId) {
+    // @GetMapping("/send/{projectId}")
+    // public ResponseEntity<ResponseMessage> sendNotifications(@PathVariable("projectId") Integer projectId) {
+    //     HttpHeaders headers = HttpHeadersCreator.createHeaders();
+    //
+    //     notificationService.checkConditionsAndSendNotifications(projectId);
+    //
+    //     return ResponseEntity
+    //         .ok()
+    //         .headers(headers)
+    //         .body(new ResponseMessage(200, "알림 전송 성공"));
+    // }
+
+    @PostMapping("/send")
+    public ResponseEntity<ResponseMessage> sendNotifications() {
         HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-        notificationService.checkConditionsAndSendNotifications(projectId);
+        checkNotificationService.checkConditionsAndSendNotificationsForAllProjects();
 
         return ResponseEntity
             .ok()

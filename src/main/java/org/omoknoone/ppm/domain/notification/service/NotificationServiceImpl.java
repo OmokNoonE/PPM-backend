@@ -23,12 +23,8 @@ import org.omoknoone.ppm.domain.notification.repository.NotificationRepository;
 import org.omoknoone.ppm.domain.notification.service.strategy.EmailNotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.NotificationStrategy;
 import org.omoknoone.ppm.domain.notification.service.strategy.SlackNotificationStrategy;
-import org.omoknoone.ppm.domain.project.service.ProjectServiceImpl;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
-import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
-import org.omoknoone.ppm.domain.projectmember.service.ProjectMemberService;
 import org.omoknoone.ppm.domain.schedule.dto.FindSchedulesForWeekDTO;
-import org.omoknoone.ppm.domain.schedule.service.ScheduleService;
 import org.omoknoone.ppm.domain.schedule.service.ScheduleServiceCalculator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,11 +52,6 @@ public class NotificationServiceImpl implements NotificationService {
     private final JavaMailSender javaMailSender;
     private final SlackNotificationStrategy slackNotificationStrategy;
     private final ModelMapper modelMapper;
-    private final ScheduleService scheduleService;
-    private final CommonCodeRepository commonCodeRepository;
-    private final ProjectServiceImpl projectService;
-    private final ProjectMemberRepository projectMemberRepository;
-    private final ProjectMemberService projectMemberService;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -71,94 +62,43 @@ public class NotificationServiceImpl implements NotificationService {
         strategyMap = new HashMap<>();
         strategyMap.put(NotificationType.EMAIL, new EmailNotificationStrategy(javaMailSender));
         strategyMap.put(NotificationType.SLACK, slackNotificationStrategy);
+        log.info("NotificationService 초기화 완료");
     }
+
 
     @Override
-    @Transactional
-    public void checkConditionsAndSendNotifications(Integer projectId) {
-        int alarm = scheduleService.calculateRatioThisWeek(projectId);
-
-        List<FindSchedulesForWeekDTO> schedules = scheduleService.getSchedulesForThisWeek(projectId);
-
-        String projectTitle = projectService.getProjectTitleById(projectId);
-        List<ProjectMember> projectMembers = projectMemberRepository.findProjectMembersByProjectMemberProjectId(projectId);
-
-        // PM/PL 역할을 가진 멤버들만 필터링
-        List<ProjectMember> pmplMembers = projectMembers.stream()
-            .filter(member -> hasPMPLRole(member.getProjectMemberId()))
-            .collect(Collectors.toList());
-
-        for (ProjectMember member : pmplMembers) {
-            handleNotificationsForMember(member, schedules, projectTitle, alarm);
+    public String createNotificationContent(List<FindSchedulesForWeekDTO> incompleteSchedules, String projectTitle) {
+        if (incompleteSchedules == null || incompleteSchedules.isEmpty()) {
+            return projectTitle + " 프로젝트에 미완료 일정이 없습니다.";
         }
-    }
 
-    @Transactional
-    @Override
-    public NotificationResponseDTO markAsDeleted(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-            .orElseThrow(() -> new EntityNotFoundException("알림을 찾을 수 없습니다: " + notificationId));
+        StringBuilder content = new StringBuilder();
+        content.append("<h2>").append(projectTitle).append(" 프로젝트의 미완료 일정 목록:</h2><ul>");
 
-        // 알림을 삭제로 마크
-        notification.markAsDeleted();
-
-        notificationRepository.save(notification);
-        return modelMapper.map(notification, NotificationResponseDTO.class);
-    }
-
-    public boolean hasPMPLRole(Integer projectMemberId) {
-        return projectMemberRepository.findById(projectMemberId)
-            .map(member -> member.getProjectMemberRoleId().equals(10601L) || member.getProjectMemberRoleId().equals(10602L))
-            .orElse(false);
-    }
-
-    private void handleNotificationsForMember(ProjectMember member, List<FindSchedulesForWeekDTO> schedules, String projectTitle, int alarm) {
-        List<FindSchedulesForWeekDTO> incompleteSchedulesForMember = getIncompleteSchedulesForMember(schedules, member);
-
-        if (!incompleteSchedulesForMember.isEmpty()) {
-            if (alarm < 90) {
-                String notificationContent = createNotificationContent(incompleteSchedulesForMember, projectTitle);
-                createAndSendNotification(member, "PM, PL에게 알립니다", notificationContent);
-            }
-        }
-    }
-
-
-    private static final String READY_STATUS = "준비";
-    private static final String IN_PROGRESS_STATUS = "진행";
-
-    private List<FindSchedulesForWeekDTO> getIncompleteSchedulesForMember(List<FindSchedulesForWeekDTO> schedules, ProjectMember member) {
-        return schedules.stream()
-            .filter(this::isScheduleIncomplete)
-            .toList();
-    }
-
-    private boolean isScheduleIncomplete(FindSchedulesForWeekDTO schedule) {
-        String status = schedule.getScheduleStatus();
-        return status.equals(READY_STATUS) || status.equals(IN_PROGRESS_STATUS);
-    }
-
-    private String createNotificationContent(List<FindSchedulesForWeekDTO> incompleteSchedules, String projectTitle) {
-        StringBuilder notificationContentBuilder = new StringBuilder();
-        notificationContentBuilder.append("미완료 일정 목록:\n");
         for (FindSchedulesForWeekDTO schedule : incompleteSchedules) {
-            String scheduleInfo = String.format("- 프로젝트 '%s'의 일정 '%s'가 아직 완료되지 않았습니다.\n", projectTitle,
-                schedule.getScheduleTitle());
-            notificationContentBuilder.append(scheduleInfo);
+            content.append("<li>").append(schedule.getScheduleTitle())
+                .append(" (상태: ").append(schedule.getScheduleStatus()).append(")</li>");
         }
-        return notificationContentBuilder.toString();
+
+        content.append("</ul>");
+        return content.toString();
     }
 
-    private void createAndSendNotification(ProjectMember member, String title, String content) {
+
+
+    @Override
+    public void createNotification(ProjectMember member, String title, String content) {
         NotificationRequestDTO requestDTO = new NotificationRequestDTO();
         requestDTO.setEmployeeId(member.getEmployeeId());
         requestDTO.setNotificationTitle(title);
         requestDTO.setNotificationContent(content);
-        createNotification(requestDTO);
+        log.debug("알림 생성 요청: 멤버 {}, 제목 '{}', 내용 '{}'", member.getProjectMemberId(), title, content);
+        createAndSendNotification(requestDTO);
     }
 
     @Transactional
-    public NotificationResponseDTO createNotification(NotificationRequestDTO requestDTO) {
+    public NotificationResponseDTO createAndSendNotification(NotificationRequestDTO requestDTO) {
+        log.debug("알림 생성 및 전송 시작: {}", requestDTO);
         Employee employee = employeeRepository.findById(requestDTO.getEmployeeId())
             .orElseThrow(() -> new EntityNotFoundException("해당 직원 Id는 존재 하지 않습니다: " + requestDTO.getEmployeeId()));
 
@@ -171,38 +111,14 @@ public class NotificationServiceImpl implements NotificationService {
             .build();
         notificationRepository.save(notification);
 
+        log.debug("알림 저장 완료: {}", notification);
         sendNotificationToEmployee(employee, notification);
 
         return modelMapper.map(notification, NotificationResponseDTO.class);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public List<NotificationResponseDTO> viewRecentNotifications(String employeeId) {
-        Pageable pageable = PageRequest.of(0, 10); // 상위 10개 항목
-        Page<Notification> notificationPage = notificationRepository.findTop10ByEmployeeIdOrderByNotificationCreatedDateDesc(employeeId, pageable);
-
-        return notificationPage.stream()
-            .map(notification -> modelMapper.map(notification, NotificationResponseDTO.class))
-            .collect(Collectors.toList());
-    }
-    @Transactional
-    public NotificationResponseDTO markAsRead(Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-            .orElseThrow(() -> new EntityNotFoundException("해당 알림 Id는 존재 하지 않습니다: " + notificationId));
-        notification.markAsRead();
-
-        notificationRepository.save(notification);
-
-        entityManager.flush();
-        entityManager.clear();
-
-        return modelMapper.map(notification, NotificationResponseDTO.class);
-    }
-
-
     private void sendNotificationToEmployee(Employee employee, Notification notification) {
-
+        log.debug("직원에게 알림 전송 시작: 직원 {}, 알림 {}", employee.getEmployeeId(), notification.getNotificationId());
         NotificationSettingsResponseDTO settings = notificationSettingService.viewNotificationSettings(employee.getEmployeeId());
 
         if (settings.isEmailEnabled()) {
@@ -215,7 +131,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void sendNotificationWithStrategy(Employee employee, Notification notification, NotificationType type) {
-
+        log.debug("전송 전략을 사용한 알림 전송 시작: 타입 {}, 직원 {}, 알림 {}", type, employee.getEmployeeId(), notification.getNotificationId());
         NotificationStrategy strategy = strategyMap.get(type);
         if (strategy != null) {
             String title = createTitle(notification);
@@ -240,17 +156,51 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-
     private String createTitle(Notification notification) {
         String templateTitle = "Notification: {title}";
-        return templateTitle.replace("{title}", notification.getNotificationTitle());
+        String title = templateTitle.replace("{title}", notification.getNotificationTitle());
+        log.debug("생성된 알림 제목: {}", title);
+        return title;
     }
 
     private String createContent(Employee employee, Notification notification) {
         String templateContent = "{employeeName}에게,\n\n{notificationContent}\n\nPPM 드림";
-        return templateContent
+        String content = templateContent
             .replace("{employeeName}", employee.getEmployeeName())
             .replace("{notificationContent}", notification.getNotificationContent());
+        log.debug("생성된 알림 내용: {}", content);
+        return content;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<NotificationResponseDTO> viewRecentNotifications(String employeeId) {
+        log.debug("최근 알림 조회: 직원 {}", employeeId);
+        Pageable pageable = PageRequest.of(0, 10); // 상위 10개 항목
+        Page<Notification> notificationPage = notificationRepository.findTop10ByEmployeeIdOrderByNotificationCreatedDateDesc(employeeId, pageable);
+
+        List<NotificationResponseDTO> notifications = notificationPage.stream()
+            .map(notification -> modelMapper.map(notification, NotificationResponseDTO.class))
+            .collect(Collectors.toList());
+        log.debug("조회된 최근 알림 목록: {}", notifications);
+        return notifications;
+    }
+
+    @Transactional
+    public NotificationResponseDTO markAsRead(Long notificationId) {
+        log.debug("알림 읽음으로 표시: 알림 {}", notificationId);
+        Notification notification = notificationRepository.findById(notificationId)
+            .orElseThrow(() -> new EntityNotFoundException("해당 알림 Id는 존재 하지 않습니다: " + notificationId));
+        notification.markAsRead();
+
+        notificationRepository.save(notification);
+
+        entityManager.flush();
+        entityManager.clear();
+
+        NotificationResponseDTO responseDTO = modelMapper.map(notification, NotificationResponseDTO.class);
+        log.debug("알림 읽음 처리 완료: {}", responseDTO);
+        return responseDTO;
     }
 
     private boolean isCompleted(FindSchedulesForWeekDTO schedule, CommonCodeRepository commonCodeRepository) {
@@ -258,6 +208,23 @@ public class NotificationServiceImpl implements NotificationService {
         String scheduleCompleted = commonCodeRepository.findById(ScheduleServiceCalculator.schedule_completed)
             .map(CommonCode::getCodeName)
             .orElse(null);
-        return Objects.equals(status, scheduleCompleted);
+        boolean isCompleted = Objects.equals(status, scheduleCompleted);
+        log.debug("일정 '{}'의 완료 여부: {}", schedule.getScheduleTitle(), isCompleted);
+        return isCompleted;
+    }
+
+    @Transactional
+    @Override
+    public NotificationResponseDTO markAsDeleted(Long notificationId) {
+        log.debug("알림 삭제 처리 시작: 알림 {}", notificationId);
+        Notification notification = notificationRepository.findById(notificationId)
+            .orElseThrow(() -> new EntityNotFoundException("알림을 찾을 수 없습니다: " + notificationId));
+
+        notification.markAsDeleted();
+
+        notificationRepository.save(notification);
+        NotificationResponseDTO responseDTO = modelMapper.map(notification, NotificationResponseDTO.class);
+        log.debug("알림 삭제 처리 완료: {}", responseDTO);
+        return responseDTO;
     }
 }

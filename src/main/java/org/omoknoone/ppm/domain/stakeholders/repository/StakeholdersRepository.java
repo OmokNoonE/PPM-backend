@@ -1,5 +1,7 @@
 package org.omoknoone.ppm.domain.stakeholders.repository;
 
+import java.util.List;
+
 import org.omoknoone.ppm.domain.stakeholders.aggregate.Stakeholders;
 import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersDTO;
 import org.omoknoone.ppm.domain.stakeholders.dto.StakeholdersEmployeeInfoDTO;
@@ -7,8 +9,6 @@ import org.omoknoone.ppm.domain.stakeholders.dto.ViewStakeholdersDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 public interface StakeholdersRepository extends JpaRepository<Stakeholders, Long> {
 
@@ -37,5 +37,7 @@ public interface StakeholdersRepository extends JpaRepository<Stakeholders, Long
             + "WHERE st.stakeholdersScheduleId IN :scheduleIdList "
             + "AND st.stakeholdersIsDeleted = false")
     List<StakeholdersEmployeeInfoDTO> findStakeholdersEmployeeInfoByScheduleIdList(Long[] scheduleIdList);
+
+	List<Stakeholders> findByStakeholdersScheduleIdAndStakeholdersProjectMemberId(Long scheduleId, Long projectMemberId);
 }
 

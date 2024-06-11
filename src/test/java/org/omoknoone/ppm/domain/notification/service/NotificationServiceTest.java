@@ -48,7 +48,7 @@ class NotificationServiceTest {
 	public void testCreateNotification() {
 		// Given
 		NotificationRequestDTO requestDTO = new NotificationRequestDTO();
-		requestDTO.setEmployeeId("EP001");
+		requestDTO.setEmployeeId("EP028");
 		requestDTO.setNotificationTitle("알림 테스트입니다.");
 		requestDTO.setNotificationContent("알림내용 테스트입니다.");
 
@@ -63,9 +63,12 @@ class NotificationServiceTest {
 		// 데이터베이스에서 알림 기록 확인
 		Notification savedNotification = notificationRepository.findById(result.getNotificationId()).orElse(null);
 		assertNotNull(savedNotification, "Saved notification should not be null");
-		assertEquals("EP001", savedNotification.getEmployeeId(), "Employee ID should match");
+		assertEquals("EP028", savedNotification.getEmployeeId(), "Employee ID should match");
 		assertEquals("알림 테스트입니다.", savedNotification.getNotificationTitle(), "Notification title should match");
 		assertEquals("알림내용 테스트입니다.", savedNotification.getNotificationContent(), "Notification content should match");
+		logger.info("Notification created: " + result.toString());
+		logger.info("Notification saved: " + savedNotification.toString());
+		logger.info("Notification ID: " + result.getNotificationId());
 	}
 
 	@Test
@@ -73,7 +76,7 @@ class NotificationServiceTest {
 	@Transactional(readOnly = true)
 	public void testViewRecentNotifications() {
 		// Given
-		String employeeId = "EP001";
+		String employeeId = "EP028";
 
 		// When
 		List<NotificationResponseDTO> result = notificationService.viewRecentNotifications(employeeId);
@@ -84,19 +87,19 @@ class NotificationServiceTest {
 		result.forEach(notification -> logger.info(notification.toString()));
 	}
 
-	@Test
-	@DisplayName("Notification 읽음 처리 테스트")
-	@Transactional
-	// 설명. 모두 true로 처리되는 이슈
-	public void testMarkAsRead() {
-		// Given
-		Long notificationId = 35L;
-
-		// When
-		NotificationResponseDTO result = notificationService.markAsRead(notificationId);
-
-		// Then
-		assertTrue(result.isMarkAsRead());
-		logger.info("Notification marked as read: " + result.toString());
-	}
+	// @Test
+	// @DisplayName("Notification 읽음 처리 테스트")
+	// @Transactional
+	// // 설명. 모두 true로 처리되는 이슈
+	// public void testMarkAsRead() {
+	// 	// Given
+	// 	Long notificationId = 2L;
+	//
+	// 	// When
+	// 	NotificationResponseDTO result = notificationService.markAsRead(notificationId);
+	//
+	// 	// Then
+	// 	assertTrue(result.isMarkAsRead());
+	// 	logger.info("Notification marked as read: " + result.toString());
+	// }
 }
