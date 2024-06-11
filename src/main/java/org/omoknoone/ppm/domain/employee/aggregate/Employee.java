@@ -64,7 +64,7 @@ public class Employee {
     private LocalDateTime employeeModifiedDate;
 
     @Column(name = "employee_role", nullable = false, length = 50)
-    private String employeeRole;
+    private String employeeRole = "ROLE_USER";
 
     @Builder
     public Employee(String employeeId, String employeeName, String employeePassword, String employeeEmail, LocalDate employeeJoinDate, Integer employeeEmploymentStatus, String employeeDepartment, String employeeContact, String employeeCompanyName, Boolean employeeIsExternalPartner, LocalDateTime employeeWithdrawalDate, Boolean employeeIsWithdrawn, LocalDateTime employeeCreatedDate, LocalDateTime employeeModifiedDate, String employeeRole) {
