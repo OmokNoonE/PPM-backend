@@ -63,31 +63,48 @@
 
 <br>
 
+
+
 ## 🎨 DDD
 🔗 <a href="https://miro.com/app/board/uXjVKQtve4I=/?share_link_id=857640009601">DDD 설계</a>
 
 <br>
 
-<details>
-  <summary>DB 논리 모델링 </summary>
 
-![image](https://github.com/OmokNoonE/PPM-backend/assets/80697609/2e407ef1-5c34-408a-952b-89b64e9599bd)
-</details>
 
 ## 📃 문서
-### 프로젝트 문서
-🔗 <a href="https://docs.google.com/spreadsheets/d/1HWfxvQndZ2qIPvQ9ABBPGIpPJcfVdUdNPyAJghvC7W4/edit?usp=sharing">프로젝트 문서</a>
 
-### 화면 설계서
-🔗 <a href="https://www.figma.com/design/NfuhVmwoKpxA9RzIm9etpk/%3APPM?node-id=0-1&t=1UjCGWqrezF1seQ2-1">화면 설계서</a>
+### 프로젝트 기획서
+<img width="491" alt="image" src="https://github.com/OmokNoonE/PPM-backend/assets/80697609/39b61cc9-92c5-407e-ade9-cead81260b08">
 
-### CI/CD
-<details>
-  <summary>시스템 아키텍처</summary>
-  
+
+### 요구사항 정의서
+<img width="991" alt="image" src="https://github.com/OmokNoonE/PPM-backend/assets/80697609/276211f3-5437-4c5b-8d92-49ebfbc422ed">
+
+
+### 시스템 아키텍처
+
 ![image](https://github.com/OmokNoonE/PPM-backend/assets/80697609/614f2c7d-8aa7-4ae2-9775-e61502318f15)
 
-</details>
+### WBS
+
+### ERD
+
+![image](https://github.com/OmokNoonE/PPM-backend/assets/80697609/2e407ef1-5c34-408a-952b-89b64e9599bd)
+
+### 화면 설계서
+
+<img width="1050" alt="image" src="https://github.com/OmokNoonE/PPM-backend/assets/80697609/8ea4356e-d7ac-43ad-a8e3-574e6b84b59e">
+
+
+### 단위 테스트 결과서
+
+### UI/UX 단위 테스트
+
+### 통합 테스트 결과서
+
+
+
 
 <br>
 
