@@ -73,44 +73,79 @@
 
 
 ## 📃 문서
+<details>
+  <summary>프로젝트 기획서</summary>
+  <img width="491" alt="image" src="https://github.com/OmokNoonE/PPM-backend/assets/80697609/39b61cc9-92c5-407e-ade9-cead81260b08">
+</details>
 
-### 프로젝트 기획서
-<img width="491" alt="image" src="https://github.com/OmokNoonE/PPM-backend/assets/80697609/39b61cc9-92c5-407e-ade9-cead81260b08">
 
-
-### 요구사항 정의서
+<details>
+  <summary>요구사항 정의서</summary>
 <img width="991" alt="image" src="https://github.com/OmokNoonE/PPM-backend/assets/80697609/276211f3-5437-4c5b-8d92-49ebfbc422ed">
+</details>
 
-### API 명세서
+
+
+<details>
+  <summary>API 명세서</summary>
+ 
 ![API명세서](https://github.com/OmokNoonE/PPM-backend/assets/80697609/ce90abd6-efaf-4662-a665-4a459b1b2653)
+</details>
 
 
-### 시스템 아키텍처
-
+<details>
+  <summary>시스템 아키텍처</summary>
+ 
 ![image](https://github.com/OmokNoonE/PPM-backend/assets/80697609/614f2c7d-8aa7-4ae2-9775-e61502318f15)
+</details>
 
-### WBS
+
+
+<details>
+  <summary>WBS</summary>
+ 
 ![WBS](https://github.com/OmokNoonE/PPM-backend/assets/80697609/8e3add54-16a2-47be-a4c5-24d4331fb454)
+</details>
 
 
-### ERD
-
+<details>
+  <summary>ERD</summary>
+ 
 ![image](https://github.com/OmokNoonE/PPM-backend/assets/80697609/2e407ef1-5c34-408a-952b-89b64e9599bd)
+</details>
 
-### 화면 설계서
 
+
+
+<details>
+  <summary>화면 설계서</summary>
+ 
 <img width="1050" alt="image" src="https://github.com/OmokNoonE/PPM-backend/assets/80697609/8ea4356e-d7ac-43ad-a8e3-574e6b84b59e">
+</details>
 
 
-### 단위 테스트 결과서
+
+
+<details>
+  <summary>단위 테스트 결과서</summary>
+ 
 <img width="1152" alt="image" src="https://github.com/OmokNoonE/PPM-backend/assets/80697609/46680b51-b401-4813-ab44-4f1208759e23">
+</details>
 
-### UI/UX 단위 테스트
+<details>
+  <summary>UI/UX 단위 테스트</summary>
+ 
 ![UI:UX](https://github.com/OmokNoonE/PPM-backend/assets/80697609/d3fa85c0-452f-4f84-9db1-c05f33fec868)
+</details>
 
 
-### 통합 테스트 결과서
+<details>
+  <summary>통합 테스트 결과서</summary>
+ 
 ![통합](https://github.com/OmokNoonE/PPM-backend/assets/80697609/5b887978-a506-470c-947f-685ee87ef1d5)
+</details>
+
+
 
 
 
