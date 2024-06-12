@@ -81,12 +81,17 @@
 ### 요구사항 정의서
 <img width="991" alt="image" src="https://github.com/OmokNoonE/PPM-backend/assets/80697609/276211f3-5437-4c5b-8d92-49ebfbc422ed">
 
+### API 명세서
+![API명세서](https://github.com/OmokNoonE/PPM-backend/assets/80697609/ce90abd6-efaf-4662-a665-4a459b1b2653)
+
 
 ### 시스템 아키텍처
 
 ![image](https://github.com/OmokNoonE/PPM-backend/assets/80697609/614f2c7d-8aa7-4ae2-9775-e61502318f15)
 
 ### WBS
+![WBS](https://github.com/OmokNoonE/PPM-backend/assets/80697609/8e3add54-16a2-47be-a4c5-24d4331fb454)
+
 
 ### ERD
 
@@ -98,10 +103,14 @@
 
 
 ### 단위 테스트 결과서
+<img width="1152" alt="image" src="https://github.com/OmokNoonE/PPM-backend/assets/80697609/46680b51-b401-4813-ab44-4f1208759e23">
 
 ### UI/UX 단위 테스트
+![UI:UX](https://github.com/OmokNoonE/PPM-backend/assets/80697609/d3fa85c0-452f-4f84-9db1-c05f33fec868)
+
 
 ### 통합 테스트 결과서
+![통합](https://github.com/OmokNoonE/PPM-backend/assets/80697609/5b887978-a506-470c-947f-685ee87ef1d5)
 
 
 
