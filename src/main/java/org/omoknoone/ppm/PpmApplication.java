@@ -1,5 +1,6 @@
 package org.omoknoone.ppm;
 
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,9 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDateTime;
+
+@Slf4j
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
 @EnableMongoRepositories
 @EnableScheduling
@@ -18,6 +22,9 @@ public class PpmApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(PpmApplication.class, args);
+
+        LocalDateTime now = LocalDateTime.now();
+        log.info("[PPM-Server] 시작 시간 {}", now);
     }
 
     @Bean
