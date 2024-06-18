@@ -5,9 +5,9 @@ spring:
     name: PPM-Backend
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: ENC(h3SQfSBcw2qduGjOeZWQYHJo3xy9/OJFgxPtpkuIzlG15uauPd5yEIiALKO3q86jJKvGGfeiGwycpXEglaE81vOOH03SncNDiMjBWj0bXg2m5vpInoR6PQ==)
-    username: ENC(y4pO3gmaIJRIC+35NstrKvCqmlYdTuyd)
-    password: ENC(CvjcCWcM/jtWMznsBfJw6sioFNZI9xYS)
+    url: ENC(EdH0MIpoZaUfhSFb6GSM9ZtJYkkuLmIjIajt3ulR65h1nNJMTp11GjaVhwbOBpUG)
+    username: ENC(MsRZrKdcjys7PXAPIHHh4kqM0m21nKN3)
+    password: ENC(VDnFwY1e2YpDofHSnRcMTX4SkpRfifag)
   config:
     import:
       - classpath:/messages.yml
