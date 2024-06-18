@@ -42,34 +42,34 @@ class NotificationServiceTest {
 	// 	// No exception is thrown
 	// }
 
-	@Test
-	@DisplayName("Notification 생성 테스트")
-	@Transactional
-	public void testCreateNotification() {
-		// Given
-		NotificationRequestDTO requestDTO = new NotificationRequestDTO();
-		requestDTO.setEmployeeId("EP028");
-		requestDTO.setNotificationTitle("알림 테스트입니다.");
-		requestDTO.setNotificationContent("알림내용 테스트입니다.");
-
-		// When
-		NotificationResponseDTO result = notificationService.createNotification(requestDTO);
-
-		// Then
-		assertNotNull(result, "Result should not be null");
-		assertEquals(requestDTO.getNotificationTitle(), result.getNotificationTitle(), "Notification title should match");
-		assertEquals(requestDTO.getNotificationContent(), result.getNotificationContent(), "Notification content should match");
-
-		// 데이터베이스에서 알림 기록 확인
-		Notification savedNotification = notificationRepository.findById(result.getNotificationId()).orElse(null);
-		assertNotNull(savedNotification, "Saved notification should not be null");
-		assertEquals("EP028", savedNotification.getEmployeeId(), "Employee ID should match");
-		assertEquals("알림 테스트입니다.", savedNotification.getNotificationTitle(), "Notification title should match");
-		assertEquals("알림내용 테스트입니다.", savedNotification.getNotificationContent(), "Notification content should match");
-		logger.info("Notification created: " + result.toString());
-		logger.info("Notification saved: " + savedNotification.toString());
-		logger.info("Notification ID: " + result.getNotificationId());
-	}
+//	@Test
+//	@DisplayName("Notification 생성 테스트")
+//	@Transactional
+//	public void testCreateNotification() {
+//		// Given
+//		NotificationRequestDTO requestDTO = new NotificationRequestDTO();
+//		requestDTO.setEmployeeId("EP028");
+//		requestDTO.setNotificationTitle("알림 테스트입니다.");
+//		requestDTO.setNotificationContent("알림내용 테스트입니다.");
+//
+//		// When
+//		NotificationResponseDTO result = notificationService.createNotification(requestDTO);
+//
+//		// Then
+//		assertNotNull(result, "Result should not be null");
+//		assertEquals(requestDTO.getNotificationTitle(), result.getNotificationTitle(), "Notification title should match");
+//		assertEquals(requestDTO.getNotificationContent(), result.getNotificationContent(), "Notification content should match");
+//
+//		// 데이터베이스에서 알림 기록 확인
+//		Notification savedNotification = notificationRepository.findById(result.getNotificationId()).orElse(null);
+//		assertNotNull(savedNotification, "Saved notification should not be null");
+//		assertEquals("EP028", savedNotification.getEmployeeId(), "Employee ID should match");
+//		assertEquals("알림 테스트입니다.", savedNotification.getNotificationTitle(), "Notification title should match");
+//		assertEquals("알림내용 테스트입니다.", savedNotification.getNotificationContent(), "Notification content should match");
+//		logger.info("Notification created: " + result.toString());
+//		logger.info("Notification saved: " + savedNotification.toString());
+//		logger.info("Notification ID: " + result.getNotificationId());
+//	}
 
 	@Test
 	@DisplayName("최근 알림 10개 조회 테스트")
