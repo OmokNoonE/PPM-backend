@@ -18,7 +18,6 @@ public class CorsConfig {
 
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of("http://ppmppm.site/", "http://www.ppmppm.site/", "http://localhost/",
-                "http://192.168.0.4/",
                 "http://a8237ef3f9cb34681a23bbeb7ecb13c1-632214019.ap-northeast-2.elb.amazonaws.com/",
                 "http://www.a8237ef3f9cb34681a23bbeb7ecb13c1-632214019.ap-northeast-2.elb.amazonaws.com/",
                 "https://api.nepcha.com/",

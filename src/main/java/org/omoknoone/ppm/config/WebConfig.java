@@ -15,7 +15,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost/",
-                        "http://192.168.0.4/",
                         "http://ppmppm.site/",
                         "http://www.ppmppm.site/",
                         "https://api.nepcha.com/",
