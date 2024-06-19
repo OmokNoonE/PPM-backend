@@ -64,10 +64,8 @@ public class RequirementsController {
 
 		RequirementsDTO projectRequirement = requirementsService.viewRequirement(projectId, requirementsId);
 
-		RequirementsDTO projectAndRequirementsIdRequirement = new RequirementsDTO(projectRequirement);
-
 		Map<String, Object> responseMap = new HashMap<>();
-		responseMap.put("viewRequirement", projectAndRequirementsIdRequirement);
+		responseMap.put("viewRequirement", projectRequirement);
 
 		return ResponseEntity
 				.ok()
