@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.common.HttpHeadersCreator;
@@ -24,17 +25,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/requirementsHistories")
 public class RequirementsHistoryController {
-	private final RequirementsHistoryService requirementsHistoryService;
-	private final ModelMapper modelMapper;
 
-	@Autowired
-	public RequirementsHistoryController(RequirementsHistoryService requirementsHistoryService, ModelMapper modelMapper) {
-		this.requirementsHistoryService = requirementsHistoryService;
-		this.modelMapper = modelMapper;
-	}
+	private final RequirementsHistoryService requirementsHistoryService;
 
 	/* 요구사항 수정 내역 등록 */
 /*	@PostMapping("/create")
