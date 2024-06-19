@@ -1,29 +1,20 @@
 package org.omoknoone.ppm.domain.requirements.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
-import org.omoknoone.ppm.domain.requirements.aggregate.RequirementsHistory;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsHistoryDTO;
 import org.omoknoone.ppm.domain.requirements.service.RequirementsHistoryService;
-import org.omoknoone.ppm.domain.requirements.vo.RequestCreateRequirementsHistory;
-import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirementHistory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -53,12 +44,10 @@ public class RequirementsHistoryController {
 		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
 		List<RequirementsHistoryDTO> requirementsHistoryDTOList =
-			requirementsHistoryService.viewRequirementHistoryList(requirementsId);
-		ResponseRequirementHistory requirementHistoryList =
-			new ResponseRequirementHistory(requirementsHistoryDTOList);
+									requirementsHistoryService.viewRequirementHistoryList(requirementsId);
 
 		Map<String, Object> responseMap = new HashMap<>();
-		responseMap.put("viewRequirementHistoryByfScheduleId", requirementHistoryList);
+		responseMap.put("viewRequirementHistoryByfScheduleId", requirementsHistoryDTOList);
 
 		return ResponseEntity
 				.ok()
