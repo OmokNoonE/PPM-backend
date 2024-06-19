@@ -22,7 +22,7 @@ public interface RequirementsService {
 
 	RequirementsDTO viewRequirement(Long projectId, Long requirementsId);
 
-	Requirements createRequirement(RequirementsDTO requirementsDTO);
+	RequirementsDTO createRequirement(RequirementsDTO requirementsDTO);
 
 	Page<RequirementsListByProjectDTO> viewRequirementsByProjectIdByPage(Long projectId, int page, int size);
 

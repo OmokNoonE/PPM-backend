@@ -77,18 +77,14 @@ public class RequirementsController {
 
 	/* requirements 등록 */
 	@PostMapping("/create")
-	public ResponseEntity<ResponseMessage> createRequirement(@RequestBody RequestRequirement requestRequirement){
+	public ResponseEntity<ResponseMessage> createRequirement(@RequestBody RequirementsDTO requestRequirement){
 
 		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		RequirementsDTO requirementsDTO = modelMapper.map(requestRequirement, RequirementsDTO.class);
-
-		Requirements newRequirement = requirementsService.createRequirement(requirementsDTO);
-		ResponseRequirement responseRequirement = modelMapper.map(newRequirement, ResponseRequirement.class);  // requirementsService에서 요구사항 생성
+		RequirementsDTO newRequirement = requirementsService.createRequirement(requestRequirement);
 
 		Map<String, Object> responseMap = new HashMap<>();
-		responseMap.put("createRequirement", responseRequirement);
+		responseMap.put("createRequirement", newRequirement);
 
 		return ResponseEntity
 				.ok()

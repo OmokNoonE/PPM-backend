@@ -53,12 +53,11 @@ public class RequirementsServiceImpl implements RequirementsService {
 
 	/* 일정 생성 */
 	@Override
-	public Requirements createRequirement(RequirementsDTO requirementsDTO) {
+	public RequirementsDTO createRequirement(RequirementsDTO requirementsDTO) {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 		Requirements requirements = modelMapper.map(requirementsDTO, Requirements.class);
 
-
-		return requirementsRepository.save(requirements);
+        return modelMapper.map(requirementsRepository.save(requirements), RequirementsDTO.class);
 	}
 
 	/* 페이징 처리하여 요구사항 목록 조회 */
