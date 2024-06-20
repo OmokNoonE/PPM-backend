@@ -11,6 +11,7 @@ import org.omoknoone.ppm.domain.schedule.vo.ResponseScheduleSheetData;
 
 public interface ScheduleService {
 
+    // TODO. Entity를 DTO로 변환하는 작업이 필요함
     /* 생성 */
     Schedule createSchedule(CreateScheduleDTO createScheduleDTO);
 
@@ -61,6 +62,7 @@ public interface ScheduleService {
     // 현재 일정의 모든 하위 일정 조회
     List<ScheduleDTO> viewSubSchedules(Long scheduleId);
 
+    // TODO. Entity를 DTO로 변환하는 작업이 필요함
     /* 상태 코드에 따른 해당 일정 확인 */
     List<Schedule> getSchedulesByStatusCodes(List<Long> codeIds);
 

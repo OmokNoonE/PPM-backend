@@ -10,6 +10,7 @@ import org.omoknoone.ppm.domain.stakeholders.dto.ViewStakeholdersDTO;
 
 public interface StakeholdersService {
 
+    // TODO. Entity를 DTO로 변환하는 작업이 필요함
     Stakeholders createStakeholder(CreateStakeholdersDTO createStakeholdersDTO);
 
     List<ViewStakeholdersDTO> viewStakeholders(Long scheduleId);

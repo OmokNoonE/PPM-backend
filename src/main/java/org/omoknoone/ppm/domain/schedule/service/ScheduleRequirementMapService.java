@@ -8,6 +8,7 @@ import org.omoknoone.ppm.domain.schedule.dto.ScheduleRequirementMapDTO;
 
 public interface ScheduleRequirementMapService {
 
+    // TODO. Entity를 DTO로 변환하는 작업이 필요함
     ScheduleRequirementMap createScheduleRequirementsMap(CreateScheduleRequirementMapDTO createScheduleRequirementMapDTO);
 
     List<ScheduleRequirementMapDTO>  viewScheduleRequirementsMap(Long scheduleId);

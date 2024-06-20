@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface TaskService {
 
+    // TODO. Entity를 DTO로 변환하는 작업이 필요함
     Task createTask(CreateTaskDTO createTaskDTO);
 
     TaskDTO viewTask(Long taskId);
