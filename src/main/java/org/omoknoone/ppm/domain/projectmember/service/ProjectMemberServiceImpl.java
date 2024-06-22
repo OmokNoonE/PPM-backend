@@ -1,10 +1,8 @@
 package org.omoknoone.ppm.domain.projectmember.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.omoknoone.ppm.domain.commoncode.dto.CommonCodeResponseDTO;
 import org.omoknoone.ppm.domain.commoncode.service.CommonCodeService;
 import org.omoknoone.ppm.domain.employee.dto.ViewEmployeeResponseDTO;
@@ -14,23 +12,16 @@ import org.omoknoone.ppm.domain.notification.service.NotificationService;
 import org.omoknoone.ppm.domain.project.service.ProjectService;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMember;
 import org.omoknoone.ppm.domain.projectmember.aggregate.ProjectMemberHistory;
-import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberHistoryRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.CreateProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ModifyProjectMemberRequestDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ProjectMemberEmployeeDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ProjectMemberHistoryDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewAvailableMembersResponseDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMemberByProjectIdResponseDTO;
-import org.omoknoone.ppm.domain.projectmember.dto.ViewProjectMembersByProjectResponseDTO;
+import org.omoknoone.ppm.domain.projectmember.dto.*;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberHistoryRepository;
 import org.omoknoone.ppm.domain.projectmember.repository.ProjectMemberRepository;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,7 +35,6 @@ public class ProjectMemberServiceImpl implements ProjectMemberService {
     private final CommonCodeService commonCodeService;
     private final Environment environment;
     private final ProjectService projectService;
-    private final ModelMapper modelMapper;
     private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
