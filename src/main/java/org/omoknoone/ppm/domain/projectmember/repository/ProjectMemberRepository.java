@@ -19,7 +19,6 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, In
             "WHERE pm.projectMemberProjectId = :projectId" +
             " AND pm.projectMemberIsExcluded = false" +
             " AND e.employeeRole <> 'ROLE_ADMIN'")
-    
     List<ViewProjectMembersByProjectResponseDTO> findByProjectMembersProjectId(@Param("projectId") Integer projectId);
 
     ProjectMember findByProjectMemberEmployeeIdAndProjectMemberProjectId(String employeeId, Integer projectId);
@@ -33,8 +32,8 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, In
     List<ProjectMember> findProjectMembersByProjectMemberRoleId(long roleId);
 
     List<ProjectMember> findAllByProjectMemberIsExcludedIsFalse();
-  
+
     List<ProjectMember> findProjectMembersByProjectMemberProjectIdAndProjectMemberIsExcludedIsFalse(Integer projectId);
-  
+
     ProjectMember findByProjectMemberId(Integer projectMemberId);
 }

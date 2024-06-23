@@ -37,7 +37,7 @@ public class ProjectMemberHistory {
     @Column(name = "project_member_history_modified_date")
     private LocalDateTime projectMemberHistoryModifiedDate;
 
-    @JoinColumn(name = "project_member_id", nullable = false)
+    @Column(name = "project_member_id", nullable = false)
     private Integer projectMemberHistoryProjectMemberId;
 
     @Builder

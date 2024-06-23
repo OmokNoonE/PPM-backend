@@ -35,10 +35,10 @@ public class ProjectMember {
     @Column(name = "project_member_exclusion_date", length = 30)
     private LocalDateTime projectMemberExclusionDate;
 
-    @JoinColumn(name = "project_member_project_id", nullable = false)
+    @Column(name = "project_member_project_id", nullable = false)
     private Integer projectMemberProjectId;
 
-    @JoinColumn(name = "project_member_employee_id", nullable = false)
+    @Column(name = "project_member_employee_id", nullable = false)
     private String projectMemberEmployeeId;
 
     @Column(name = "project_member_employee_name", nullable = false)
