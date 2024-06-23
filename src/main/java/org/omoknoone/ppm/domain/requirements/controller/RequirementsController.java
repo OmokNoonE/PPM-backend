@@ -1,39 +1,29 @@
 package org.omoknoone.ppm.domain.requirements.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
+import lombok.RequiredArgsConstructor;
 import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
-import org.omoknoone.ppm.domain.requirements.aggregate.Requirements;
 import org.omoknoone.ppm.domain.requirements.dto.ModifyRequirementRequestDTO;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsDTO;
 import org.omoknoone.ppm.domain.requirements.dto.RequirementsListByProjectDTO;
 import org.omoknoone.ppm.domain.requirements.service.RequirementsService;
-import org.omoknoone.ppm.domain.requirements.vo.RequestModifyRequirement;
-import org.omoknoone.ppm.domain.requirements.vo.RequestRequirement;
 import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirement;
-import org.omoknoone.ppm.domain.requirements.vo.ResponseRequirementsListByProject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/requirements")
 public class RequirementsController {
+
 	private final RequirementsService requirementsService;
-	private final ModelMapper modelMapper;
-	@Autowired
-	public RequirementsController(RequirementsService requirementsService, ModelMapper modelMapper) {
-		this.requirementsService = requirementsService;
-		this.modelMapper = modelMapper;
-	}
 
 	/* ProjectId를 통한 requirements 조회 */
 	@GetMapping("/list/{projectId}")
@@ -42,13 +32,10 @@ public class RequirementsController {
 		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
 		List<RequirementsListByProjectDTO> projectRequirements =
-			requirementsService.viewRequirementsByProjectId(projectId, false);
-
-		ResponseRequirementsListByProject projectRequirementsList =
-			new ResponseRequirementsListByProject(projectRequirements);
+							requirementsService.viewRequirementsByProjectId(projectId, false);
 
 		Map<String, Object> responseMap = new HashMap<>();
-		responseMap.put("viewRequirementsList", projectRequirementsList);
+		responseMap.put("viewRequirementsList", projectRequirements);
 
 		return ResponseEntity
 				.ok()
@@ -64,10 +51,8 @@ public class RequirementsController {
 
 		RequirementsDTO projectRequirement = requirementsService.viewRequirement(projectId, requirementsId);
 
-		RequirementsDTO projectAndRequirementsIdRequirement = new RequirementsDTO(projectRequirement);
-
 		Map<String, Object> responseMap = new HashMap<>();
-		responseMap.put("viewRequirement", projectAndRequirementsIdRequirement);
+		responseMap.put("viewRequirement", projectRequirement);
 
 		return ResponseEntity
 				.ok()
@@ -77,18 +62,14 @@ public class RequirementsController {
 
 	/* requirements 등록 */
 	@PostMapping("/create")
-	public ResponseEntity<ResponseMessage> createRequirement(@RequestBody RequestRequirement requestRequirement){
+	public ResponseEntity<ResponseMessage> createRequirement(@RequestBody RequirementsDTO requestRequirement){
 
 		HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
-		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-		RequirementsDTO requirementsDTO = modelMapper.map(requestRequirement, RequirementsDTO.class);
-
-		Requirements newRequirement = requirementsService.createRequirement(requirementsDTO);
-		ResponseRequirement responseRequirement = modelMapper.map(newRequirement, ResponseRequirement.class);  // requirementsService에서 요구사항 생성
+		RequirementsDTO newRequirement = requirementsService.createRequirement(requestRequirement);
 
 		Map<String, Object> responseMap = new HashMap<>();
-		responseMap.put("createRequirement", responseRequirement);
+		responseMap.put("createRequirement", newRequirement);
 
 		return ResponseEntity
 				.ok()

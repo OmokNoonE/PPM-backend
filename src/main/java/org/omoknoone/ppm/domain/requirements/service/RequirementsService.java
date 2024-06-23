@@ -12,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface RequirementsService {
 
+	// TODO. Entity를 DTO로 변환하는 작업이 필요함
 	ResponseRequirement modifyRequirement(ModifyRequirementRequestDTO requirementRequestDTO);
 
+	// TODO. Entity를 DTO로 변환하는 작업이 필요함
 	ResponseRequirement removeRequirement(ModifyRequirementRequestDTO requirementRequestDTO);
 
 	/* ProjectId를 통한 RequirementsList 조회 */
@@ -22,7 +24,7 @@ public interface RequirementsService {
 
 	RequirementsDTO viewRequirement(Long projectId, Long requirementsId);
 
-	Requirements createRequirement(RequirementsDTO requirementsDTO);
+	RequirementsDTO createRequirement(RequirementsDTO requirementsDTO);
 
 	Page<RequirementsListByProjectDTO> viewRequirementsByProjectIdByPage(Long projectId, int page, int size);
 
