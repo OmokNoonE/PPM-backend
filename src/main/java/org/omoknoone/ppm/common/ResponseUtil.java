@@ -32,4 +32,27 @@ public class ResponseUtil {
                 .headers(headers)
                 .body(new ResponseMessage(status.value(), message, responseMap));
     }
+
+    // 데이터가 없는 응답
+    public static ResponseEntity<ResponseMessage> createResponse(HttpStatus status, String message) {
+        return createResponse(status, message, null, null);
+    }
+
+    // 헤더 커스터마이징 응답
+    public static ResponseEntity<ResponseMessage> createResponse(HttpStatus status, String message, String key,
+                                                                 Object data, Map<String, String> additionalHeaders) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+        if (additionalHeaders != null) {
+            additionalHeaders.forEach(headers::add);
+        }
+
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put(key, data);
+
+        return ResponseEntity
+                .status(status)
+                .headers(headers)
+                .body(new ResponseMessage(status.value(), message, responseMap));
+    }
 }
