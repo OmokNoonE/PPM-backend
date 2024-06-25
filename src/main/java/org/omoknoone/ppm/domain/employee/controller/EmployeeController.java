@@ -37,6 +37,8 @@ public class EmployeeController {
     public ResponseEntity<ResponseMessage> modifyEmployee(@PathVariable("employeeId") String employeeId,
                                                       @RequestBody ModifyEmployeeRequestDTO modifyEmployeeRequestDTO) {
 
+        modifyEmployeeRequestDTO.setEmployeeId(employeeId);
+
         String modifiedEmployeeId = employeeService.modifyEmployee(modifyEmployeeRequestDTO);
 
         return ResponseUtil.createResponse(
