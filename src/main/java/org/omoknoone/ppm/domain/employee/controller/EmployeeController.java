@@ -2,20 +2,15 @@ package org.omoknoone.ppm.domain.employee.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.omoknoone.ppm.common.HttpHeadersCreator;
 import org.omoknoone.ppm.common.ResponseMessage;
-import org.omoknoone.ppm.domain.employee.aggregate.Employee;
+import org.omoknoone.ppm.common.ResponseUtil;
 import org.omoknoone.ppm.domain.employee.dto.*;
 import org.omoknoone.ppm.domain.employee.service.EmployeeService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.charset.Charset;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,103 +20,88 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    @GetMapping("/view/{employeeId}")
+    @GetMapping("/{employeeId}")
     public ResponseEntity<ResponseMessage> viewEmployee(@PathVariable("employeeId") String employeeId) {
-
-        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         ViewEmployeeResponseDTO responseEmployeeDTO = employeeService.viewEmployee(employeeId);
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("viewEmployee", responseEmployeeDTO);
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(new ResponseMessage(200, "회원 조회 성공", responseMap));
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "회원 조회 성공",
+                "viewEmployee",
+                responseEmployeeDTO
+        );
     }
 
-    @PutMapping("/modify")
-    public ResponseEntity<ResponseMessage> modifyEmployee(@RequestBody ModifyEmployeeRequestDTO modifyEmployeeRequestDTO) {
+    @PutMapping("/{employeeId}")
+    public ResponseEntity<ResponseMessage> modifyEmployee(@PathVariable("employeeId") String employeeId,
+                                                      @RequestBody ModifyEmployeeRequestDTO modifyEmployeeRequestDTO) {
 
-        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+        modifyEmployeeRequestDTO.setEmployeeId(employeeId);
 
-        String employeeId = employeeService.modifyEmployee(modifyEmployeeRequestDTO);
+        String modifiedEmployeeId = employeeService.modifyEmployee(modifyEmployeeRequestDTO);
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("modifyEmployee", employeeId);
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(new ResponseMessage(200, "회원 정보 수정 성공", responseMap));
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "회원 정보 수정 성공",
+                "modifyEmployee",
+                modifiedEmployeeId
+        );
     }
 
-    @PostMapping("/signup")
+    @PostMapping
     public ResponseEntity<ResponseMessage> signUp(@RequestBody SignUpEmployeeRequestDTO signUpEmployeeRequestDTO) {
-
-        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         String employeeId = employeeService.signUp(signUpEmployeeRequestDTO);
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("signUp", employeeId);
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(new ResponseMessage(200, "회원 가입 성공", responseMap));
+        return ResponseUtil.createResponse(
+                HttpStatus.CREATED,
+                "회원 가입 성공",
+                "signUp",
+                employeeId
+        );
     }
 
     /* employeeName을 통한 사원검색 */
-    @GetMapping("/search/{employeeName}")
-    public ResponseEntity<ResponseMessage> searchEmployeeByName(@PathVariable String employeeName) {
-
-        HttpHeaders headers = HttpHeadersCreator.createHeaders();
+    @GetMapping
+    public ResponseEntity<ResponseMessage> searchEmployeeByName(@RequestParam("name") String employeeName) {
 
         ViewEmployeeResponseDTO viewEmployeeResponseDTO = employeeService.searchEmployeeByName(employeeName);
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("searchEmployeeByName", viewEmployeeResponseDTO);
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(new ResponseMessage(200, "회원 검색 성공", responseMap));
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "회원 검색 성공",
+                "searchEmployeeByName",
+                viewEmployeeResponseDTO
+        );
     }
     
-    @PutMapping("/password/{employeeId}")
+    @PutMapping("/{employeeId}/password")
     public ResponseEntity<ResponseMessage> modifyPassword(
                     @PathVariable String employeeId, @RequestBody ModifyPasswordRequestDTO modifyPasswordRequestDTO) {
-
-        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         modifyPasswordRequestDTO.setEmployeeId(employeeId);
 
         String modifiedEmployeeId = employeeService.modifyPassword(modifyPasswordRequestDTO);
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("modifyPassword", modifiedEmployeeId);
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(new ResponseMessage(200, "비밀번호 변경 성공", responseMap));
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "비밀번호 변경 성공",
+                "modifyPassword",
+                modifiedEmployeeId
+        );
     }
 
-    @GetMapping("/admin/list")
+    @GetMapping("/admin")
     public ResponseEntity<ResponseMessage> viewEmployeeList() {
-
-        HttpHeaders headers = HttpHeadersCreator.createHeaders();
 
         List<ViewEmployeeListResponseDTO> viewEmployeeList = employeeService.viewEmployeeList();
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("viewEmployeeList", viewEmployeeList);
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body(new ResponseMessage(200, "회원 목록 조회 성공", responseMap));
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "회원 목록 조회 성공",
+                "viewEmployeeList",
+                viewEmployeeList
+        );
     }
 }
