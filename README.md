@@ -63,10 +63,6 @@
 
 <br>
 
-## System Architecture
-![image](https://github.com/OmokNoonE/PPM-backend/assets/80697609/614f2c7d-8aa7-4ae2-9775-e61502318f15)
-
-
 ## 🎨 DDD
 🔗 <a href="https://miro.com/app/board/uXjVKQtve4I=/?share_link_id=857640009601">DDD 설계</a>
 
